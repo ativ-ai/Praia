@@ -12,6 +12,7 @@ import ProtectedRoute from './components/shared/ProtectedRoute';
 import Modal from './components/shared/Modal';
 
 import Login from './components/pages/Login';
+import LandingPage from './components/pages/LandingPage';
 import CommunityHub from './components/pages/CommunityHub';
 import MyPraia from './components/pages/MyPraia';
 import PromptStudio from './components/pages/PromptStudio';
@@ -43,8 +44,9 @@ const AppRoutes: React.FC = () => {
     <>
       <Routes location={background || location}>
         <Route path="/login" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
+
         <Route element={<Layout />}>
-          <Route path="/" element={<Navigate to="/prompts" replace />} />
           <Route path="/prompts" element={<CommunityHub />} />
           <Route path="/tools" element={<AIToolsHub />} />
           <Route path="/training" element={<TrainingCenter />} />

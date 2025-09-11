@@ -133,6 +133,18 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
             // Meta tags
             setMeta('name', 'description', description);
             
+            // Keywords
+            const baseKeywords = "AI, Prompt Engineering, Gemini, Prompt Optimization, LLM, Generative AI, Prompt Suite, AI Tools, Prompt Library, Prompt Helper, AI Prompts, Vibe Coding";
+            let itemKeywords = '';
+            if ('category' in item && item.category) {
+                const typeName = itemType === 'prompt' ? 'AI Prompt' : itemType === 'tool' ? 'AI Tool' : 'Training Module';
+                itemKeywords = `${item.title}, ${item.category}, ${typeName}`;
+            } else {
+                itemKeywords = item.title;
+            }
+            const fullKeywords = `${itemKeywords}, ${baseKeywords}`;
+            setMeta('name', 'keywords', fullKeywords);
+            
             // Open Graph
             setMeta('property', 'og:title', title);
             setMeta('property', 'og:description', description);
@@ -141,10 +153,10 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
             setMeta('property', 'og:image', OG_IMAGE_URL);
     
             // Twitter Card
-            setMeta('name', 'twitter:card', 'summary_large_image');
-            setMeta('name', 'twitter:title', title);
-            setMeta('name', 'twitter:description', description);
-            setMeta('name', 'twitter:image', OG_IMAGE_URL);
+            setMeta('property', 'twitter:card', 'summary_large_image');
+            setMeta('property', 'twitter:title', title);
+            setMeta('property', 'twitter:description', description);
+            setMeta('property', 'twitter:image', OG_IMAGE_URL);
             
             // Canonical URL
             setLink('canonical', url);
