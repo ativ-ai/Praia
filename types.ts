@@ -9,7 +9,10 @@ export interface User {
 export type PromptCategory = "Marketing" | "Code Generation" | "Copywriting" | "Ideation" | "Image Generation" | "Productivity" | "Data Analysis" | "Personal Development" | "Sales" | "Business" | "Role-Playing" | "Advertising" | "Content Creation" | "Creative Writing" | "E-Commerce" | "Editing & Proofreading" | "Goal Setting" | "Graphic Design" | "Personal Finance" | "Persuasion & Influence" | "Social Media" | "Frameworks" | "Learning" | "Career" | "Self Help" | "Education" | "Research" | "Fundamentals" | "Advanced Techniques";
 
 export interface Prompt {
-  id: string;
+  id: string; // Unique ID for this specific version
+  historyId: string; // Common ID for all versions of a prompt
+  version: number;
+  isLatest: boolean;
   uid?: string;
   title: string;
   promptText: string;
@@ -18,7 +21,7 @@ export interface Prompt {
   isFavorited?: boolean;
   originalPublicId?: string;
   folderId?: string | null;
-  createdAt: number;
+  createdAt: number; // Timestamp of when this version was created
   framework?: PromptFramework | null;
   frameworkData?: Record<string, string>;
 }

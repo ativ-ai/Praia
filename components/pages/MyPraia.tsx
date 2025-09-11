@@ -6,13 +6,13 @@ import { usePrompts } from '../../hooks/usePrompts';
 import { useAITools } from '../../hooks/useAITools';
 import { useTraining } from '../../hooks/useTraining';
 import { useAuth } from '../../hooks/useAuth';
-import { Prompt, AITool, TrainingModule, GroupedPrompt } from '../../types';
+import { Prompt, AITool, TrainingModule } from '../../types';
 import { PromptCard } from '../shared/PromptCard';
 import AIToolCard from '../shared/AIToolCard';
 import TrainingCard from '../shared/TrainingCard';
 import Spinner from '../shared/Spinner';
 import Modal from '../shared/Modal';
-import { PUBLIC_PROMPTS, PUBLIC_TRAINING_MODULES, PUBLIC_AI_TOOLS } from '../../constants';
+import { PUBLIC_TRAINING_MODULES } from '../../constants';
 import { useNotification } from '../../hooks/useNotification';
 import usePageTitle from '../../hooks/usePageTitle';
 import Icon from '../shared/Icon';
@@ -21,18 +21,20 @@ type PraiaItem = (Prompt & { itemType: 'prompt' }) | (AITool & { itemType: 'tool
 
 const MyPraia: React.FC = () => {
   usePageTitle('My Praia');
-  const { prompts, folders, loading: promptsLoading, getPromptsInFolder, createFolder, deletePrompt, toggleFavoritePrompt, movePrompt } = usePrompts();
-  const { tools, loading: toolsLoading, toggleFavoriteTool, deleteTool, saveTool, isToolFavorited } = useAITools();
-  const { trainings, loading: trainingsLoading, toggleFavoriteTraining, deleteTraining, saveTraining, isTrainingFavorited } = useTraining();
-  const { isAdmin } = useAuth();
+  const { prompts, folders, loading: promptsLoading, getPromptsInFolder, createFolder, deletePrompt, toggleFavoritePrompt, movePrompt, getPromptHistory, revertToVersion } = usePrompts();
+  const { tools, loading: toolsLoading, toggleFavoriteTool, deleteTool } = useAITools();
+  const { trainings, loading: trainingsLoading, toggleFavoriteTraining, deleteTraining } = useTraining();
+  const { user, logout, isAdmin } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'prompts' | 'tools' | 'training'>('prompts');
+  const [activeTab, setActiveTab] = useState<'prompts' | 'tools' | 'training' | 'profile'>('prompts');
   const { addNotification } = useNotification();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [newFolderName, setNewFolderName] = useState('');
   
   const [selectedItem, setSelectedItem] = useState<PraiaItem | null>(null);
+  const [historyVisible, setHistoryVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleCreateFolder = (e: React.FormEvent) => {
@@ -43,117 +45,43 @@ const MyPraia: React.FC = () => {
     }
   };
   
-  const promptsToShow = getPromptsInFolder(selectedFolderId);
+  const filteredPrompts = useMemo(() => {
+      const promptsInFolder = getPromptsInFolder(selectedFolderId);
+      if (!searchTerm) return promptsInFolder;
+      return promptsInFolder.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()) || p.description.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [getPromptsInFolder, selectedFolderId, searchTerm]);
+
+  const filteredTools = useMemo(() => {
+    if (!searchTerm) return tools;
+    return tools.filter(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.description.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [tools, searchTerm]);
+
+  const filteredTrainings = useMemo(() => {
+    if (!searchTerm) return trainings;
+    return trainings.filter(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()) || t.description.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [trainings, searchTerm]);
   
   const loading = useMemo(() => promptsLoading || toolsLoading || trainingsLoading, [promptsLoading, toolsLoading, trainingsLoading]);
 
-  const handleExport = () => {
-    let dataToExport: any[] = [];
-    let headers: string[] = [];
-    let filename = '';
+  const handleOpenModal = (item: PraiaItem) => {
+    setSelectedItem(item);
+    setHistoryVisible(false); // Reset history view on open
+  };
 
-    const escapeCSV = (field: any): string => {
-        if (field === null || field === undefined) {
-            return '';
-        }
-        const str = String(field);
-        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-        return str;
-    };
-
-    switch (activeTab) {
-      case 'prompts':
-        if (promptsToShow.length === 0) {
-            addNotification('No prompts to export.', 'info');
-            return;
-        }
-        headers = ['id', 'title', 'description', 'category', 'promptText', 'framework', 'frameworkData', 'folderId', 'isFavorited', 'originalPublicId'];
-        dataToExport = promptsToShow.map(p => ({
-            id: p.id,
-            title: p.title,
-            description: p.description,
-            category: p.category,
-            promptText: p.promptText,
-            framework: p.framework || '',
-            frameworkData: JSON.stringify(p.frameworkData || {}),
-            folderId: p.folderId || '',
-            isFavorited: p.isFavorited || false,
-            originalPublicId: p.originalPublicId || ''
-        }));
-        filename = 'my_praia_prompts.csv';
-        break;
-      case 'tools':
-        if (tools.length === 0) {
-            addNotification('No tools to export.', 'info');
-            return;
-        }
-        headers = ['id', 'name', 'description', 'category', 'link', 'iconUrl', 'isFavorited', 'originalPublicId'];
-        dataToExport = tools.map(t => ({
-            id: t.id,
-            name: t.name,
-            description: t.description,
-            category: t.category,
-            link: t.link,
-            iconUrl: t.iconUrl,
-            isFavorited: t.isFavorited || false,
-            originalPublicId: t.originalPublicId || ''
-        }));
-        filename = 'my_praia_tools.csv';
-        break;
-      case 'training':
-        if (trainings.length === 0) {
-            addNotification('No training to export.', 'info');
-            return;
-        }
-        headers = ['id', 'title', 'description', 'category', 'content', 'isFavorited', 'originalPublicId'];
-        dataToExport = trainings.map(t => {
-            const fullModule = t.originalPublicId ? PUBLIC_TRAINING_MODULES.find(m => m.id === t.originalPublicId) || t : t;
-            return {
-                id: t.id,
-                title: t.title,
-                description: t.description,
-                category: t.category,
-                content: JSON.stringify(fullModule.content),
-                isFavorited: t.isFavorited || false,
-                originalPublicId: t.originalPublicId || ''
-            };
-        });
-        filename = 'my_praia_training.csv';
-        break;
-      default:
-        return;
-    }
-
-    const csvContent = [
-        headers.join(','),
-        ...dataToExport.map(row => 
-            headers.map(header => escapeCSV(row[header])).join(',')
-        )
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    addNotification(`${filename} downloaded.`, 'success');
+  const handleRevert = async (versionId: string) => {
+    await revertToVersion(versionId);
+    setSelectedItem(null); // Close modal on revert
   };
 
   if (loading) {
       return <div className="flex justify-center items-center h-64"><Spinner /></div>;
   }
   
-  const tabClasses = (tabName: 'prompts' | 'tools' | 'training') => 
-    `px-4 py-2 font-medium text-sm rounded-t-lg transition-colors border-b-2 whitespace-nowrap ${
+  const tabClasses = (tabName: 'prompts' | 'tools' | 'training' | 'profile') => 
+    `px-4 py-2.5 font-bold text-sm rounded-lg transition-all transform hover:scale-105 whitespace-nowrap flex items-center gap-2 ${
         activeTab === tabName
-        ? 'border-sky-500 text-sky-600'
-        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+        ? 'bg-indigo-600 text-white shadow-md'
+        : 'text-slate-600 hover:bg-slate-200'
     }`;
     
   const getModalTitle = (item: PraiaItem | null): string => {
@@ -162,22 +90,26 @@ const MyPraia: React.FC = () => {
   }
 
   const handleDeleteItem = async (item: PraiaItem) => {
-    if (window.confirm(`Are you sure you want to delete "${'name' in item ? item.name : item.title}"?`)) {
+    const confirmMessage = item.itemType === 'prompt' 
+        ? `Are you sure you want to delete "${item.title}" and its entire version history?`
+        : `Are you sure you want to delete "${'name' in item ? item.name : item.title}"?`;
+    
+    if (window.confirm(confirmMessage)) {
       if (item.itemType === 'prompt') {
-        if (item.isFavorited) {
-          await toggleFavoritePrompt(item.originalPublicId!);
+        if (item.isFavorited && item.originalPublicId) {
+          await toggleFavoritePrompt(item.originalPublicId);
         } else {
           await deletePrompt(item.id);
         }
       } else if (item.itemType === 'tool') {
-        if (item.isFavorited) {
-          await toggleFavoriteTool(item.originalPublicId!);
+        if (item.isFavorited && item.originalPublicId) {
+          await toggleFavoriteTool(item.originalPublicId);
         } else {
           await deleteTool(item.id);
         }
       } else if (item.itemType === 'training') {
-        if (item.isFavorited) {
-          await toggleFavoriteTraining(item.originalPublicId!);
+        if (item.isFavorited && item.originalPublicId) {
+          await toggleFavoriteTraining(item.originalPublicId);
         } else {
           await deleteTraining(item.id);
         }
@@ -201,17 +133,46 @@ const MyPraia: React.FC = () => {
     
     return (
         <div>
-            <p className="text-base text-slate-600 mb-4">{selectedItem.description}</p>
+            <p className="text-base text-slate-600 mb-4 leading-relaxed">{selectedItem.description}</p>
             {selectedItem.itemType === 'prompt' && (
-                <pre className="w-full bg-slate-800 text-slate-200 p-4 rounded-md font-mono text-sm whitespace-pre-wrap break-words overflow-x-auto">
+                <>
+                <pre className="w-full bg-slate-900 text-slate-200 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap break-words overflow-x-auto">
                     {selectedItem.promptText}
                 </pre>
+                <div className="mt-4 border-t border-slate-200 pt-4">
+                    <button onClick={() => setHistoryVisible(!historyVisible)} className="flex justify-between items-center w-full font-bold text-slate-700 hover:bg-slate-100 p-2 rounded-md">
+                        <span>Version History ({getPromptHistory(selectedItem.historyId).length})</span>
+                        <Icon name={historyVisible ? 'chevronUp' : 'chevronDown'} className="w-5 h-5 transition-transform" />
+                    </button>
+                    {historyVisible && (
+                        <div className="mt-2 space-y-2 max-h-60 overflow-y-auto pr-2 animate-fade-in">
+                            {getPromptHistory(selectedItem.historyId).map(version => (
+                                <div key={version.id} className="p-3 bg-slate-100 rounded-md flex justify-between items-center text-sm">
+                                    <div>
+                                        <span className={`font-bold ${version.isLatest ? 'text-indigo-600' : ''}`}>Version {version.version} {version.isLatest && '(Latest)'}</span>
+                                        <span className="text-xs text-slate-500 ml-2">
+                                            {new Date(version.createdAt).toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <button 
+                                        onClick={() => handleRevert(version.id)}
+                                        disabled={version.isLatest}
+                                        className="text-xs font-bold bg-white border border-slate-300 px-2.5 py-1 rounded-md hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        Revert
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                </>
             )}
             {selectedItem.itemType === 'training' && (
                 <div className="space-y-4 mt-6 pt-4 border-t border-slate-200">
                     {selectedItem.content?.map((contentItem) => (
                         <div key={contentItem.id} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                            <h4 className="font-semibold text-sky-800">{contentItem.title}</h4>
+                            <h4 className="font-semibold text-indigo-800">{contentItem.title}</h4>
                             <p className="mt-1 text-sm text-slate-700 whitespace-pre-wrap">{contentItem.details}</p>
                             {contentItem.mediaUrl && (
                                 <div className="mt-3">
@@ -231,7 +192,7 @@ const MyPraia: React.FC = () => {
                                 </div>
                             )}
                             {contentItem.example && (
-                                <div className="mt-3 p-3 bg-slate-800 text-slate-200 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                                <div className="mt-3 p-3 bg-slate-900 text-slate-200 rounded text-sm font-mono whitespace-pre-wrap break-words">
                                    <span className="font-bold text-amber-400 text-xs block mb-1 tracking-wider uppercase">Example</span>
                                    {contentItem.example}
                                 </div>
@@ -243,34 +204,34 @@ const MyPraia: React.FC = () => {
              <div className="mt-6 pt-4 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2">
                 <div className="flex gap-2 flex-wrap">
                     {selectedItem.itemType === 'tool' && (
-                        <a href={selectedItem.link} target="_blank" rel="noopener noreferrer" className="bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-2">
-                            Visit Tool <span role="img" aria-label="link">🔗</span>
+                        <a href={selectedItem.link} target="_blank" rel="noopener noreferrer" className="bg-indigo-600 text-white font-bold py-2.5 px-5 rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2">
+                            Visit Tool <Icon name="link" className="w-5 h-5" />
                         </a>
                     )}
                     {canEditAndDelete && (
-                        <button onClick={() => {navigate(`/${selectedItem.itemType}-studio/${selectedItem.id}`); setSelectedItem(null);}} className="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
-                           <span role="img" aria-label="edit">✏️</span> Edit
+                        <button onClick={() => {navigate(`/${selectedItem.itemType}-studio/${selectedItem.id}`); setSelectedItem(null);}} className="bg-slate-100 text-slate-700 font-bold py-2.5 px-5 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
+                           <Icon name="pencil" className="w-5 h-5" /> Edit
                         </button>
                     )}
                     {selectedItem.itemType === 'prompt' && (
                         <>
-                         <button onClick={() => {navigate('/prompt-studio', { state: { prompt: selectedItem } }); setSelectedItem(null);}} className="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
-                            <span role="img" aria-label="template">📝</span> Use as Template
+                         <button onClick={() => {navigate('/prompt-studio', { state: { prompt: selectedItem } }); setSelectedItem(null);}} className="bg-slate-100 text-slate-700 font-bold py-2.5 px-5 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
+                            <Icon name="edit" className="w-5 h-5" /> Use as Template
                         </button>
-                        <button onClick={handleCopy} className="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
-                            <span role="img" aria-label="copy">📋</span> Copy
+                        <button onClick={handleCopy} className="bg-slate-100 text-slate-700 font-bold py-2.5 px-5 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
+                            <Icon name="copy" className="w-5 h-5" /> Copy
                         </button>
                         </>
                     )}
                 </div>
                  <div className="flex gap-2 flex-wrap">
                     {canEditAndDelete ? (
-                        <button onClick={() => handleDeleteItem(selectedItem)} className="bg-red-100 text-red-700 font-bold py-2 px-4 rounded-lg hover:bg-red-200 transition-colors">
+                        <button onClick={() => handleDeleteItem(selectedItem)} className="bg-red-100 text-red-700 font-bold py-2.5 px-5 rounded-lg hover:bg-red-200 transition-colors">
                             Delete
                         </button>
                     ): (
-                         <button onClick={() => handleDeleteItem(selectedItem)} className="bg-amber-100 text-amber-800 font-bold py-2 px-4 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
-                            <span role="img" aria-label="unfavorite">⭐</span> Remove Favorite
+                         <button onClick={() => handleDeleteItem(selectedItem)} className="bg-amber-100 text-amber-800 font-bold py-2.5 px-5 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
+                           <span className="material-symbols-outlined" style={{fontVariationSettings: `'FILL' 1`}}>star</span> Remove Favorite
                         </button>
                     )}
                  </div>
@@ -281,70 +242,68 @@ const MyPraia: React.FC = () => {
   
 
   const newContentLinks = [
-      { to: "/prompt-studio", label: "New Prompt", icon: "📝" },
-      { to: "/tool-studio", label: "New Tool", icon: "🛠️" },
-      { to: "/training-studio", label: "New Training", icon: "🎓" },
+      { to: "/prompt-studio", label: "New Prompt", icon: "edit" },
+      { to: "/tool-studio", label: "New Tool", icon: "construction" },
+      { to: "/training-studio", label: "New Training", icon: "draw" },
   ];
 
   return (
-    <div>
+    <div className="animate-fade-in">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-                <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">My Praia</h1>
+                <h1 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-6xl">My Praia</h1>
                 <p className="mt-2 text-xl text-slate-600">Your personal library of prompts, tools, and training.</p>
             </div>
             <div className="flex-shrink-0 flex flex-wrap gap-2">
                 {newContentLinks.map(link => (
-                    <Link key={link.to} to={link.to} className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-sky-600 hover:bg-sky-700">
-                        <span className="-ml-1 mr-2" role="img" aria-label="add">{link.icon}</span>
+                    <Link key={link.to} to={link.to} className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-bold rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition-all transform hover:scale-105">
+                        <span className="material-symbols-outlined -ml-1 mr-2">{link.icon}</span>
                         {link.label}
                     </Link>
                 ))}
-                <button
-                    onClick={handleExport}
-                    disabled={
-                        (activeTab === 'prompts' && promptsToShow.length === 0) ||
-                        (activeTab === 'tools' && tools.length === 0) ||
-                        (activeTab === 'training' && trainings.length === 0)
-                    }
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-sky-700 bg-sky-100 hover:bg-sky-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <Icon name="download" className="-ml-1 mr-2 h-5 w-5" />
-                    Export CSV
-                </button>
             </div>
         </div>
         
-        <div className="mb-6">
-            <div className="border-b border-slate-200">
-                <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
-                    <button onClick={() => setActiveTab('prompts')} className={tabClasses('prompts')}>My Prompts ({prompts.length})</button>
-                    <button onClick={() => setActiveTab('tools')} className={tabClasses('tools')}>My Tools ({tools.length})</button>
-                    <button onClick={() => setActiveTab('training')} className={tabClasses('training')}>My Training ({trainings.length})</button>
-                </nav>
-            </div>
+        <div className="mb-6 bg-slate-100 p-2 rounded-xl inline-flex flex-wrap items-center gap-2 border border-slate-200">
+            <button onClick={() => setActiveTab('prompts')} className={tabClasses('prompts')}><Icon name="lightbulb" className="w-5 h-5" /> Prompts ({prompts.length})</button>
+            <button onClick={() => setActiveTab('tools')} className={tabClasses('tools')}><Icon name="cpuChip" className="w-5 h-5" /> Tools ({tools.length})</button>
+            <button onClick={() => setActiveTab('training')} className={tabClasses('training')}><Icon name="academicCap" className="w-5 h-5" /> Training ({trainings.length})</button>
+            <button onClick={() => setActiveTab('profile')} className={tabClasses('profile')}><span className="material-symbols-outlined">person</span> Profile</button>
         </div>
+
+        {activeTab !== 'profile' && (
+             <div className="relative mb-6">
+                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                 <input
+                     type="text"
+                     placeholder={`Search your ${activeTab}...`}
+                     value={searchTerm}
+                     onChange={(e) => setSearchTerm(e.target.value)}
+                     className="w-full max-w-lg pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-base shadow-sm placeholder-slate-400"
+                 />
+             </div>
+        )}
 
         {activeTab === 'prompts' && (
             <div className="flex flex-col lg:flex-row gap-8">
                 <aside className="lg:w-1/4 xl:w-1/5 flex-shrink-0">
-                    <div className="bg-white p-4 rounded-lg shadow-md sticky top-24">
+                    <div className="bg-white p-4 rounded-xl shadow-md sticky top-28">
                         <h2 className="text-lg font-bold text-slate-800 mb-4">Folders</h2>
                         <nav className="space-y-1">
                             <button 
                                 onClick={() => setSelectedFolderId(null)}
-                                className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${selectedFolderId === null ? 'bg-sky-100 text-sky-800' : 'text-slate-600 hover:bg-slate-100'}`}
+                                className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${selectedFolderId === null ? 'bg-indigo-100 text-indigo-800' : 'text-slate-600 hover:bg-slate-100'}`}
                             >
-                                <span className="mr-3 text-xl" role="img" aria-label="folder">📁</span>
+                                <span className="material-symbols-outlined mr-3 text-xl">folder</span>
                                 All Prompts
                             </button>
                             {folders.map(folder => (
                                 <button 
                                     key={folder.id}
                                     onClick={() => setSelectedFolderId(folder.id)}
-                                    className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${selectedFolderId === folder.id ? 'bg-sky-100 text-sky-800' : 'text-slate-600 hover:bg-slate-100'}`}
+                                    className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${selectedFolderId === folder.id ? 'bg-indigo-100 text-indigo-800' : 'text-slate-600 hover:bg-slate-100'}`}
                                 >
-                                    <span className="mr-3 text-xl" role="img" aria-label="folder">📁</span>
+                                    <span className="material-symbols-outlined mr-3 text-xl">folder</span>
                                     <span className="truncate">{folder.name}</span>
                                 </button>
                             ))}
@@ -355,7 +314,7 @@ const MyPraia: React.FC = () => {
                                 value={newFolderName}
                                 onChange={(e) => setNewFolderName(e.target.value)}
                                 placeholder="New folder name..."
-                                className="w-full text-sm border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"
+                                className="w-full text-sm border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                             />
                             <button type="submit" className="w-full mt-2 bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-slate-300 transition-colors">
                                 Create Folder
@@ -364,13 +323,13 @@ const MyPraia: React.FC = () => {
                     </div>
                 </aside>
                 <main className="flex-grow">
-                    {promptsToShow.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {promptsToShow.map((prompt: Prompt) => (
+                    {filteredPrompts.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                            {filteredPrompts.map((prompt: Prompt) => (
                                 <PromptCard 
                                     key={prompt.id} 
                                     item={prompt} 
-                                    onClick={() => setSelectedItem({...prompt, itemType: 'prompt'})}
+                                    onClick={() => handleOpenModal({...prompt, itemType: 'prompt'})}
                                     onFavorite={prompt.originalPublicId ? () => toggleFavoritePrompt(prompt.originalPublicId!) : undefined}
                                     isFavorited={!!prompt.isFavorited}
                                     onMove={movePrompt}
@@ -382,10 +341,10 @@ const MyPraia: React.FC = () => {
                          <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
                             <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="folder">📁</span>
                             <h3 className="mt-2 text-lg font-medium text-slate-900">
-                                {selectedFolderId ? 'This folder is empty' : 'No Prompts Yet'}
+                                {searchTerm ? 'No matches found' : selectedFolderId ? 'This folder is empty' : 'No Prompts Yet'}
                             </h3>
                             <p className="mt-1 text-sm text-slate-500">
-                                {selectedFolderId ? 'Move prompts here or create a new one.' : 'Create your first prompt or add one from the AI Community Hub.'}
+                                {searchTerm ? 'Try a different search term.' : selectedFolderId ? 'Move prompts here or create a new one.' : 'Create your first prompt or add one from the Hub.'}
                             </p>
                         </div>
                     )}
@@ -395,13 +354,13 @@ const MyPraia: React.FC = () => {
         
         {activeTab === 'tools' && (
              <main>
-                {tools.length > 0 ? (
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {tools.map((tool) => (
+                {filteredTools.length > 0 ? (
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        {filteredTools.map((tool) => (
                             <AIToolCard 
                                 key={tool.id} 
                                 tool={tool} 
-                                onClick={() => setSelectedItem({...tool, itemType: 'tool'})}
+                                onClick={() => handleOpenModal({...tool, itemType: 'tool'})}
                                 onFavorite={tool.originalPublicId ? () => toggleFavoriteTool(tool.originalPublicId!) : undefined}
                                 isFavorited={!!tool.isFavorited}
                             />
@@ -412,7 +371,7 @@ const MyPraia: React.FC = () => {
                         <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="tools">🛠️</span>
                         <h3 className="mt-2 text-lg font-medium text-slate-900">No Tools Saved</h3>
                         <p className="mt-1 text-sm text-slate-500">
-                           Create your first tool, or discover and favorite new AI tools in the <Link to="/prompts" className="text-sky-600 font-medium hover:underline">Community Hub</Link>.
+                           {searchTerm ? 'No tools match your search.' : <>Create your first tool, or discover new ones in the <Link to="/tools" className="text-indigo-600 font-medium hover:underline">Tools Hub</Link>.</>}
                         </p>
                     </div>
                 )}
@@ -421,20 +380,18 @@ const MyPraia: React.FC = () => {
 
         {activeTab === 'training' && (
              <main>
-                {trainings.length > 0 ? (
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {trainings.map((module) => {
-                           // For favorites, we only store a stub. We need to get full data from constants.
+                {filteredTrainings.length > 0 ? (
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {filteredTrainings.map((module) => {
                            const fullModuleData = module.originalPublicId ? PUBLIC_TRAINING_MODULES.find(m => m.id === module.originalPublicId) : module;
                            if (!fullModuleData) return null;
-                           // Combine the favorite data (like id) with the full public data
                            const displayModule = { ...fullModuleData, ...module };
 
                            return (
                                <TrainingCard 
                                    key={module.id} 
                                    module={displayModule}
-                                   onClick={() => setSelectedItem({...displayModule, itemType: 'training'})}
+                                   onClick={() => handleOpenModal({...displayModule, itemType: 'training'})}
                                    onFavorite={module.originalPublicId ? () => toggleFavoriteTraining(module.originalPublicId!) : undefined}
                                    isFavorited={!!module.isFavorited}
                                />
@@ -446,12 +403,39 @@ const MyPraia: React.FC = () => {
                         <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="academic cap">🎓</span>
                         <h3 className="mt-2 text-lg font-medium text-slate-900">No Training Saved</h3>
                         <p className="mt-1 text-sm text-slate-500">
-                           Create a module, or explore the <Link to="/prompts" className="text-sky-600 font-medium hover:underline">Community Hub</Link> to find and save helpful training.
+                           {searchTerm ? 'No training modules match your search.' : <>Create a module, or explore the <Link to="/training" className="text-indigo-600 font-medium hover:underline">Training Center</Link> to find and save helpful lessons.</>}
                         </p>
                     </div>
                 )}
             </main>
         )}
+
+        {activeTab === 'profile' && (
+             <main className="animate-fade-in">
+                <div className="max-w-lg mx-auto">
+                    <div className="bg-white shadow-xl rounded-xl overflow-hidden">
+                        <div className="p-8 text-center">
+                            <img 
+                                className="h-32 w-32 rounded-full ring-4 ring-indigo-200 mx-auto mb-4" 
+                                src={user!.photoURL} 
+                                alt="User profile" 
+                            />
+                            <h2 className="text-3xl font-bold text-slate-900">{user!.displayName}</h2>
+                            <p className="text-md text-slate-500 mt-1">{user!.email}</p>
+                        </div>
+                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200">
+                            <button 
+                                onClick={logout} 
+                                className="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all"
+                            >
+                                Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        )}
+
         <Modal 
           isOpen={!!selectedItem} 
           onClose={() => setSelectedItem(null)} 

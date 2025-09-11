@@ -81,68 +81,81 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
   const icon = (iconId && PROMPT_ICONS[iconId]) ? PROMPT_ICONS[iconId] : '📝';
 
   const isMovable = onMove && !isGroupedPrompt(item);
+  
+  const categoryColor = PROMPT_CATEGORY_COLORS[item.category]?.split(' ')[0].replace('bg-', 'border-') || 'border-slate-300';
 
   return (
-    <article className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full" onClick={onClick}>
-      <div className="p-5 flex-grow cursor-pointer">
-        <div className="flex justify-between items-start gap-2">
-            <div className="flex-grow flex items-start gap-4">
-                <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center bg-sky-100/70 rounded-full">
-                    <span className="text-2xl text-sky-700" role="img" aria-label="prompt icon">{icon}</span>
-                </div>
-                <div className="flex-grow">
-                    <h3 className="text-lg font-bold text-slate-800">{item.title}</h3>
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <button onClick={onCategoryClick ? handleCategoryClick : undefined} disabled={!onCategoryClick} className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-sky-400' : 'cursor-default'}`}>{item.category}</button>
-                    </div>
-                </div>
-            </div>
-          <div className="flex-shrink-0">
-            <button onClick={onTypeClick ? handleTypeClick : undefined} disabled={!onTypeClick} className={`text-xs font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap ${ITEM_TYPE_COLORS.prompt} ${onTypeClick ? 'cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-sky-400' : 'cursor-default'}`}>Prompt</button>
-          </div>
-        </div>
-        <p className="text-sm text-slate-600 mt-4 line-clamp-3">{item.description}</p>
-      </div>
-      <div className="bg-slate-50 p-3 flex justify-between items-center rounded-b-lg mt-auto">
-        <div className="flex items-center gap-2 flex-wrap">
-            {frameworks.map(fw => (
-                <button
-                    key={fw}
-                    onClick={onFrameworkClick ? (e) => handleFrameworkClick(e, fw) : undefined}
-                    disabled={!onFrameworkClick}
-                    className={`text-xs font-semibold px-2 py-0.5 rounded ${PROMPT_FRAMEWORK_COLORS[fw] || 'bg-slate-200 text-slate-800'} ${onFrameworkClick ? 'cursor-pointer hover:ring-2 hover:ring-offset-1' : 'cursor-default'}`}
-                >
-                    {fw}
-                </button>
-            ))}
-        </div>
-        <div className="flex items-center gap-1">
-            {isMovable && (
-                <div ref={menuRef} className="relative">
-                    <button onClick={toggleMoveMenu} title="Move to folder" className="p-1 rounded-full hover:bg-slate-200 transition-all duration-200 transform hover:scale-125 active:scale-100">
-                        <span className="text-xl" role="img" aria-label="move to folder">📁</span>
+    <article 
+      className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all duration-300 flex flex-col h-full overflow-hidden group cursor-pointer"
+      onClick={onClick}
+    >
+      <div className={`h-1.5 ${categoryColor.replace('border-', 'bg-')}`}></div>
+      <div className="p-5 flex-grow flex flex-col">
+          <div className="flex-grow">
+            <div className="flex justify-between items-start gap-4">
+              <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center bg-slate-100 rounded-lg">
+                <span className="text-3xl" role="img" aria-label="prompt icon">{icon}</span>
+              </div>
+              <div className="flex-grow">
+                <h3 className="text-lg font-bold text-slate-900 leading-tight">{item.title}</h3>
+                <div className="flex items-center gap-2 mt-1.5">
+                    <button 
+                        onClick={onCategoryClick ? handleCategoryClick : undefined} 
+                        disabled={!onCategoryClick} 
+                        className={`text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
+                    >
+                        {item.category}
                     </button>
-                    {moveMenuOpen && (
-                        <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                            <div className="py-1">
-                                <button onClick={(e) => handleMove(e, null)} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    All Prompts (Uncategorized)
-                                </button>
-                                {folders.map(folder => (
-                                    <button key={folder.id} onClick={(e) => handleMove(e, folder.id)} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        {folder.name}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    {'version' in item && <span className="text-xs font-mono bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">v{item.version}</span>}
                 </div>
-            )}
-            {onFavorite && (
-                <button onClick={handleFavoriteClick} title={isFavorited ? "Remove from Favorites" : "Add to Favorites"} className="p-1 rounded-full hover:bg-amber-100 transition-all duration-200 transform hover:scale-125 active:scale-100">
-                    <span className="text-xl" role="img" aria-label="favorite star">{isFavorited ? '⭐' : '☆'}</span>
-                </button>
-            )}
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mt-4 line-clamp-3 leading-relaxed">{item.description}</p>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-slate-200/80 flex justify-between items-center">
+            <div className="flex items-center gap-1.5 flex-wrap">
+                {frameworks.map(fw => (
+                    <button
+                        key={fw}
+                        onClick={onFrameworkClick ? (e) => handleFrameworkClick(e, fw) : undefined}
+                        disabled={!onFrameworkClick}
+                        className={`text-xs font-bold px-2 py-0.5 rounded ${PROMPT_FRAMEWORK_COLORS[fw] || 'bg-slate-200 text-slate-800'} ${onFrameworkClick ? 'cursor-pointer hover:ring-2 hover:ring-offset-1' : 'cursor-default'}`}
+                    >
+                        {fw}
+                    </button>
+                ))}
+            </div>
+            <div className="flex items-center gap-1">
+              {isMovable && (
+                  <div ref={menuRef} className="relative">
+                      <button onClick={toggleMoveMenu} title="Move to folder" className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                          <span className="material-symbols-outlined text-slate-500 text-xl leading-none">folder_open</span>
+                      </button>
+                      {moveMenuOpen && (
+                          <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 animate-expand-in">
+                              <div className="py-1">
+                                  <button onClick={(e) => handleMove(e, null)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                                      All Prompts (Uncategorized)
+                                  </button>
+                                  {folders.map(folder => (
+                                      <button key={folder.id} onClick={(e) => handleMove(e, folder.id)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 truncate">
+                                          {folder.name}
+                                      </button>
+                                  ))}
+                              </div>
+                          </div>
+                      )}
+                  </div>
+              )}
+              {onFavorite && (
+                  <button onClick={handleFavoriteClick} title={isFavorited ? "Remove from Favorites" : "Add to Favorites"} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
+                      <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
+                        star
+                      </span>
+                  </button>
+              )}
+          </div>
         </div>
       </div>
     </article>

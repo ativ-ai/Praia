@@ -30,23 +30,23 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 animate-fade-in"
+      className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex justify-center items-center p-4 animate-fade-in"
       onClick={onClose}
       aria-modal="true"
       role="dialog"
     >
       <div
-        className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-expand-in"
+        className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col animate-expand-in border border-slate-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-4 border-b border-slate-200 flex-shrink-0">
+        <div className="flex justify-between items-center p-5 border-b border-slate-200 flex-shrink-0">
           <h2 className="text-xl font-bold text-slate-800 truncate pr-8">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"
+            className="p-1.5 rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"
             aria-label="Close"
           >
-            <span className="text-2xl" role="img" aria-label="close">❌</span>
+            <span className="material-symbols-outlined text-2xl leading-none">close</span>
           </button>
         </div>
         <div className="overflow-y-auto p-6">

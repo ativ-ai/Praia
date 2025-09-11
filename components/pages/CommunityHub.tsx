@@ -104,62 +104,61 @@ const CommunityHub: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Prompts Hub</h1>
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600">Discover high-quality prompts, curated by experts and the community.</p>
+    <div className="animate-fade-in">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-6xl">Prompts Hub</h1>
+        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed">Discover high-quality prompts, curated by experts and the community.</p>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 mb-8">
-        <div className="relative mb-4">
-            <input
-            type="text"
-            placeholder="Search for prompts..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-base shadow-sm placeholder-slate-400"
-            />
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xl">
-                <span role="img" aria-label="search">🔍</span>
+      <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200 mb-8 sticky top-28 z-40">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-3">
+                <div className="relative">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                    <input
+                    type="text"
+                    placeholder="Search prompts by title or description..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-base shadow-sm placeholder-slate-400"
+                    />
+                </div>
             </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-            <div>
+            <div className="md:col-span-1">
               <label htmlFor="category-filter" className="block text-sm font-medium text-slate-700 mb-1">Category</label>
               <select
                   id="category-filter"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value as any)}
-                  className="w-full py-2 px-3 border border-slate-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"
+                  className="w-full py-3 px-3 border border-slate-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               >
                   <option value="All">All Categories</option>
                   {PROMPT_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
-            <div>
+            <div className="md:col-span-1">
                  <label htmlFor="framework-filter" className="block text-sm font-medium text-slate-700 mb-1">Framework</label>
                 <select
                     id="framework-filter"
                     value={selectedFramework}
                     onChange={(e) => setSelectedFramework(e.target.value as any)}
-                    className="w-full py-2 px-3 border border-slate-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"
+                    className="w-full py-3 px-3 border border-slate-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 >
                     <option value="All">All Frameworks</option>
                     {Object.values(PromptFramework).map(fw => <option key={fw} value={fw}>{fw}</option>)}
                 </select>
             </div>
+            <div className="md:col-span-1 flex items-end">
+                <p className="text-sm font-medium text-slate-700 w-full text-right">
+                {filteredItems.length} {filteredItems.length === 1 ? 'result' : 'results'} found.
+                </p>
+            </div>
         </div>
       </div>
       
-      <div className="mb-4">
-        <p className="text-sm font-medium text-slate-700">
-          {filteredItems.length} {filteredItems.length === 1 ? 'result' : 'results'} found.
-        </p>
-      </div>
-
       {filteredItems.length > 0 ? (
         <>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {paginatedItems.map(item => {
               const itemUrl = `/detail/prompt/${item.id}`;
               const favoritedPromptInGroup = item.prompts.find(p => myFavoritedPromptIds.has(p.id));
@@ -180,11 +179,11 @@ const CommunityHub: React.FC = () => {
           })}
         </div>
         {totalPages > 1 && (
-            <div className="mt-8 flex justify-center items-center gap-4">
+            <div className="mt-12 flex justify-center items-center gap-4">
                 <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-white border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-white border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Previous
                 </button>
@@ -194,7 +193,7 @@ const CommunityHub: React.FC = () => {
                 <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-white border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-white border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Next
                 </button>
@@ -202,13 +201,13 @@ const CommunityHub: React.FC = () => {
         )}
         </>
       ) : (
-        <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
-            <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="search">🔍</span>
-            <h3 className="mt-2 text-lg font-medium text-slate-900">No Prompts Found</h3>
-            <p className="mt-1 text-sm text-slate-500">Try adjusting your search or filters to find what you're looking for.</p>
+        <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md animate-fade-in">
+            <span className="mx-auto text-6xl text-slate-400" role="img" aria-label="search">🔍</span>
+            <h3 className="mt-4 text-xl font-semibold text-slate-900">No Prompts Found</h3>
+            <p className="mt-2 text-base text-slate-500">Try adjusting your search or filters to find what you're looking for.</p>
             <div className="mt-6">
-                <Link to="/prompt-studio" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
-                    <span role="img" aria-label="prompt" className="mr-2">📝</span>
+                <Link to="/prompt-studio" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:scale-105">
+                    <span className="material-symbols-outlined mr-2">add</span>
                     Create a New Prompt
                 </Link>
             </div>

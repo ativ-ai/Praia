@@ -2,9 +2,12 @@ import React from 'react';
 import usePageTitle from '../../hooks/usePageTitle';
 
 const CodeBlock: React.FC<{ children: React.ReactNode, language: string }> = ({ children, language }) => (
-    <pre className={`bg-slate-800 text-slate-200 p-4 rounded-lg my-4 overflow-x-auto text-sm language-${language}`}>
-        <code>{children}</code>
-    </pre>
+    <div className="bg-slate-900 rounded-lg my-4 overflow-hidden">
+        <div className="bg-slate-700 text-slate-300 text-xs font-sans px-4 py-1.5">{language}</div>
+        <pre className={`text-slate-200 p-4 overflow-x-auto text-sm language-${language}`}>
+            <code>{children}</code>
+        </pre>
+    </div>
 );
 
 const ApiDocs: React.FC = () => {
@@ -27,24 +30,24 @@ const ApiDocs: React.FC = () => {
 }`;
 
     return (
-        <div className="max-w-4xl mx-auto prose prose-slate">
-            <div className="text-center mb-10">
-                <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">API Documentation</h1>
-                <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600">Integrate the Praia prompt engine into your own applications.</p>
+        <div className="max-w-4xl mx-auto animate-fade-in">
+            <div className="text-center mb-12">
+                <h1 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-6xl">API Documentation</h1>
+                <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed">Integrate the Praia prompt engine into your own applications.</p>
             </div>
             
-            <div className="bg-white p-8 rounded-lg shadow-md">
+            <div className="bg-white p-8 rounded-xl shadow-lg border border-slate-200 prose prose-slate max-w-none">
                 <h2 className="text-2xl font-bold text-slate-800">Introduction</h2>
                 <p>The Praia API allows you to programmatically transform structured inputs into fully-formed prompts using our powerful frameworks. This is ideal for building prompt generation into your own workflows and applications.</p>
                 
                 <h2 className="text-2xl font-bold text-slate-800 mt-8">Authentication</h2>
-                <p>API access is authenticated using Bearer tokens. You can generate and manage your API keys on your <a href="#/profile" className="text-sky-600 hover:text-sky-800">Profile page</a>.</p>
+                <p>API access is authenticated using Bearer tokens. You can generate and manage your API keys on your profile page.</p>
                 <p>Include your API key in the Authorization header of your requests:</p>
                 <CodeBlock language="bash">{`Authorization: Bearer <YOUR_API_KEY>`}</CodeBlock>
 
                 <h2 className="text-2xl font-bold text-slate-800 mt-8">Endpoint</h2>
                 <h3 className="text-xl font-semibold text-slate-700 mt-4">Transform Prompt</h3>
-                <p><span className="font-mono bg-slate-200 text-slate-800 px-2 py-1 rounded">POST /v1/transform</span></p>
+                <p><span className="font-mono bg-slate-200 text-slate-800 px-2 py-1 rounded-md text-sm font-semibold">POST /v1/transform</span></p>
 
                 <h4 className="text-lg font-semibold text-slate-700 mt-6">Request Body</h4>
                 <p>The request must be a JSON object with two keys: <code>framework</code> and <code>data</code>.</p>

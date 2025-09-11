@@ -35,10 +35,11 @@ const TrainingCenter: React.FC = () => {
   };
 
   const filteredModules = useMemo(() => {
+    const sortedModules = [...PUBLIC_TRAINING_MODULES].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
     if (selectedCategory === 'All') {
-      return PUBLIC_TRAINING_MODULES;
+      return sortedModules;
     }
-    return PUBLIC_TRAINING_MODULES.filter(module => module.category === selectedCategory);
+    return sortedModules.filter(module => module.category === selectedCategory);
   }, [selectedCategory]);
 
   const CategoryButton: React.FC<{ category: TrainingCategory | 'All' }> = ({ category }) => {
@@ -48,30 +49,30 @@ const TrainingCenter: React.FC = () => {
     return (
       <button
         onClick={() => setSelectedCategory(category)}
-        className={`w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+        className={`w-full flex justify-between items-center px-4 py-2.5 text-sm font-bold rounded-lg transition-colors text-left ${
             isActive
-            ? 'bg-sky-100 text-sky-800'
-            : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-indigo-600 text-white shadow-md'
+            : 'text-slate-700 hover:bg-slate-200'
         }`}
       >
         <span className="truncate">{category}</span>
-        <span className={`px-2 py-0.5 rounded-full text-xs font-mono ${isActive ? 'bg-sky-200 text-sky-900' : 'bg-slate-200 text-slate-700'}`}>{count}</span>
+        <span className={`px-2 py-0.5 rounded-full text-xs font-mono ${isActive ? 'bg-indigo-400 text-white' : 'bg-slate-200 text-slate-700'}`}>{count}</span>
       </button>
     )
   }
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Training Center</h1>
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600">Level up your AI skills with curated guides and best practices.</p>
+        <h1 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-6xl">Training Center</h1>
+        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed">Level up your AI skills with curated guides and best practices.</p>
       </div>
       
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-12">
         <aside className="lg:w-1/4 xl:w-1/5 flex-shrink-0">
-          <div className="sticky top-24">
+          <div className="sticky top-28 bg-white p-4 rounded-xl shadow-lg border border-slate-200">
             <h2 className="text-lg font-bold text-slate-800 mb-4 px-3">Categories</h2>
-            <nav className="space-y-1">
+            <nav className="space-y-1.5">
               <CategoryButton category="All" />
               {TRAINING_CATEGORIES.map(cat => <CategoryButton key={cat} category={cat} />)}
             </nav>
@@ -80,7 +81,7 @@ const TrainingCenter: React.FC = () => {
         
         <main className="flex-grow min-w-0">
           {filteredModules.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
               {filteredModules.map((module) => (
                   <TrainingCard 
                       key={module.id}
