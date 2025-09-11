@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import usePageTitle from '../../hooks/usePageTitle';
 import CookieBanner from '../shared/CookieBanner';
+import Header from '../shared/Header';
 
 const FeatureCard: React.FC<{ icon: string; title: string; children: React.ReactNode; }> = ({ icon, title, children }) => (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-xl hover:border-sky-300 transform hover:-translate-y-1">
@@ -69,7 +70,8 @@ const LandingPage: React.FC = () => {
     usePageTitle('Your All-in-One AI Suite');
 
     return (
-        <div className="bg-slate-50 text-slate-800 overflow-hidden">
+        <div className="bg-slate-50 text-slate-800">
+            <Header />
             {/* Hero Section */}
             <section className="relative text-center py-20 sm:py-32 overflow-hidden">
                  <div className="relative container mx-auto px-4 z-10">
@@ -187,6 +189,12 @@ const LandingPage: React.FC = () => {
                     </Link>
                 </div>
             </section>
+            <footer className="w-full text-center py-4 text-sm text-slate-500 border-t border-slate-200">
+                © {new Date().getFullYear()} - Praia by{' '}
+                <a href="https://ativ.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-sky-600 hover:underline">
+                  ativ.ai
+                </a>
+            </footer>
             <CookieBanner />
         </div>
     );

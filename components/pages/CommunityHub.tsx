@@ -110,7 +110,7 @@ const CommunityHub: React.FC = () => {
         <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600">Discover high-quality prompts, curated by experts and the community.</p>
       </div>
 
-      <div className="sticky top-[65px] bg-sky-50/90 backdrop-blur-lg z-40 py-4 mb-6 rounded-lg">
+      <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 mb-8">
         <div className="relative mb-4">
             <input
             type="text"

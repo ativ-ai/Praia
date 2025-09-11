@@ -17,10 +17,6 @@ const Layout: React.FC = () => {
         <a href="https://ativ.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-sky-600 hover:underline">
           ativ.ai
         </a>
-        <span className="mx-2">|</span>
-        <a href="mailto:praia@ativ.ai" className="font-medium text-sky-600 hover:underline">
-          praia@ativ.ai
-        </a>
       </footer>
       <CookieBanner />
     </div>
