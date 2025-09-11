@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="https://fav.farm/🏖️" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0ea5e9">
+    <title>Praia: AI Prompt Engineering Suite</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free." />
+    <meta name="keywords" content="AI, Prompt Engineering, Gemini, Prompt Optimization, LLM, Generative AI, Prompt Suite, AI Tools, Prompt Library, Prompt Helper, AI Prompts, Vibe Coding" />
+    <link rel="canonical" href="https://praia-ai-suite.web.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://praia-ai-suite.web.app/">
+    <meta property="og:title" content="Praia: AI Prompt Engineering Suite">
+    <meta property="og:description" content="Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free.">
+    <meta property="og:image" content="https://i.imgur.com/gU8m4Lq.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://praia-ai-suite.web.app/">
+    <meta property="twitter:title" content="Praia: AI Prompt Engineering Suite">
+    <meta property="twitter:description" content="Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free.">
+    <meta property="twitter:image" content="https://i.imgur.com/gU8m4Lq.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "url": "https://praia-ai-suite.web.app/",
+          "name": "Praia: AI Prompt Engineering Suite",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://praia-ai-suite.web.app/#/prompts?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Praia: AI Prompt Engineering Suite",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "description": "Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free.",
+          "url": "https://praia-ai-suite.web.app/",
+          "keywords": "AI, Prompt Engineering, Gemini, Prompt Optimization, LLM, Generative AI, Prompt Suite, AI Tools, Prompt Library, Prompt Helper, AI Prompts, Vibe Coding",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "217"
+          },
+          "author": {
+            "@type": "Organization",
+            "name": "Praia Labs"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Praia Labs"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              sky: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                200: '#bae6fd',
+                300: '#7dd3fc',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1',
+                800: '#075985',
+              },
+              amber: {
+                100: '#fef3c7',
+                200: '#fde68a',
+                300: '#fcd34d',
+                400: '#fbbf24',
+                500: '#f59e0b',
+                600: '#d97706',
+                800: '#92400e',
+                900: '#78350f',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slide-up {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes expand-in {
+        from { 
+          opacity: 0; 
+          transform: scale(0.95);
+        }
+        to { 
+          opacity: 1; 
+          transform: scale(1);
+        }
+      }
+      .animate-fade-in { animation: fade-in 0.2s ease-out forwards; }
+      .animate-slide-up { animation: slide-up 0.3s ease-out forwards; }
+      .animate-expand-in { animation: expand-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      .aspect-video {
+        aspect-ratio: 16 / 9;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.7.0",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.3",
+    "react-router": "https://esm.sh/react-router@^7.6.3"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

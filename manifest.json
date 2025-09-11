@@ -1,0 +1,21 @@
+
+{
+  "short_name": "Praia",
+  "name": "Praia: AI Prompt Suite",
+  "icons": [
+    {
+      "src": "https://fav.farm/🏖️?s=192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://fav.farm/🏖️?s=512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0ea5e9",
+  "background_color": "#f0f9ff"
+}

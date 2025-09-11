@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://praia-ai-suite.web.app/sitemap.xml
