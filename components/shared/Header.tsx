@@ -72,7 +72,7 @@ const Header: React.FC = () => {
           return (
               <div className="space-y-2">
                   <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">Studio</h3>
-                  <NavLink to="/playground" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">design_services</span>Prompt Studio</NavLink>
+                  <NavLink to="/prompt-studio" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">design_services</span>Prompt Studio</NavLink>
                   
                   <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Explore</h3>
                   <NavLink to="/prompts" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">tips_and_updates</span>Prompts</NavLink>
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
 
       return (
           <>
-              <NavLink to="/playground" className={navLinkClasses}>
+              <NavLink to="/prompt-studio" className={navLinkClasses}>
                 <span className="material-symbols-outlined text-indigo-600">design_services</span>Prompt Studio
               </NavLink>
               <Dropdown title={<><span className="material-symbols-outlined text-indigo-600">explore</span>Explore</>}>

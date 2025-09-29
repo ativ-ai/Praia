@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -24,9 +25,9 @@ const MyPraia: React.FC = () => {
   const { prompts, folders, loading: promptsLoading, getPromptsInFolder, createFolder, deletePrompt, toggleFavoritePrompt, movePrompt, getPromptHistory, revertToVersion } = usePrompts();
   const { tools, loading: toolsLoading, toggleFavoriteTool, deleteTool } = useAITools();
   const { trainings, loading: trainingsLoading, toggleFavoriteTraining, deleteTraining } = useTraining();
-  const { user, logout, isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'prompts' | 'tools' | 'training' | 'profile'>('prompts');
+  const [activeTab, setActiveTab] = useState<'prompts' | 'tools' | 'training'>('prompts');
   const { addNotification } = useNotification();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -77,7 +78,7 @@ const MyPraia: React.FC = () => {
       return <div className="flex justify-center items-center h-64"><Spinner /></div>;
   }
   
-  const tabClasses = (tabName: 'prompts' | 'tools' | 'training' | 'profile') => 
+  const tabClasses = (tabName: 'prompts' | 'tools' | 'training') => 
     `px-4 py-2.5 font-bold text-sm rounded-lg transition-all transform hover:scale-105 whitespace-nowrap flex items-center gap-2 ${
         activeTab === tabName
         ? 'bg-indigo-600 text-white shadow-md'
@@ -90,31 +91,29 @@ const MyPraia: React.FC = () => {
   }
 
   const handleDeleteItem = async (item: PraiaItem) => {
-    const confirmMessage = item.itemType === 'prompt' 
-        ? `Are you sure you want to delete "${item.title}" and its entire version history?`
-        : `Are you sure you want to delete "${'name' in item ? item.name : item.title}"?`;
+    const itemName = 'name' in item ? item.name : item.title;
+    const isUserOwned = !item.originalPublicId;
+
+    const confirmMessage = isUserOwned
+      ? `Are you sure you want to permanently delete "${itemName}"? ${item.itemType === 'prompt' ? 'Its entire version history will be removed. ' : ''}This action cannot be undone.`
+      : `Are you sure you want to remove "${itemName}" from your library?`;
     
     if (window.confirm(confirmMessage)) {
-      if (item.itemType === 'prompt') {
-        if (item.isFavorited && item.originalPublicId) {
-          await toggleFavoritePrompt(item.originalPublicId);
-        } else {
-          await deletePrompt(item.id);
+        switch (item.itemType) {
+            case 'prompt':
+                if (item.originalPublicId) await toggleFavoritePrompt(item.originalPublicId);
+                else await deletePrompt(item.id);
+                break;
+            case 'tool':
+                if (item.originalPublicId) await toggleFavoriteTool(item.originalPublicId);
+                else await deleteTool(item.id);
+                break;
+            case 'training':
+                if (item.originalPublicId) await toggleFavoriteTraining(item.originalPublicId);
+                else await deleteTraining(item.id);
+                break;
         }
-      } else if (item.itemType === 'tool') {
-        if (item.isFavorited && item.originalPublicId) {
-          await toggleFavoriteTool(item.originalPublicId);
-        } else {
-          await deleteTool(item.id);
-        }
-      } else if (item.itemType === 'training') {
-        if (item.isFavorited && item.originalPublicId) {
-          await toggleFavoriteTraining(item.originalPublicId);
-        } else {
-          await deleteTraining(item.id);
-        }
-      }
-      setSelectedItem(null);
+      setSelectedItem(null); // Close modal if open
     }
   };
 
@@ -122,7 +121,7 @@ const MyPraia: React.FC = () => {
     if (!selectedItem) return null;
 
     const isUserOwned = !selectedItem.originalPublicId;
-    const canEditAndDelete = isUserOwned || isAdmin;
+    const canEdit = isUserOwned || isAdmin;
 
     const handleCopy = () => {
       if ('promptText' in selectedItem) {
@@ -208,7 +207,7 @@ const MyPraia: React.FC = () => {
                             Visit Tool <Icon name="link" className="w-5 h-5" />
                         </a>
                     )}
-                    {canEditAndDelete && (
+                    {canEdit && (
                         <button onClick={() => {navigate(`/${selectedItem.itemType}-studio/${selectedItem.id}`); setSelectedItem(null);}} className="bg-slate-100 text-slate-700 font-bold py-2.5 px-5 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
                            <Icon name="pencil" className="w-5 h-5" /> Edit
                         </button>
@@ -225,15 +224,9 @@ const MyPraia: React.FC = () => {
                     )}
                 </div>
                  <div className="flex gap-2 flex-wrap">
-                    {canEditAndDelete ? (
-                        <button onClick={() => handleDeleteItem(selectedItem)} className="bg-red-100 text-red-700 font-bold py-2.5 px-5 rounded-lg hover:bg-red-200 transition-colors">
-                            Delete
-                        </button>
-                    ): (
-                         <button onClick={() => handleDeleteItem(selectedItem)} className="bg-amber-100 text-amber-800 font-bold py-2.5 px-5 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
-                           <span className="material-symbols-outlined" style={{fontVariationSettings: `'FILL' 1`}}>star</span> Remove Favorite
-                        </button>
-                    )}
+                    <button onClick={() => handleDeleteItem(selectedItem)} className={`${isUserOwned ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'} font-bold py-2.5 px-5 rounded-lg transition-colors`}>
+                        {isUserOwned ? 'Delete' : 'Remove Favorite'}
+                    </button>
                  </div>
             </div>
         </div>
@@ -268,21 +261,18 @@ const MyPraia: React.FC = () => {
             <button onClick={() => setActiveTab('prompts')} className={tabClasses('prompts')}><Icon name="lightbulb" className="w-5 h-5" /> Prompts ({prompts.length})</button>
             <button onClick={() => setActiveTab('tools')} className={tabClasses('tools')}><Icon name="cpuChip" className="w-5 h-5" /> Tools ({tools.length})</button>
             <button onClick={() => setActiveTab('training')} className={tabClasses('training')}><Icon name="academicCap" className="w-5 h-5" /> Training ({trainings.length})</button>
-            <button onClick={() => setActiveTab('profile')} className={tabClasses('profile')}><span className="material-symbols-outlined">person</span> Profile</button>
         </div>
 
-        {activeTab !== 'profile' && (
-             <div className="relative mb-6">
-                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                 <input
-                     type="text"
-                     placeholder={`Search your ${activeTab}...`}
-                     value={searchTerm}
-                     onChange={(e) => setSearchTerm(e.target.value)}
-                     className="w-full max-w-lg pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-base shadow-sm placeholder-slate-400"
-                 />
-             </div>
-        )}
+        <div className="relative mb-6">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <input
+                type="text"
+                placeholder={`Search your ${activeTab}...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full max-w-lg pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-base shadow-sm placeholder-slate-400"
+            />
+        </div>
 
         {activeTab === 'prompts' && (
             <div className="flex flex-col lg:flex-row gap-8">
@@ -334,6 +324,8 @@ const MyPraia: React.FC = () => {
                                     isFavorited={!!prompt.isFavorited}
                                     onMove={movePrompt}
                                     folders={folders}
+                                    onDelete={() => handleDeleteItem({...prompt, itemType: 'prompt'})}
+                                    isUserOwned={!prompt.originalPublicId}
                                 />
                             ))}
                         </div>
@@ -363,6 +355,8 @@ const MyPraia: React.FC = () => {
                                 onClick={() => handleOpenModal({...tool, itemType: 'tool'})}
                                 onFavorite={tool.originalPublicId ? () => toggleFavoriteTool(tool.originalPublicId!) : undefined}
                                 isFavorited={!!tool.isFavorited}
+                                onDelete={() => handleDeleteItem({...tool, itemType: 'tool'})}
+                                isUserOwned={!tool.originalPublicId}
                             />
                         ))}
                     </div>
@@ -394,6 +388,8 @@ const MyPraia: React.FC = () => {
                                    onClick={() => handleOpenModal({...displayModule, itemType: 'training'})}
                                    onFavorite={module.originalPublicId ? () => toggleFavoriteTraining(module.originalPublicId!) : undefined}
                                    isFavorited={!!module.isFavorited}
+                                   onDelete={() => handleDeleteItem({...displayModule, itemType: 'training'})}
+                                   isUserOwned={!module.originalPublicId}
                                />
                            )
                         })}
@@ -407,32 +403,6 @@ const MyPraia: React.FC = () => {
                         </p>
                     </div>
                 )}
-            </main>
-        )}
-
-        {activeTab === 'profile' && (
-             <main className="animate-fade-in">
-                <div className="max-w-lg mx-auto">
-                    <div className="bg-white shadow-xl rounded-xl overflow-hidden">
-                        <div className="p-8 text-center">
-                            <img 
-                                className="h-32 w-32 rounded-full ring-4 ring-indigo-200 mx-auto mb-4" 
-                                src={user!.photoURL} 
-                                alt="User profile" 
-                            />
-                            <h2 className="text-3xl font-bold text-slate-900">{user!.displayName}</h2>
-                            <p className="text-md text-slate-500 mt-1">{user!.email}</p>
-                        </div>
-                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200">
-                            <button 
-                                onClick={logout} 
-                                className="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all"
-                            >
-                                Log Out
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </main>
         )}
 

@@ -1,4 +1,5 @@
 
+
 export interface User {
   uid: string;
   displayName: string;
@@ -19,6 +20,7 @@ export interface Prompt {
   description: string;
   category: PromptCategory;
   isFavorited?: boolean;
+  isPublic?: boolean;
   originalPublicId?: string;
   folderId?: string | null;
   createdAt: number; // Timestamp of when this version was created

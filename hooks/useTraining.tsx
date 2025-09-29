@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, ReactNode, useEffect, useMemo } from 'react';
 import { TrainingModule } from '../types';
 import { useAuth } from './useAuth';
@@ -59,7 +60,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
   const deleteTraining = async (id: string) => {
     if (!user) return;
     localTrainings = localTrainings.filter(t => t.id !== id);
-    setTrainings(localTrainings);
+    setTrainings([...localTrainings]);
     addNotification('Training module deleted.', 'info');
   };
 

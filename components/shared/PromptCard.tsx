@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { GroupedPrompt, Prompt, PromptFolder, PromptCategory, PromptFramework } from '../../types';
 import { PROMPT_CATEGORY_COLORS, PROMPT_FRAMEWORK_COLORS, ITEM_TYPE_COLORS, PROMPT_FRAMEWORKS, PROMPT_ICONS } from '../../constants';
@@ -13,22 +14,29 @@ interface PromptCardProps {
   onCategoryClick?: (category: PromptCategory) => void;
   onFrameworkClick?: (framework: PromptFramework) => void;
   onTypeClick?: () => void;
+  onDelete?: () => void;
+  isUserOwned?: boolean;
 }
 
 const isGroupedPrompt = (item: GroupedPrompt | Prompt): item is GroupedPrompt => {
   return 'prompts' in item && Array.isArray(item.prompts);
 };
 
-export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorite, isFavorited, onMove, folders = [], onCategoryClick, onFrameworkClick, onTypeClick }) => {
+export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorite, isFavorited, onMove, folders = [], onCategoryClick, onFrameworkClick, onTypeClick, onDelete, isUserOwned }) => {
   const [moveMenuOpen, setMoveMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
+  const moveMenuRef = useRef<HTMLDivElement>(null);
+  const optionsMenuRef = useRef<HTMLDivElement>(null);
   
   const categoryColorClass = PROMPT_CATEGORY_COLORS[item.category] || 'bg-slate-200 text-slate-800';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (moveMenuRef.current && !moveMenuRef.current.contains(event.target as Node)) {
         setMoveMenuOpen(false);
+      }
+       if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target as Node)) {
+        setOptionsMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -41,6 +49,12 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
     e.stopPropagation();
     onFavorite?.();
   };
+  
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete?.();
+    setOptionsMenuOpen(false);
+  };
 
   const handleMove = (e: React.MouseEvent, folderId: string | null) => {
     e.stopPropagation();
@@ -52,7 +66,14 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
   
   const toggleMoveMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setOptionsMenuOpen(false);
     setMoveMenuOpen(prev => !prev);
+  }
+  
+  const toggleOptionsMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMoveMenuOpen(false);
+    setOptionsMenuOpen(prev => !prev);
   }
 
   const handleCategoryClick = (e: React.MouseEvent) => {
@@ -67,18 +88,14 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
     onFrameworkClick?.(framework);
   };
 
-  const handleTypeClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onTypeClick?.();
-  };
-
   const frameworks = isGroupedPrompt(item) ? item.frameworks : (item.framework ? [item.framework] : []);
   
   const iconId = isGroupedPrompt(item)
     ? item.prompts[0]?.id
     : (item as Prompt).originalPublicId || item.id;
   const icon = (iconId && PROMPT_ICONS[iconId]) ? PROMPT_ICONS[iconId] : '📝';
+  const isUserSubmitted = isGroupedPrompt(item) && item.prompts[0] && !item.prompts[0].originalPublicId;
+
 
   const isMovable = onMove && !isGroupedPrompt(item);
   
@@ -98,7 +115,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
               </div>
               <div className="flex-grow">
                 <h3 className="text-lg font-bold text-slate-900 leading-tight">{item.title}</h3>
-                <div className="flex items-center gap-2 mt-1.5">
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                     <button 
                         onClick={onCategoryClick ? handleCategoryClick : undefined} 
                         disabled={!onCategoryClick} 
@@ -106,6 +123,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
                     >
                         {item.category}
                     </button>
+                    {isUserSubmitted && <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-800">Community</span>}
                     {'version' in item && <span className="text-xs font-mono bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">v{item.version}</span>}
                 </div>
               </div>
@@ -128,7 +146,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
             </div>
             <div className="flex items-center gap-1">
               {isMovable && (
-                  <div ref={menuRef} className="relative">
+                  <div ref={moveMenuRef} className="relative">
                       <button onClick={toggleMoveMenu} title="Move to folder" className="p-2 rounded-full hover:bg-slate-200 transition-colors">
                           <span className="material-symbols-outlined text-slate-500 text-xl leading-none">folder_open</span>
                       </button>
@@ -154,6 +172,23 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
                         star
                       </span>
                   </button>
+              )}
+               {onDelete && (
+                  <div ref={optionsMenuRef} className="relative">
+                    <button onClick={toggleOptionsMenu} title="More options" className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                      <span className="material-symbols-outlined text-slate-500 text-xl">more_vert</span>
+                    </button>
+                    {optionsMenuOpen && (
+                      <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 animate-expand-in">
+                        <div className="py-1">
+                           <button onClick={handleDeleteClick} className={`w-full text-left px-4 py-2 text-sm flex items-center gap-3 ${isUserOwned ? 'text-red-700 hover:bg-red-50' : 'text-amber-700 hover:bg-amber-50'}`}>
+                              <span className="material-symbols-outlined text-xl">{isUserOwned ? 'delete' : 'star'}</span>
+                              <span>{isUserOwned ? 'Delete Forever' : 'Remove Favorite'}</span>
+                           </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
               )}
           </div>
         </div>

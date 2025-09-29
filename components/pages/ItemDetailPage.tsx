@@ -89,6 +89,7 @@ const setJsonLd = (data: object | null) => {
 const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setModalTitle }) => {
     const { itemType, itemId } = useParams<{ itemType: 'prompt' | 'tool' | 'training', itemId: string }>();
     const navigate = useNavigate();
+    const { userPublicPrompts } = usePrompts();
 
     const [item, setItem] = useState<DetailItem | null | undefined>(undefined);
     const [activePromptId, setActivePromptId] = useState<string>('');
@@ -99,6 +100,21 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
         let foundItem: DetailItem | undefined;
         if (itemType === 'prompt') {
             foundItem = allGroupedPrompts.find(p => p.id === itemId);
+            if (!foundItem) {
+                const userPrompt = userPublicPrompts.find(p => p.historyId === itemId);
+                if (userPrompt) {
+                    foundItem = {
+                        type: 'grouped-prompt',
+                        id: userPrompt.historyId,
+                        title: userPrompt.title,
+                        description: userPrompt.description,
+                        category: userPrompt.category,
+                        prompts: [userPrompt],
+                        frameworks: userPrompt.framework ? [userPrompt.framework] : [],
+                        createdAt: userPrompt.createdAt,
+                    };
+                }
+            }
         } else if (itemType === 'tool') {
             const tool = PUBLIC_AI_TOOLS.find(t => t.id === itemId);
             if (tool) {
@@ -122,7 +138,7 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
             setActivePromptId(foundItem.prompts[0].id);
         }
 
-    }, [itemType, itemId, setModalTitle]);
+    }, [itemType, itemId, setModalTitle, userPublicPrompts]);
 
     useEffect(() => {
         if (item && itemType && itemId) {

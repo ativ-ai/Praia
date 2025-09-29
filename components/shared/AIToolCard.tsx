@@ -1,5 +1,6 @@
 
-import React from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { AITool, AIToolCategory } from '../../types';
 import { AI_TOOL_CATEGORY_COLORS } from '../../constants';
 import Icon from './Icon';
@@ -10,15 +11,36 @@ interface AIToolCardProps {
   isFavorited?: boolean;
   onClick?: () => void;
   onCategoryClick?: (category: AIToolCategory) => void;
+  onDelete?: () => void;
+  isUserOwned?: boolean;
 }
 
-const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, onClick, onCategoryClick }) => {
+const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, onClick, onCategoryClick, onDelete, isUserOwned }) => {
   const categoryColorClass = AI_TOOL_CATEGORY_COLORS[tool.category] || 'bg-slate-100 text-slate-800';
-  const categoryBorderClass = categoryColorClass.split(' ')[0].replace('bg-', 'border-');
+  const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
+  const optionsMenuRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target as Node)) {
+        setOptionsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onFavorite?.(tool.originalPublicId || tool.id);
+  };
+  
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete?.();
+    setOptionsMenuOpen(false);
   };
 
   const handleLinkClick = (e: React.MouseEvent) => {
@@ -30,6 +52,11 @@ const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, 
     e.preventDefault();
     onCategoryClick?.(tool.category);
   };
+  
+  const toggleOptionsMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOptionsMenuOpen(prev => !prev);
+  }
 
   return (
     <article 
@@ -65,13 +92,32 @@ const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, 
                 >
                     Visit Tool <Icon name="link" className="w-4 h-4" />
                 </a>
-                {onFavorite && (
-                    <button onClick={handleFavoriteClick} title={isFavorited ? "Remove from Favorites" : "Add to Favorites"} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
-                        <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
-                            star
-                        </span>
-                    </button>
-                )}
+                <div className="flex items-center gap-1">
+                    {onFavorite && (
+                        <button onClick={handleFavoriteClick} title={isFavorited ? "Remove from Favorites" : "Add to Favorites"} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
+                            <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
+                                star
+                            </span>
+                        </button>
+                    )}
+                    {onDelete && (
+                      <div ref={optionsMenuRef} className="relative">
+                        <button onClick={toggleOptionsMenu} title="More options" className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                          <span className="material-symbols-outlined text-slate-500 text-xl">more_vert</span>
+                        </button>
+                        {optionsMenuOpen && (
+                          <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 animate-expand-in">
+                            <div className="py-1">
+                               <button onClick={handleDeleteClick} className={`w-full text-left px-4 py-2 text-sm flex items-center gap-3 ${isUserOwned ? 'text-red-700 hover:bg-red-50' : 'text-amber-700 hover:bg-amber-50'}`}>
+                                  <span className="material-symbols-outlined text-xl">{isUserOwned ? 'delete' : 'star'}</span>
+                                  <span>{isUserOwned ? 'Delete Forever' : 'Remove Favorite'}</span>
+                               </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                </div>
             </div>
         </div>
     </article>

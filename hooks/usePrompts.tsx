@@ -1,4 +1,5 @@
 
+
 import React, { createContext, useState, useContext, ReactNode, useEffect, useMemo } from 'react';
 import { Prompt, PromptFolder } from '../types';
 import { useAuth } from './useAuth';
@@ -8,9 +9,11 @@ import { useNotification } from './useNotification';
 // Simulating a local database for prompts that resets on refresh
 let localPrompts: Prompt[] = [];
 let localFolders: PromptFolder[] = [];
+let localPublicPrompts: Prompt[] = [];
 
 interface PromptContextType {
   prompts: Prompt[];
+  userPublicPrompts: Prompt[];
   folders: PromptFolder[];
   loading: boolean;
   getPromptById: (id: string) => Prompt | undefined;
@@ -48,45 +51,61 @@ const addDefaultData = (userId: string) => {
     ];
     localPrompts = initialPrompts;
     localFolders = initialFolders;
-    return { prompts: initialPrompts, folders: initialFolders };
+    localPublicPrompts = [];
+    return { prompts: initialPrompts, folders: initialFolders, publicPrompts: [] };
 };
 
 export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const { addNotification } = useNotification();
   const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [userPublicPrompts, setUserPublicPrompts] = useState<Prompt[]>([]);
   const [folders, setFolders] = useState<PromptFolder[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
       if (localPrompts.length === 0 && localFolders.length === 0) {
-          const { prompts: newPrompts, folders: newFolders } = addDefaultData(user.uid);
+          const { prompts: newPrompts, folders: newFolders, publicPrompts: newPublic } = addDefaultData(user.uid);
           setPrompts(newPrompts);
           setFolders(newFolders);
+          setUserPublicPrompts(newPublic);
       } else {
           setPrompts(localPrompts);
           setFolders(localFolders);
+          setUserPublicPrompts(localPublicPrompts);
       }
     } else {
       localPrompts = [];
       localFolders = [];
+      localPublicPrompts = [];
       setPrompts([]);
       setFolders([]);
+      setUserPublicPrompts([]);
     }
   }, [user]);
 
   const getPromptById = (id: string) => prompts.find(p => p.id === id);
+  
+  const updatePublicPrompts = (historyId: string, latestVersion: Prompt | null) => {
+    localPublicPrompts = localPublicPrompts.filter(p => p.historyId !== historyId);
+    if (latestVersion && latestVersion.isPublic) {
+        localPublicPrompts.push(latestVersion);
+    }
+    setUserPublicPrompts([...localPublicPrompts]);
+  };
 
   const savePrompt = async (promptData: Omit<Prompt, 'id' | 'createdAt' | 'uid' | 'isFavorited' | 'originalPublicId' | 'historyId' | 'version' | 'isLatest'> & { id?: string }) => {
     if (!user) throw new Error("User not authenticated");
     
+    let newVersion: Prompt;
+
     if (promptData.id) { // Editing existing prompt or creating a copy
         const existingVersion = localPrompts.find(p => p.id === promptData.id);
         
         if (!existingVersion) { // Creating a copy from a template, not a direct edit
             const newHistoryId = `history-${Date.now()}`;
-            const newPrompt: Prompt = {
+            newVersion = {
                 id: `user-prompt-${Date.now()}`,
                 historyId: newHistoryId,
                 version: 1,
@@ -95,7 +114,7 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 createdAt: Date.now(),
                 ...promptData,
             };
-            localPrompts.push(newPrompt);
+            localPrompts.push(newVersion);
         } else { // It's a direct edit, so create a new version
             const { historyId } = existingVersion;
             const history = localPrompts.filter(p => p.historyId === historyId);
@@ -104,7 +123,7 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             // Mark all old versions as not latest
             localPrompts = localPrompts.map(p => p.historyId === historyId ? { ...p, isLatest: false } : p);
             
-            const newVersion: Prompt = {
+            newVersion = {
                 ...existingVersion, // carry over folderId, originalPublicId etc.
                 ...promptData, // apply changes from form
                 id: `user-prompt-${Date.now()}`,
@@ -116,7 +135,7 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
     } else { // Creating a brand new prompt
         const newHistoryId = `history-${Date.now()}`;
-        const newPrompt: Prompt = {
+        newVersion = {
             id: `user-prompt-${Date.now()}`,
             historyId: newHistoryId,
             version: 1,
@@ -125,9 +144,10 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             createdAt: Date.now(),
             ...promptData,
         };
-        localPrompts.push(newPrompt);
+        localPrompts.push(newVersion);
     }
     setPrompts([...localPrompts]);
+    updatePublicPrompts(newVersion.historyId, newVersion);
     addNotification('Prompt saved!', 'success');
   };
 
@@ -135,8 +155,10 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (!user) return;
     const promptToDelete = localPrompts.find(p => p.id === id);
     if (promptToDelete) {
-        localPrompts = localPrompts.filter(p => p.historyId !== promptToDelete.historyId);
-        setPrompts(localPrompts);
+        const { historyId } = promptToDelete;
+        localPrompts = localPrompts.filter(p => p.historyId !== historyId);
+        setPrompts([...localPrompts]);
+        updatePublicPrompts(historyId, null);
         addNotification('Prompt and its history deleted.', 'info');
     }
   };
@@ -211,6 +233,8 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
       const { historyId } = versionToRevert;
       const history = localPrompts.filter(p => p.historyId === historyId);
+      const currentLatest = history.find(p => p.isLatest);
+      const isCurrentlyPublic = !!currentLatest?.isPublic;
       const maxVersion = Math.max(...history.map(p => p.version));
       localPrompts = localPrompts.map(p => (p.historyId === historyId ? { ...p, isLatest: false } : p));
       
@@ -220,16 +244,18 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           version: maxVersion + 1,
           isLatest: true,
           createdAt: Date.now(),
+          isPublic: isCurrentlyPublic,
       };
       localPrompts = [...localPrompts, newVersion];
       setPrompts([...localPrompts]);
+      updatePublicPrompts(historyId, newVersion);
       addNotification(`Reverted to version ${versionToRevert.version}.`, 'success');
   };
   
   const latestPrompts = useMemo(() => prompts.filter(p => p.isLatest), [prompts]);
 
   return (
-    <PromptContext.Provider value={{ prompts: latestPrompts, folders, loading, getPromptById, savePrompt, deletePrompt, toggleFavoritePrompt, createFolder, getPromptsInFolder, movePrompt, getPromptHistory, revertToVersion }}>
+    <PromptContext.Provider value={{ prompts: latestPrompts, userPublicPrompts, folders, loading, getPromptById, savePrompt, deletePrompt, toggleFavoritePrompt, createFolder, getPromptsInFolder, movePrompt, getPromptHistory, revertToVersion }}>
       {children}
     </PromptContext.Provider>
   );

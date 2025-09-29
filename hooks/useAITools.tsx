@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, ReactNode, useEffect, useMemo } from 'react';
 import { AITool } from '../types';
 import { useAuth } from './useAuth';
@@ -60,7 +61,7 @@ export const AIToolsProvider: React.FC<{ children: ReactNode }> = ({ children })
   const deleteTool = async (id: string) => {
     if (!user) return;
     localTools = localTools.filter(t => t.id !== id);
-    setTools(localTools);
+    setTools([...localTools]);
     addNotification('Tool deleted successfully.', 'info');
   };
 

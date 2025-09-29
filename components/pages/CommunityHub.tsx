@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { PUBLIC_PROMPTS, PROMPT_CATEGORIES } from '../../constants';
 import { usePrompts } from '../../hooks/usePrompts';
@@ -27,7 +28,7 @@ const CommunityHub: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const { toggleFavoritePrompt, prompts: myPrompts } = usePrompts();
+  const { toggleFavoritePrompt, prompts: myPrompts, userPublicPrompts } = usePrompts();
   const myFavoritedPromptIds = useMemo(() => new Set(myPrompts.filter(p => p.isFavorited && p.originalPublicId).map(p => p.originalPublicId!)), [myPrompts]);
 
   useEffect(() => {
@@ -43,16 +44,17 @@ const CommunityHub: React.FC = () => {
     toggleFavoritePrompt(id);
   }
 
-  const groupedPrompts = useMemo(() => {
-    const groups: Record<string, Prompt[]> = {};
+  const groupedAndCombinedPrompts = useMemo(() => {
+    // Group the official curated prompts by title
+    const officialGroups: Record<string, Prompt[]> = {};
     PUBLIC_PROMPTS.forEach(prompt => {
-      if (!groups[prompt.title]) {
-        groups[prompt.title] = [];
+      if (!officialGroups[prompt.title]) {
+        officialGroups[prompt.title] = [];
       }
-      groups[prompt.title].push(prompt);
+      officialGroups[prompt.title].push(prompt);
     });
 
-    const allItems: GroupedPrompt[] = Object.values(groups).map((promptsInGroup): GroupedPrompt => {
+    const officialGroupedPrompts: GroupedPrompt[] = Object.values(officialGroups).map((promptsInGroup): GroupedPrompt => {
       const firstPrompt = promptsInGroup[0];
       const groupId = slugify(firstPrompt.title);
       
@@ -68,17 +70,31 @@ const CommunityHub: React.FC = () => {
       };
     });
 
-    return allItems.sort((a, b) => a.title.localeCompare(b.title));
-  }, []);
+    // Convert user-submitted public prompts into the GroupedPrompt format
+    const userGroupedPrompts: GroupedPrompt[] = userPublicPrompts.map(prompt => ({
+        type: 'grouped-prompt',
+        id: prompt.historyId, // Use historyId for a unique, stable ID
+        title: prompt.title,
+        description: prompt.description,
+        category: prompt.category,
+        prompts: [prompt],
+        frameworks: prompt.framework ? [prompt.framework] : [],
+        createdAt: prompt.createdAt,
+    }));
+
+    // Combine both lists and sort by creation date (newest first)
+    return [...officialGroupedPrompts, ...userGroupedPrompts].sort((a, b) => b.createdAt - a.createdAt);
+  }, [userPublicPrompts]);
+
 
   const filteredItems = useMemo(() => {
-    return groupedPrompts.filter(item => {
+    return groupedAndCombinedPrompts.filter(item => {
       const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) || item.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFramework = selectedFramework === 'All' || item.frameworks.includes(selectedFramework);
       return matchesCategory && matchesSearch && matchesFramework;
     });
-  }, [searchTerm, selectedCategory, selectedFramework, groupedPrompts]);
+  }, [searchTerm, selectedCategory, selectedFramework, groupedAndCombinedPrompts]);
 
   const paginatedItems = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -163,7 +179,7 @@ const CommunityHub: React.FC = () => {
               const itemUrl = `/detail/prompt/${item.id}`;
               const favoritedPromptInGroup = item.prompts.find(p => myFavoritedPromptIds.has(p.id));
               const isGroupFavorited = !!favoritedPromptInGroup;
-              const promptIdForAction = favoritedPromptInGroup?.id || item.prompts[0]?.id;
+              const promptIdForAction = favoritedPromptInGroup?.originalPublicId || item.prompts[0]?.id;
 
               return (
                   <PromptCard 

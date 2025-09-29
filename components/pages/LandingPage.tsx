@@ -17,23 +17,35 @@ const FeatureCard: React.FC<{ icon: string; title: string; children: React.React
 );
 
 const AnimatedPromptBuilder: React.FC = () => {
-    const fullText = `Act as a: World-class copywriter
-Task: Write 3 ad headlines for a new sustainable headphone brand
-Format: A JSON object with a key 'headlines' containing an array of strings`;
+    const fullText = `  Act as a: World-class copywriter
+  Task: Write 3 ad headlines for a new sustainable headphone brand
+  Format: A JSON object with a key 'headlines' containing an array of strings`;
     const [text, setText] = useState('');
 
     useEffect(() => {
-        let i = 0;
-        setText('');
-        const intervalId = setInterval(() => {
-            if (i < fullText.length) {
-                setText(prev => prev + fullText.charAt(i));
-                i++;
-            } else {
-                clearInterval(intervalId);
+        let isMounted = true;
+        let currentIndex = 0;
+        setText(''); // Reset text when animation should restart
+
+        // Use a recursive setTimeout for a more robust typing animation
+        // that is less prone to issues with React's component lifecycle (e.g., Strict Mode).
+        function type() {
+            if (!isMounted || currentIndex >= fullText.length) {
+                return;
             }
-        }, 25);
-        return () => clearInterval(intervalId);
+            setText(prevText => prevText + fullText.charAt(currentIndex));
+            currentIndex++;
+            setTimeout(type, 25);
+        }
+
+        // Delay starting the animation for a smoother entry effect
+        const startTimeout = setTimeout(type, 500);
+
+        // Cleanup function to prevent state updates on an unmounted component
+        return () => {
+            isMounted = false;
+            clearTimeout(startTimeout);
+        };
     }, [fullText]);
 
     return (

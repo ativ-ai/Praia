@@ -23,7 +23,6 @@ import ItemDetailPage from './components/pages/ItemDetailPage';
 import AIToolsHub from './components/pages/AIToolsHub';
 import TrainingCenter from './components/pages/TrainingCenter';
 import ApiDocs from './components/pages/ApiDocs';
-import PromptPlayground from './components/pages/PromptPlayground';
 
 const ItemDetailModal: React.FC = () => {
   const navigate = useNavigate();
@@ -47,7 +46,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/" element={<LandingPage />} />
 
         <Route element={<Layout />}>
-          <Route path="/playground" element={<PromptPlayground />} />
+          <Route path="/prompt-studio" element={<PromptStudio />} />
           <Route path="/prompts" element={<CommunityHub />} />
           <Route path="/tools" element={<AIToolsHub />} />
           <Route path="/training" element={<TrainingCenter />} />
@@ -57,7 +56,6 @@ const AppRoutes: React.FC = () => {
           <Route path="/detail/:itemType/:itemId" element={<ItemDetailPage />} />
           
           <Route path="/my-praia" element={<ProtectedRoute><MyPraia /></ProtectedRoute>} />
-          <Route path="/prompt-studio" element={<ProtectedRoute><PromptStudio /></ProtectedRoute>} />
           <Route path="/prompt-studio/:id" element={<ProtectedRoute><PromptStudio /></ProtectedRoute>} />
           <Route path="/tool-studio" element={<ProtectedRoute><ToolStudio /></ProtectedRoute>} />
           <Route path="/tool-studio/:id" element={<ProtectedRoute><ToolStudio /></ProtectedRoute>} />
