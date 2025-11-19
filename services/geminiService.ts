@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { lyraPromptText } from '../data/lyraPromptText';
 import { PROMPT_FRAMEWORKS } from "../constants";
@@ -86,5 +87,38 @@ ${userPrompt}
   } catch (error) {
     console.error("Error applying framework to prompt:", error);
     throw new Error("Failed to apply framework. Please check your API key and network connection.");
+  }
+};
+
+export const generateProSpec = async (userIntent: string): Promise<string> => {
+  const metaPrompt = `Role: Senior System Architect & PRO-SPEC Expert.
+Task: Transform the user's rough idea (The Vibe) into a standardized, rigorous PRO-SPEC Markdown artifact.
+
+# PRO-SPEC STRUCTURE RULES (Strictly follow this 5-layer format):
+1. [L1] PRODUCT INTENT: Define User Story, Business Logic, & Core Value.
+2. [L2] TECHNICAL CONTRACTS: Define DB Schema (Prisma/SQL style) & API Interfaces (TS/JSON).
+3. [L3] THE SHIELD: Define Security Constraints (Auth, Sanitization, RBAC).
+4. [L4] THE ENGINE: Define Performance & UX Constraints (Caching, Optimistic UI, Loading States).
+5. [L5] ORCHESTRATION: Define the Role & specific Task for the AI developer who will consume this spec.
+
+# USER INPUT (THE VIBE):
+"""
+${userIntent}
+"""
+
+# OUTPUT INSTRUCTION:
+Return ONLY the PRO-SPEC markdown content. Do not include any conversational filler text. Start the output immediately with the title header "# PRO-SPEC: [Title]".
+Ensure the content is technical, precise, and ready for a developer or AI coder to implement directly.
+`;
+
+  try {
+    const response: GenerateContentResponse = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: metaPrompt,
+    });
+    return response.text.trim();
+  } catch (error) {
+    console.error("Error generating PRO-SPEC:", error);
+    throw new Error("Failed to generate PRO-SPEC. Please check your API key.");
   }
 };

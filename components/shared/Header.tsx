@@ -82,6 +82,7 @@ const Header: React.FC = () => {
                   <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Resources</h3>
                   <NavLink to="/about" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">info</span>About</NavLink>
                   <NavLink to="/api-docs" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">code</span>API Docs</NavLink>
+                  <NavLink to="/pro-spec" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">integration_instructions</span>PRO-SPEC</NavLink>
               </div>
           );
       }
@@ -101,6 +102,7 @@ const Header: React.FC = () => {
               <Dropdown title={<><span className="material-symbols-outlined text-indigo-600">school</span>Resources</>}>
                   <NavLink to="/about" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">info</span>About</NavLink>
                   <NavLink to="/api-docs" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">code</span>API Docs</NavLink>
+                  <NavLink to="/pro-spec" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">integration_instructions</span>PRO-SPEC</NavLink>
               </Dropdown>
           </>
       );
