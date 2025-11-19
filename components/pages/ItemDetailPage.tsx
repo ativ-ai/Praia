@@ -1,17 +1,17 @@
 
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { GroupedPrompt, AITool, TrainingModule, Prompt, PromptFramework } from '../../types';
-import { PUBLIC_PROMPTS, PUBLIC_AI_TOOLS, PUBLIC_TRAINING_MODULES, PROMPT_CATEGORY_COLORS, AI_TOOL_CATEGORY_COLORS, TRAINING_CATEGORY_COLORS, ITEM_TYPE_COLORS, PROMPT_FRAMEWORK_COLORS, PROMPT_FRAMEWORKS } from '../../constants';
+import { PUBLIC_PROMPTS, PUBLIC_AI_TOOLS, PUBLIC_TRAINING_MODULES, PROMPT_CATEGORY_COLORS, AI_TOOL_CATEGORY_COLORS, TRAINING_CATEGORY_COLORS, ITEM_TYPE_COLORS } from '../../constants';
 import { usePrompts } from '../../hooks/usePrompts';
 import { useAITools } from '../../hooks/useAITools';
 import { useTraining } from '../../hooks/useTraining';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
+import { useSEO } from '../../hooks/useSEO';
 import Spinner from '../shared/Spinner';
-import usePageTitle from '../../hooks/usePageTitle';
+import Icon from '../shared/Icon';
 
 const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
@@ -48,44 +48,6 @@ interface ItemDetailPageProps {
     setModalTitle?: (title: string) => void;
 }
 
-const BASE_URL = "https://praia-ai-suite.web.app/";
-const OG_IMAGE_URL = "https://i.imgur.com/gU8m4Lq.png";
-
-const setMeta = (attr: 'name' | 'property', key: string, content: string) => {
-    let element = document.head.querySelector(`meta[${attr}='${key}']`) as HTMLMetaElement;
-    if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attr, key);
-        document.head.appendChild(element);
-    }
-    element.setAttribute('content', content);
-};
-
-const setLink = (rel: string, href: string) => {
-    let element = document.head.querySelector(`link[rel='${rel}']`) as HTMLLinkElement;
-    if (!element) {
-        element = document.createElement('link');
-        element.setAttribute('rel', rel);
-        document.head.appendChild(element);
-    }
-    element.href = href;
-};
-
-const setJsonLd = (data: object | null) => {
-    let element = document.head.querySelector('#page-json-ld') as HTMLScriptElement;
-    if (element) {
-        element.remove();
-    }
-    if (data) {
-        const script = document.createElement('script');
-        script.id = 'page-json-ld';
-        script.type = 'application/ld+json';
-        script.textContent = JSON.stringify(data);
-        document.head.appendChild(script);
-    }
-}
-
-
 const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setModalTitle }) => {
     const { itemType, itemId } = useParams<{ itemType: 'prompt' | 'tool' | 'training', itemId: string }>();
     const navigate = useNavigate();
@@ -94,8 +56,6 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
     const [item, setItem] = useState<DetailItem | null | undefined>(undefined);
     const [activePromptId, setActivePromptId] = useState<string>('');
 
-    usePageTitle(item ? item.title : (item === null ? 'Not Found' : ''));
-    
     useEffect(() => {
         let foundItem: DetailItem | undefined;
         if (itemType === 'prompt') {
@@ -140,97 +100,64 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
 
     }, [itemType, itemId, setModalTitle, userPublicPrompts]);
 
-    useEffect(() => {
-        if (item && itemType && itemId) {
-            const url = `${BASE_URL}#/detail/${itemType}/${itemId}`;
-            const title = item.title;
-            const description = item.description;
-    
-            // Meta tags
-            setMeta('name', 'description', description);
-            
-            // Keywords
-            const baseKeywords = "AI, Prompt Engineering, Gemini, Prompt Optimization, LLM, Generative AI, Prompt Suite, AI Tools, Prompt Library, Prompt Helper, AI Prompts, Vibe Coding";
-            let itemKeywords = '';
-            if ('category' in item && item.category) {
-                const typeName = itemType === 'prompt' ? 'AI Prompt' : itemType === 'tool' ? 'AI Tool' : 'Training Module';
-                itemKeywords = `${item.title}, ${item.category}, ${typeName}`;
-            } else {
-                itemKeywords = item.title;
-            }
-            const fullKeywords = `${itemKeywords}, ${baseKeywords}`;
-            setMeta('name', 'keywords', fullKeywords);
-            
-            // Open Graph
-            setMeta('property', 'og:title', title);
-            setMeta('property', 'og:description', description);
-            setMeta('property', 'og:url', url);
-            setMeta('property', 'og:type', 'website');
-            setMeta('property', 'og:image', OG_IMAGE_URL);
-    
-            // Twitter Card
-            setMeta('property', 'twitter:card', 'summary_large_image');
-            setMeta('property', 'twitter:title', title);
-            setMeta('property', 'twitter:description', description);
-            setMeta('property', 'twitter:image', OG_IMAGE_URL);
-            
-            // Canonical URL
-            setLink('canonical', url);
-    
-            // JSON-LD structured data
-            let jsonLdData: object | null = null;
-            if(item.type === 'grouped-prompt') {
-                const activePrompt = item.prompts.find(p => p.id === activePromptId) || item.prompts[0];
-                jsonLdData = {
-                    "@context": "https://schema.org",
-                    "@type": "HowTo",
-                    "name": `How to use the "${item.title}" prompt`,
-                    "description": item.description,
-                    "step": [
-                        {
-                            "@type": "HowToStep",
-                            "name": "Understand the Prompt",
-                            "text": item.description
-                        },
-                        {
-                            "@type": "HowToStep",
-                            "name": "Copy and Use the Prompt Text",
-                            "text": activePrompt.promptText
-                        }
-                    ]
-                }
-            } else if (item.type === 'tool') {
-                jsonLdData = {
-                    "@context": "https://schema.org",
-                    "@type": "SoftwareApplication",
-                    "name": item.name,
-                    "description": item.description,
-                    "applicationCategory": item.category,
-                    "url": item.link,
-                    "operatingSystem": "Web",
-                    "offers": {
-                        "@type": "Offer",
-                        "price": "0",
-                        "priceCurrency": "USD"
+    // Prepare schema data for SEO hook
+    const schemaData = useMemo(() => {
+        if (!item) return null;
+        if(item.type === 'grouped-prompt') {
+            const activePrompt = item.prompts.find(p => p.id === activePromptId) || item.prompts[0];
+            return {
+                "@context": "https://schema.org",
+                "@type": "HowTo",
+                "name": `How to use the "${item.title}" prompt`,
+                "description": item.description,
+                "step": [
+                    {
+                        "@type": "HowToStep",
+                        "name": "Understand the Prompt",
+                        "text": item.description
+                    },
+                    {
+                        "@type": "HowToStep",
+                        "name": "Copy and Use the Prompt Text",
+                        "text": activePrompt.promptText
                     }
+                ]
+            };
+        } else if (item.type === 'tool') {
+            return {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": item.name,
+                "description": item.description,
+                "applicationCategory": item.category,
+                "url": item.link,
+                "operatingSystem": "Web",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
                 }
-            } else if (item.type === 'training') {
-                 jsonLdData = {
-                    "@context": "https://schema.org",
-                    "@type": "LearningResource",
-                    "name": item.title,
-                    "description": item.description,
-                    "learningResourceType": item.category,
-                    "teaches": item.content.map(c => c.title).join(', ')
-                }
-            }
-            setJsonLd(jsonLdData);
+            };
+        } else if (item.type === 'training') {
+             return {
+                "@context": "https://schema.org",
+                "@type": "LearningResource",
+                "name": item.title,
+                "description": item.description,
+                "learningResourceType": item.category,
+                "teaches": item.content.map(c => c.title).join(', ')
+            };
         }
-    
-        return () => {
-            setJsonLd(null); 
-        };
-    }, [item, itemType, itemId, activePromptId]);
+        return null;
+    }, [item, activePromptId]);
+
+    // SEO Hook
+    useSEO({
+        title: item ? item.title : (item === null ? 'Not Found' : 'Loading...'),
+        description: item?.description,
+        keywords: item ? ['category' in item ? item.category : ''] : [],
+        schema: schemaData
+    });
 
 
     const { user } = useAuth();

@@ -1,5 +1,4 @@
 
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { PUBLIC_PROMPTS, PROMPT_CATEGORIES } from '../../constants';
 import { usePrompts } from '../../hooks/usePrompts';
@@ -9,14 +8,19 @@ import { PromptCategory, Prompt, GroupedPrompt, PromptFramework } from '../../ty
 import { PromptCard } from '../shared/PromptCard';
 import { useLocation, useNavigate } from 'react-router';
 import { Link, useSearchParams } from 'react-router-dom';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 
 const ITEMS_PER_PAGE = 12;
 
 const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
 const CommunityHub: React.FC = () => {
-  usePageTitle('Prompts Hub');
+  useSEO({
+    title: 'Prompts Hub',
+    description: 'Discover a vast library of curated AI prompts for marketing, coding, writing, and more. Optimized for Gemini, ChatGPT, and Claude.',
+    keywords: ['AI Prompts', 'Prompt Library', 'Prompt Hub', 'Marketing Prompts', 'Coding Prompts']
+  });
+
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState<PromptCategory | 'All'>('All');

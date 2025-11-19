@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,35 +6,36 @@
     <link rel="icon" type="image/png" href="https://fav.farm/🏖️" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#4338ca">
-    <title>Praia: AI Prompt Engineering Suite</title>
+    <title>Praia: AI Prompt Suite & Vibe Coding</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free." />
-    <meta name="keywords" content="AI, Prompt Engineering, Gemini, Prompt Optimization, LLM, Generative AI, Prompt Suite, AI Tools, Prompt Library, Prompt Helper, AI Prompts, Vibe Coding" />
+    <meta name="description" content="Master AI with Praia. The all-in-one suite featuring Vibe Coding for rapid development, a curated prompt hub, and AI-powered enhancement tools for Gemini & ChatGPT." />
+    <meta name="keywords" content="AI, Prompt Engineering, Gemini, Vibe Coding, AI App Builder, Prompt Optimization, LLM, Generative AI, Prompt Suite, AI Tools, PRO-SPEC" />
     <link rel="canonical" href="https://praia-ai-suite.web.app/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://praia-ai-suite.web.app/">
-    <meta property="og:title" content="Praia: AI Prompt Engineering Suite">
-    <meta property="og:description" content="Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free.">
+    <meta property="og:title" content="Praia: AI Prompt Suite & Vibe Coding">
+    <meta property="og:description" content="Master AI with Praia. The all-in-one suite featuring Vibe Coding for rapid development, a curated prompt hub, and AI-powered enhancement tools for Gemini & ChatGPT.">
     <meta property="og:image" content="https://i.imgur.com/gU8m4Lq.png">
+    <meta property="og:site_name" content="Praia: AI Prompt Suite">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://praia-ai-suite.web.app/">
-    <meta property="twitter:title" content="Praia: AI Prompt Engineering Suite">
-    <meta property="twitter:description" content="Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free.">
+    <meta property="twitter:title" content="Praia: AI Prompt Suite & Vibe Coding">
+    <meta property="twitter:description" content="Master AI with Praia. The all-in-one suite featuring Vibe Coding for rapid development, a curated prompt hub, and AI-powered enhancement tools for Gemini & ChatGPT.">
     <meta property="twitter:image" content="https://i.imgur.com/gU8m4Lq.png">
 
-    <script type="application/ld+json">
+    <script type="application/ld+json" id="json-ld-schema">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "WebSite",
           "url": "https://praia-ai-suite.web.app/",
-          "name": "Praia: AI Prompt Engineering Suite",
+          "name": "Praia: AI Prompt Suite",
           "potentialAction": {
             "@type": "SearchAction",
             "target": {
@@ -45,47 +47,28 @@
         },
         {
           "@type": "SoftwareApplication",
-          "name": "Praia: AI Prompt Engineering Suite",
+          "name": "Praia",
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Web",
-          "description": "Go beyond basic prompts with Praia, your all-in-one AI suite. Discover expert-curated prompts, create with powerful frameworks in our studio, and master prompt engineering for Gemini and other models. Start for free.",
-          "url": "https://praia-ai-suite.web.app/",
-          "keywords": "AI, Prompt Engineering, Gemini, Prompt Optimization, LLM, Generative AI, Prompt Suite, AI Tools, Prompt Library, Prompt Helper, AI Prompts, Vibe Coding",
+          "description": "A comprehensive AI suite for prompt engineering and Vibe Coding. Features a hub, personal library, AI-powered prompt studio, and training content.",
           "offers": {
             "@type": "Offer",
             "price": "0",
             "priceCurrency": "USD"
           },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "reviewCount": "217"
-          },
           "author": {
             "@type": "Organization",
             "name": "Praia Labs"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "Praia Labs"
-          }
-        },
-        {
-          "@type": "Organization",
-          "name": "Praia Labs",
-          "url": "https://praia-ai-suite.web.app/",
-          "logo": "https://i.imgur.com/gU8m4Lq.png",
-          "contactPoint": {
-            "@type": "ContactPoint",
-            "email": "praia@ativ.ai",
-            "contactType": "Customer Support"
           }
         }
       ]
     }
     </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PrismJS Theme (Tomorrow Night) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -129,91 +112,15 @@
         }
       }
     </script>
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      .material-symbols-outlined {
-        font-variation-settings:
-        'FILL' 0,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 24
-      }
-      @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-       @keyframes fade-in-right {
-        from { opacity: 0; transform: translateX(20px); }
-        to { opacity: 1; transform: translateX(0); }
-      }
-      @keyframes slide-up {
-        from { transform: translateY(20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-      @keyframes subtle-slide-up {
-        from { transform: translateY(8px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-      @keyframes expand-in {
-        from { 
-          opacity: 0; 
-          transform: scale(0.95);
-        }
-        to { 
-          opacity: 1; 
-          transform: scale(1);
-        }
-      }
-      @keyframes gradient-animation {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
-      }
-      @keyframes blink-caret {
-        from, to { border-color: transparent }
-        50% { border-color: #fbbf24; }
-      }
-      .animate-typing::after {
-        content: '_';
-        animation: blink-caret .75s step-end infinite;
-        color: #fbbf24;
-      }
-      @keyframes reveal {
-        0% { opacity: 0; transform: translateY(10px); }
-        100% { opacity: 1; transform: translateY(0); }
-      }
-      .animate-reveal {
-        animation: reveal 0.5s ease-out forwards;
-      }
-      .animate-gradient {
-        background-size: 200% 200%;
-        animation: gradient-animation 15s ease infinite;
-      }
-      .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
-      .animate-fade-in-right { animation: fade-in-right 0.3s ease-out forwards; }
-      .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-      .animate-subtle-slide-up { animation: subtle-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-      .animate-expand-in { animation: expand-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-      
-      .aspect-video { aspect-ratio: 16 / 9; }
+    <!-- PrismJS Scripts for Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
 
-      .text-shadow { text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
-      .text-shadow-lg { text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
-
-      /* For custom scrollbars */
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #f1f5f9; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
   <script type="importmap">
 {
   "imports": {
@@ -222,7 +129,8 @@
     "react": "https://esm.sh/react@^19.1.0",
     "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
     "react-router-dom": "https://esm.sh/react-router-dom@^7.6.3",
-    "react-router": "https://esm.sh/react-router@^7.6.3"
+    "react-router": "https://esm.sh/react-router@^7.6.3",
+    "marked": "https://esm.sh/marked@12.0.0"
   }
 }
 </script>

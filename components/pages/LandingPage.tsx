@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 import CookieBanner from '../shared/CookieBanner';
 import Header from '../shared/Header';
 
@@ -79,7 +80,11 @@ const TestimonialCard: React.FC<{ quote: string; author: string; role: string; a
 );
 
 const LandingPage: React.FC = () => {
-    usePageTitle('Your All-in-One AI Suite');
+    useSEO({
+        title: 'Home',
+        description: 'Praia is your all-in-one AI suite. Build apps faster with Vibe Coding, discover expert prompts, and optimize your AI interactions.',
+        keywords: ['AI Suite', 'Prompt Helper', 'App Builder', 'Prompt Library', 'Free AI Tools']
+    });
 
     return (
         <div className="bg-slate-50 text-slate-800">
