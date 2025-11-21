@@ -101,20 +101,26 @@ const ProSpecFramework: React.FC = () => {
     graph TD
       A[💡 Raw Idea / The Vibe] -->|Input| B(Prompt Studio);
       B -->|Select Tool| C{PRO-SPEC Builder};
-      C -->|Architect| D[L1: Intent & Vibe];
-      C -->|Architect| E[L2: Contracts];
-      C -->|Architect| F[L3: Security];
-      D & E & F --> G[Artifact: .prospec.md];
-      G -->|Feed to AI| H[🤖 AI Code Generator];
-      H -->|Output| I[🚀 Production Code];
-      I -->|Review| J{Matches Spec?};
-      J -->|No| K[Update Spec L1-L5];
-      K --> G;
-      J -->|Yes| L[Commit];
+      
+      %% Corrected order: Define L1 first to ensure it renders on the Left (for Top-Down graphs, siblings often render Left-to-Right)
+      C --> D[L1: Intent & Vibe];
+      C --> E[L2: Contracts];
+      C --> F[L3: Security];
+      C --> G[L4: Engine];
+      C --> H[L5: Command];
+      
+      D & E & F & G & H --> I[Artifact: .prospec.md];
+      
+      I -->|Feed to AI| J[🤖 AI Code Generator];
+      J -->|Output| K[🚀 Production Code];
+      K -->|Review| L{Matches Spec?};
+      L -->|No| M[Update Spec Layers];
+      M --> I;
+      L -->|Yes| N[Commit];
       
       style A fill:#fef3c7,stroke:#d97706,color:#92400e
-      style G fill:#ecfdf5,stroke:#059669,color:#065f46,stroke-width:2px
-      style I fill:#eff6ff,stroke:#3b82f6,color:#1e40af
+      style I fill:#ecfdf5,stroke:#059669,color:#065f46,stroke-width:2px
+      style K fill:#eff6ff,stroke:#3b82f6,color:#1e40af
     `;
 
     return (

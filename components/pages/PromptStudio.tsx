@@ -62,6 +62,19 @@ const PRO_SPEC_TEMPLATE = `# PRO-SPEC: [Feature Name]
 **Task:** Implement the features described in L1-L4.
 `;
 
+const VIBE_TEMPLATE = `# THE VIBE
+> Describe the emotional feel, aesthetic, and core purpose.
+"A minimalistic, zen-like task manager that feels like a breath of fresh air. Soft shadows, ample whitespace, pastel accent colors."
+
+# CORE FEATURES
+- [ ] Fast task entry
+- [ ] Drag and drop organization
+- [ ] "Focus Mode" toggle
+
+# TECH STACK PREFERENCE
+- React + Tailwind
+- Framer Motion for smooth transitions`;
+
 const LAYER_SNIPPETS = {
     L1: `## [L1] PRODUCT INTENT (The Soul)
 **User Story:** 
@@ -170,16 +183,19 @@ const PromptStudio: React.FC = () => {
     }
   }, [editorView, promptText]);
 
-  // Handle Escape key to exit full screen
+  // Handle Escape key to enter/exit full screen
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isFullScreen) {
-        setIsFullScreen(false);
+      if (e.key === 'Escape') {
+        // Prevent toggling if modals are open
+        if (isSaveModalOpen || showHistory) return;
+        
+        setIsFullScreen(prev => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFullScreen]);
+  }, [isSaveModalOpen, showHistory]);
   
   const clearResult = () => {
     setResultOriginalText(null);
@@ -345,6 +361,13 @@ const PromptStudio: React.FC = () => {
     setEditorView('write'); // Switch to write mode
     addNotification('PRO-SPEC template inserted.', 'success');
   };
+
+  const insertVibeTemplate = () => {
+    if (promptText.trim() && !window.confirm("This will replace your current content. Continue?")) return;
+    setPromptText(VIBE_TEMPLATE);
+    setEditorView('write');
+    addNotification('Vibe Coding template inserted.', 'success');
+  };
   
   const insertLayerSnippet = (layer: keyof typeof LAYER_SNIPPETS) => {
       setPromptText(prev => prev + (prev ? '\n\n' : '') + LAYER_SNIPPETS[layer]);
@@ -430,7 +453,7 @@ const PromptStudio: React.FC = () => {
                     <button 
                         onClick={() => setIsFullScreen(!isFullScreen)} 
                         className="text-slate-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-slate-100"
-                        title={isFullScreen ? "Exit Full Screen (Esc)" : "Enter Full Screen"}
+                        title={isFullScreen ? "Exit Full Screen (Esc)" : "Enter Full Screen (Esc)"}
                     >
                         <span className="material-symbols-outlined text-xl block">
                             {isFullScreen ? 'close_fullscreen' : 'open_in_full'}
@@ -465,7 +488,7 @@ const PromptStudio: React.FC = () => {
              <div className="bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 flex gap-1 flex-shrink-0 overflow-x-auto">
                 <TabButton tabName="enhance" icon="auto_awesome" label="Lyra" />
                 <TabButton tabName="structure" icon="dashboard" label="Struct" />
-                <TabButton tabName="vibe" icon="bolt" label="Vibe" />
+                <TabButton tabName="vibe" icon="bolt" label="Vibe Coding" />
                 <TabButton tabName="prospec" icon="integration_instructions" label="Spec" />
             </div>
 
@@ -553,11 +576,30 @@ const PromptStudio: React.FC = () => {
                                 <div className="bg-fuchsia-50 p-4 rounded-xl border border-fuchsia-100">
                                     <h3 className="font-bold text-fuchsia-900 flex items-center gap-2">
                                         <span className="material-symbols-outlined">bolt</span>
-                                        Vibe Generator
+                                        Vibe Coding Studio
                                     </h3>
                                     <p className="text-sm text-fuchsia-700 mt-1">
-                                        Quickly transform ideas into artifacts.
+                                        Transform abstract feelings and high-level requirements into concrete code artifacts using Praia's generative frameworks.
                                     </p>
+                                </div>
+
+                                {/* Guide Section */}
+                                <div className="bg-white border border-slate-200 rounded-lg p-4 text-sm text-slate-600">
+                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-base text-fuchsia-500">school</span>
+                                        How to Vibe Code
+                                    </h4>
+                                    <ol className="list-decimal list-inside space-y-1 mb-3 ml-1">
+                                        <li>Define the <strong>Vibe</strong> & <strong>Intent</strong> in the editor.</li>
+                                        <li>Select your target <strong>Artifact</strong> below.</li>
+                                        <li>Generate production-ready output.</li>
+                                    </ol>
+                                    <button 
+                                        onClick={insertVibeTemplate} 
+                                        className="text-xs font-bold text-fuchsia-600 hover:text-fuchsia-800 hover:bg-fuchsia-50 px-2 py-1 rounded transition-colors flex items-center gap-1"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">add_circle</span> Insert Vibe Template
+                                    </button>
                                 </div>
 
                                 {/* Mode Switcher */}
