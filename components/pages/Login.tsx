@@ -36,7 +36,8 @@ const Login: React.FC = () => {
         <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-100 mb-6 text-5xl">
           <span role="img" aria-label="logo">🏖️</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900">Welcome to Praia</h1>
+        <h1 className="text-3xl font-extrabold text-slate-900">Welcome to PRAIA</h1>
+        <p className="mt-2 text-lg font-semibold text-indigo-600">Prompt Research & AI Architect</p>
         <p className="mt-2 text-slate-600 leading-relaxed">Your personal suite for mastering the AI conversation.</p>
         <div className="mt-8">
           {loading ? (

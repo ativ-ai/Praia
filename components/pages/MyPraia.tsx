@@ -1,5 +1,4 @@
 
-
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -21,7 +20,7 @@ import Icon from '../shared/Icon';
 type PraiaItem = (Prompt & { itemType: 'prompt' }) | (AITool & { itemType: 'tool' }) | (TrainingModule & { itemType: 'training' });
 
 const MyPraia: React.FC = () => {
-  usePageTitle('My Praia');
+  usePageTitle('My PRAIA');
   const { prompts, folders, loading: promptsLoading, getPromptsInFolder, createFolder, deletePrompt, toggleFavoritePrompt, movePrompt, getPromptHistory, revertToVersion } = usePrompts();
   const { tools, loading: toolsLoading, toggleFavoriteTool, deleteTool } = useAITools();
   const { trainings, loading: trainingsLoading, toggleFavoriteTraining, deleteTraining } = useTraining();
@@ -244,7 +243,7 @@ const MyPraia: React.FC = () => {
     <div className="animate-fade-in">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-                <h1 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-6xl">My Praia</h1>
+                <h1 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-6xl">My PRAIA</h1>
                 <p className="mt-2 text-xl text-slate-600">Your personal library of prompts, tools, and training.</p>
             </div>
             <div className="flex-shrink-0 flex flex-wrap gap-2">

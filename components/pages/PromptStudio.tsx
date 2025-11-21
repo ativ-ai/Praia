@@ -4,7 +4,7 @@ import { useParams, useNavigate, useLocation } from 'react-router';
 import { usePrompts } from '../../hooks/usePrompts';
 import { useNotification } from '../../hooks/useNotification';
 import { useAuth } from '../../hooks/useAuth';
-import { PROMPT_FRAMEWORKS, PROMPT_CATEGORIES, LYRA_ENHANCEMENT_OPTIONS } from '../../constants';
+import { PROMPT_FRAMEWORKS, PROMPT_CATEGORIES } from '../../constants';
 import { PromptFramework, PromptCategory, Prompt } from '../../types';
 import { enhancePrompt, applyFrameworkToPrompt, generateProSpec, generateComponent } from '../../services/geminiService';
 import Spinner from '../shared/Spinner';
@@ -16,6 +16,11 @@ import { marked } from 'marked';
 
 // Declare Prism globally to avoid TS errors since we load it via CDN
 declare const Prism: any;
+
+const LYRA_ENHANCEMENT_OPTIONS = {
+  targetAI: ['Gemini', 'ChatGPT', 'Claude', 'Llama 3', 'Mistral'],
+  style: ['BASIC: Clarity & Structure', 'DETAIL: Reasoning & Robustness']
+};
 
 const PRO_SPEC_TEMPLATE = `# PRO-SPEC: [Feature Name]
 > Version: 1.0 | Stack: [Tech Stack]
@@ -410,6 +415,15 @@ const PromptStudio: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3 px-2">
+                    <button
+                        onClick={insertProSpecTemplate}
+                        className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors"
+                        title="Insert PRO-SPEC Template"
+                    >
+                        <span className="material-symbols-outlined text-lg text-emerald-600">integration_instructions</span>
+                        <span className="hidden sm:inline">Insert Template</span>
+                    </button>
+                    <div className="h-4 w-px bg-slate-300 mx-1"></div>
                     {promptText.length > 0 && (
                         <span className="text-xs font-mono text-slate-400">{promptText.length} chars</span>
                     )}
@@ -487,6 +501,13 @@ const PromptStudio: React.FC = () => {
                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Target AI Model</label>
                                     <select value={enhancementTargetAI} onChange={e => setEnhancementTargetAI(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                         {LYRA_ENHANCEMENT_OPTIONS.targetAI.map(ai => <option key={ai} value={ai}>{ai}</option>)}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Optimization Style</label>
+                                    <select value={enhancementStyle} onChange={e => setEnhancementStyle(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                        {LYRA_ENHANCEMENT_OPTIONS.style.map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
                                 </div>
 
@@ -645,7 +666,7 @@ const PromptStudio: React.FC = () => {
                                     </div>
                                     <div>
                                         <h4 className="text-xs font-bold text-indigo-600 uppercase mb-2">Optimized</h4>
-                                        <div className="p-3 bg-indigo-50 text-indigo-900 rounded-lg text-xs border border-indigo-100 font-mono h-full overflow-y-auto max-h-96 whitespace-pre-wrap">
+                                        <div className={`p-3 rounded-lg text-xs border font-mono h-full overflow-y-auto max-h-96 whitespace-pre-wrap ${resultType === 'Framework' ? 'bg-sky-50 text-sky-900 border-sky-100' : 'bg-indigo-50 text-indigo-900 border-indigo-100'}`}>
                                             {resultGeneratedText}
                                         </div>
                                     </div>
@@ -676,7 +697,7 @@ const PromptStudio: React.FC = () => {
                              <button onClick={clearResult} className="flex-1 py-3 px-4 font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
                                 Discard
                             </button>
-                            <button onClick={acceptChanges} className={`flex-[2] py-3 px-4 font-bold text-white rounded-lg shadow-md transition-transform hover:scale-[1.02] active:scale-95 ${resultType === 'PRO-SPEC' ? 'bg-emerald-600 hover:bg-emerald-700' : resultType === 'Component' ? 'bg-fuchsia-600 hover:bg-fuchsia-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
+                            <button onClick={acceptChanges} className={`flex-[2] py-3 px-4 font-bold text-white rounded-lg shadow-md transition-transform hover:scale-[1.02] active:scale-95 ${resultType === 'PRO-SPEC' ? 'bg-emerald-600 hover:bg-emerald-700' : resultType === 'Component' ? 'bg-fuchsia-600 hover:bg-fuchsia-700' : resultType === 'Framework' ? 'bg-sky-600 hover:bg-sky-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
                                 Use in Editor
                             </button>
                         </div>

@@ -1,6 +1,7 @@
+
 import { useEffect } from 'react';
 
-const BASE_TITLE = 'Praia: AI Prompt Suite';
+const BASE_TITLE = 'PRAIA: Prompt Research & AI Architect';
 
 const usePageTitle = (pageTitle: string) => {
   useEffect(() => {

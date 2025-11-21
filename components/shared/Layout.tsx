@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Outlet } from 'react-router';
 import Header from './Header';
@@ -13,7 +14,7 @@ const Layout: React.FC = () => {
         </main>
       </div>
       <footer className="w-full text-center py-4 mt-8 text-sm text-slate-500 border-t border-slate-200 flex-shrink-0">
-        © {new Date().getFullYear()} - Praia by{' '}
+        © {new Date().getFullYear()} - PRAIA by{' '}
         <a href="https://ativ.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
           ativ.ai
         </a>

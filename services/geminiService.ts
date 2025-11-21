@@ -19,15 +19,12 @@ export const enhancePrompt = async (
   targetAI: string,
   style: string
 ): Promise<string> => {
-  if (!style.startsWith('BASIC')) {
-      throw new Error('DETAIL style enhancement is not yet supported.');
-  }
-
+  
   const metaPrompt = `${lyraPromptText}
 
 ---
 
-A user wants to optimize the following prompt. Use your full 4-D methodology to perform a BASIC optimization.
+A user wants to optimize the following prompt. Use your full 4-D methodology to perform a '${style}' optimization.
 
 USER'S PROMPT TO OPTIMIZE:
 """
@@ -36,7 +33,7 @@ ${userPrompt}
 
 OPTIMIZATION PARAMETERS:
 - Target AI: ${targetAI}
-- Prompt Style: BASIC
+- Prompt Style: ${style}
 
 Your final output MUST be ONLY the optimized prompt text itself, without any of your usual formatting (like "**Your Optimized Prompt:**" or "**What Changed:**") or markdown. Just the raw, ready-to-use prompt text.`;
   

@@ -1,8 +1,8 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
 import { GroupedPrompt, Prompt, PromptFolder, PromptCategory, PromptFramework } from '../../types';
 import { PROMPT_CATEGORY_COLORS, PROMPT_FRAMEWORK_COLORS, ITEM_TYPE_COLORS, PROMPT_FRAMEWORKS, PROMPT_ICONS } from '../../constants';
+import { useNotification } from '../../hooks/useNotification';
 
 interface PromptCardProps {
   item: GroupedPrompt | Prompt;
@@ -23,6 +23,7 @@ const isGroupedPrompt = (item: GroupedPrompt | Prompt): item is GroupedPrompt =>
 };
 
 export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorite, isFavorited, onMove, folders = [], onCategoryClick, onFrameworkClick, onTypeClick, onDelete, isUserOwned }) => {
+  const { addNotification } = useNotification();
   const [moveMenuOpen, setMoveMenuOpen] = useState(false);
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const moveMenuRef = useRef<HTMLDivElement>(null);
@@ -86,6 +87,20 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
     e.stopPropagation();
     e.preventDefault();
     onFrameworkClick?.(framework);
+  };
+
+  const handleCopyClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const textToCopy = isGroupedPrompt(item) 
+      ? item.prompts[0]?.promptText 
+      : item.promptText;
+      
+    if (textToCopy) {
+      navigator.clipboard.writeText(textToCopy);
+      addNotification('Prompt copied to clipboard!', 'success');
+    } else {
+       addNotification('No prompt text to copy.', 'error');
+    }
   };
 
   const frameworks = isGroupedPrompt(item) ? item.frameworks : (item.framework ? [item.framework] : []);
@@ -166,6 +181,9 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
                       )}
                   </div>
               )}
+              <button onClick={handleCopyClick} title="Copy Prompt Text" className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                <span className="material-symbols-outlined text-slate-500 text-xl leading-none">content_copy</span>
+              </button>
               {onFavorite && (
                   <button onClick={handleFavoriteClick} title={isFavorited ? "Remove from Favorites" : "Add to Favorites"} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
                       <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>

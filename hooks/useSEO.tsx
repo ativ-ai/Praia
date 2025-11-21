@@ -11,8 +11,8 @@ interface SEOProps {
   schema?: object | null;
 }
 
-const SITE_NAME = 'Praia: AI Prompt Suite';
-const DEFAULT_DESCRIPTION = 'Master AI with Praia. The all-in-one suite featuring Vibe Coding for rapid development, a curated prompt hub, and AI-powered enhancement tools for Gemini & ChatGPT.';
+const SITE_NAME = 'PRAIA: Prompt Research & AI Architect';
+const DEFAULT_DESCRIPTION = 'Master AI with PRAIA. The all-in-one suite featuring Vibe Coding for rapid development, a curated prompt hub, and AI-powered enhancement tools for Gemini & ChatGPT.';
 const DEFAULT_IMAGE = 'https://i.imgur.com/gU8m4Lq.png';
 
 export const useSEO = ({
@@ -49,7 +49,7 @@ export const useSEO = ({
     };
 
     setMeta('description', description);
-    setMeta('keywords', ['AI', 'Prompt Engineering', 'Vibe Coding', 'Gemini', 'LLM', 'PRO-SPEC', ...keywords].join(', '));
+    setMeta('keywords', ['AI', 'Prompt Engineering', 'Vibe Coding', 'Gemini', 'LLM', 'PRO-SPEC', 'PRAIA', ...keywords].join(', '));
 
     setProperty('og:title', fullTitle);
     setProperty('og:description', description);

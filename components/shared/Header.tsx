@@ -115,7 +115,7 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" onClick={closeAllMenus} className="flex-shrink-0 flex items-center gap-3">
               <span className="text-4xl" role="img" aria-label="logo">🏖️</span>
-              <span className="text-3xl font-black text-slate-900 tracking-tighter">Praia</span>
+              <span className="text-3xl font-black text-slate-900 tracking-tighter">PRAIA</span>
             </Link>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-2">
@@ -137,7 +137,7 @@ const Header: React.FC = () => {
                       <span className="font-semibold text-base text-slate-900">{user.displayName}</span>
                     </div>
                     <Link to="/my-praia" onClick={() => setUserMenuOpen(false)} className={dropdownItemClasses}>
-                        <span className="material-symbols-outlined text-slate-500">cottage</span>My Praia
+                        <span className="material-symbols-outlined text-slate-500">cottage</span>My PRAIA
                     </Link>
                     <button onClick={() => { logout(); setUserMenuOpen(false); }} className={`${dropdownItemClasses} text-red-600`}>
                       <span className="material-symbols-outlined">logout</span>Sign Out
@@ -185,7 +185,7 @@ const Header: React.FC = () => {
               </div>
               <div className="mt-3 px-2 space-y-1">
                 <Link to="/my-praia" onClick={closeAllMenus} className={`${mobileLinkClasses} ${mobileInactiveLinkClasses}`}>
-                  <span className="material-symbols-outlined">cottage</span>My Praia
+                  <span className="material-symbols-outlined">cottage</span>My PRAIA
                 </Link>
                 <button
                   onClick={() => {

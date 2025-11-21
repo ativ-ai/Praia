@@ -82,8 +82,8 @@ const TestimonialCard: React.FC<{ quote: string; author: string; role: string; a
 const LandingPage: React.FC = () => {
     useSEO({
         title: 'Home',
-        description: 'Praia is your all-in-one AI suite. Build apps faster with Vibe Coding, discover expert prompts, and optimize your AI interactions.',
-        keywords: ['AI Suite', 'Prompt Helper', 'App Builder', 'Prompt Library', 'Free AI Tools']
+        description: 'PRAIA is your all-in-one AI suite. Build apps faster with Vibe Coding, discover expert prompts, and optimize your AI interactions.',
+        keywords: ['AI Suite', 'Prompt Helper', 'App Builder', 'Prompt Library', 'Free AI Tools', 'PRAIA']
     });
 
     return (
@@ -94,13 +94,13 @@ const LandingPage: React.FC = () => {
                  <div className="absolute inset-0 bg-grid-slate-800 [mask-image:linear-gradient(to_bottom,white,transparent)] opacity-10"></div>
                  <div className="relative container mx-auto px-4 z-10">
                     <h1 className="text-4xl md:text-7xl font-black tracking-tighter animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-slate-900 to-slate-700">
-                        Build with AI.
+                        Build with PRAIA.
                     </h1>
                     <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-indigo-600 animate-slide-up" style={{ animationDelay: '0.1s' }}>
                         Guided by Intelligence.
                     </h2>
                     <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-600 leading-relaxed animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                        Praia is the all-in-one suite for discovering, crafting, and mastering world-class AI prompts. Stop guessing, start engineering.
+                        <strong>Prompt Research & AI Architect</strong> is the all-in-one suite for discovering, crafting, and mastering world-class AI prompts. Stop guessing, start engineering.
                     </p>
                     <div className="mt-8 flex justify-center gap-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
                          <Link
@@ -142,7 +142,7 @@ const LandingPage: React.FC = () => {
              <section className="py-16 sm:py-24">
                  <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                      <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Transform Vague Ideas into Precise Instructions</h2>
-                    <p className="mt-4 text-lg text-slate-600">Praia helps you structure your thoughts, adding the necessary context and clarity that AI models need to deliver exceptional results.</p>
+                    <p className="mt-4 text-lg text-slate-600">PRAIA helps you structure your thoughts, adding the necessary context and clarity that AI models need to deliver exceptional results.</p>
                      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch text-left">
                         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-lg">
                             <h3 className="text-xl font-bold text-red-600 mb-2">Your Idea</h3>
@@ -151,7 +151,7 @@ const LandingPage: React.FC = () => {
                             </div>
                         </div>
                          <div className="bg-slate-900 p-6 rounded-xl border-2 border-indigo-500 shadow-2xl shadow-indigo-500/20">
-                            <h3 className="text-xl font-bold text-indigo-400 mb-2">Praia's Structure</h3>
+                            <h3 className="text-xl font-bold text-indigo-400 mb-2">PRAIA's Structure</h3>
                              <div className="text-slate-200 p-4 rounded-lg font-mono text-sm h-full space-y-2">
                                 <p className="animate-reveal" style={{ animationDelay: '0.2s' }}><strong className="text-indigo-400">Act as:</strong> Professional pet blogger...</p>
                                 <p className="animate-reveal" style={{ animationDelay: '0.4s' }}><strong className="text-indigo-400">Task:</strong> Write a 500-word blog post...</p>
@@ -167,11 +167,11 @@ const LandingPage: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                      <div className="text-center">
                         <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Loved by Creators and Developers</h2>
-                        <p className="mt-4 text-lg text-slate-600">See how professionals are using Praia to accelerate their workflows.</p>
+                        <p className="mt-4 text-lg text-slate-600">See how professionals are using PRAIA to accelerate their workflows.</p>
                     </div>
                     <div className="mt-12 grid md:grid-cols-1 lg:grid-cols-3 gap-8">
                         <TestimonialCard 
-                            quote="Praia's Prompt Hub is my secret weapon for marketing campaigns. I can find proven ad copy and social media ideas in seconds. It's cut my content creation time in half."
+                            quote="PRAIA's Prompt Hub is my secret weapon for marketing campaigns. I can find proven ad copy and social media ideas in seconds. It's cut my content creation time in half."
                             author="Elena Rodriguez"
                             role="Marketing Manager"
                             avatar="https://i.imgur.com/83dv4n8.png"
@@ -208,7 +208,7 @@ const LandingPage: React.FC = () => {
                 </div>
             </section>
             <footer className="w-full text-center py-4 text-sm text-slate-500 border-t border-slate-200">
-                © {new Date().getFullYear()} - Praia by{' '}
+                © {new Date().getFullYear()} - PRAIA by{' '}
                 <a href="https://ativ.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
                   ativ.ai
                 </a>
