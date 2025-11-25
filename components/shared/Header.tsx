@@ -122,7 +122,9 @@ const Header: React.FC = () => {
               <span className="text-4xl" role="img" aria-label="logo">🏖️</span>
               <div className="flex flex-col">
                 <span className="text-3xl font-black text-slate-900 tracking-tighter leading-none">PRAIA</span>
-                <span className="text-[0.65rem] sm:text-xs font-bold text-indigo-600 tracking-wide uppercase">Prompt Research & AI Architect</span>
+                <span className="text-[0.65rem] sm:text-xs font-bold text-indigo-600 tracking-wide uppercase leading-none mt-0.5">
+                  Prompt Research<br/>& AI Architect
+                </span>
               </div>
             </Link>
             <div className="hidden md:block">
