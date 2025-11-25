@@ -7,7 +7,7 @@ export interface User {
   photoURL: string;
 }
 
-export type PromptCategory = "Marketing" | "Code Generation" | "Copywriting" | "Ideation" | "Image Generation" | "Productivity" | "Data Analysis" | "Personal Development" | "Sales" | "Business" | "Role-Playing" | "Advertising" | "Content Creation" | "Creative Writing" | "E-Commerce" | "Editing & Proofreading" | "Goal Setting" | "Graphic Design" | "Personal Finance" | "Persuasion & Influence" | "Social Media" | "Frameworks" | "Learning" | "Career" | "Self Help" | "Education" | "Research" | "Fundamentals" | "Advanced Techniques";
+export type PromptCategory = "Marketing" | "Code Generation" | "Copywriting" | "Ideation" | "Image Generation" | "Productivity" | "Data Analysis" | "Personal Development" | "Sales" | "Business" | "Role-Playing" | "Advertising" | "Content Creation" | "Creative Writing" | "E-Commerce" | "Editing & Proofreading" | "Goal Setting" | "Graphic Design" | "Personal Finance" | "Persuasion & Influence" | "Social Media" | "Frameworks" | "Learning" | "Career" | "Self Help" | "Education" | "Research" | "Fundamentals" | "Advanced Techniques" | "System Prompts";
 
 export interface Prompt {
   id: string; // Unique ID for this specific version
@@ -74,7 +74,7 @@ export interface PromptFrameworkDefinition {
   description: string;
 }
 
-export type TrainingCategory = "Fundamentals" | "Advanced Techniques" | "Business & Marketing" | "Frameworks & Patterns" | "Education" | "Creative & Media" | "Career";
+export type TrainingCategory = "Fundamentals" | "Advanced Techniques" | "Business & Marketing" | "Frameworks & Patterns" | "Education" | "Creative & Media" | "Career" | "System Architecture";
 
 export interface TrainingModule {
     id: string;

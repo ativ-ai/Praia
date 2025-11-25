@@ -1,4 +1,5 @@
 
+
 import {
   Prompt,
   PromptFramework,
@@ -18,12 +19,12 @@ export const PROMPT_CATEGORIES: PromptCategory[] = [
   "E-Commerce", "Editing & Proofreading", "Goal Setting", "Graphic Design",
   "Personal Finance", "Persuasion & Influence", "Social Media", "Frameworks",
   "Learning", "Career", "Self Help", "Education", "Research", "Fundamentals",
-  "Advanced Techniques"
+  "Advanced Techniques", "System Prompts"
 ];
 
 export const TRAINING_CATEGORIES: TrainingCategory[] = [
   "Fundamentals", "Advanced Techniques", "Business & Marketing",
-  "Frameworks & Patterns", "Education", "Creative & Media", "Career"
+  "Frameworks & Patterns", "Education", "Creative & Media", "Career", "System Architecture"
 ];
 
 export const AI_TOOL_CATEGORIES: AIToolCategory[] = [
@@ -63,7 +64,8 @@ export const PROMPT_CATEGORY_COLORS: Record<string, string> = {
   "Education": "bg-orange-50 text-orange-900",
   "Research": "bg-zinc-100 text-zinc-800",
   "Fundamentals": "bg-stone-100 text-stone-800",
-  "Advanced Techniques": "bg-red-50 text-red-900"
+  "Advanced Techniques": "bg-red-50 text-red-900",
+  "System Prompts": "bg-slate-800 text-slate-100"
 };
 
 export const PROMPT_FRAMEWORK_COLORS: Record<string, string> = {
@@ -120,7 +122,8 @@ export const TRAINING_CATEGORY_COLORS: Record<string, string> = {
   "Frameworks & Patterns": "bg-orange-100 text-orange-800",
   "Education": "bg-yellow-100 text-yellow-800",
   "Creative & Media": "bg-pink-100 text-pink-800",
-  "Career": "bg-slate-100 text-slate-800"
+  "Career": "bg-slate-100 text-slate-800",
+  "System Architecture": "bg-slate-800 text-slate-100"
 };
 
 export const PROMPT_ICONS: Record<string, string> = {
@@ -135,6 +138,9 @@ export const PROMPT_ICONS: Record<string, string> = {
   "awesome-prompt-7": "🗺️",
   "awesome-prompt-8": "📖",
   "awesome-prompt-9": "✍️",
+  "sys-chatgpt": "🟢",
+  "sys-claude": "🟣",
+  "sys-dalle": "🎨",
 };
 
 export const PROMPT_FRAMEWORKS: Record<PromptFramework, PromptFrameworkDefinition> = {
@@ -348,11 +354,80 @@ const daveBirssPrompts: Prompt[] = [
     { id: 'db-perspectives-1', historyId: 'db-perspectives-1', version: 1, isLatest: true, title: 'Devil’s Advocate', promptText: 'Act as: A Devil’s Advocate.\n\nTask: Challenge the following idea or argument. Find holes in the logic, potential downsides, and reasons why it might fail.\n\nFormat: A bulleted list of counter-arguments.', description: 'Challenges an idea by highlighting potential flaws and counter-arguments.', category: 'Ideation', createdAt: Date.now() - 51300, framework: PromptFramework.RTF },
 ];
 
+const systemPrompts: Prompt[] = [
+    { 
+        id: 'sys-chatgpt', 
+        historyId: 'sys-chatgpt', 
+        version: 1, 
+        isLatest: true, 
+        title: 'ChatGPT System Instruction', 
+        promptText: `You are ChatGPT, a large language model trained by OpenAI.
+Knowledge cutoff: 2023-10
+Current date: [CURRENT_DATE]
+
+# Tools
+
+## python
+When you send a message containing Python code to python, it will be executed in a stateful Jupyter notebook environment.
+
+## browser
+You have the tool "browser". Use it to browse the web when the user asks for up-to-date information.
+
+## dalle
+// Whenever a description of an image is given, create a prompt that dalle can use to generate the image and abide by the following policy...`, 
+        description: 'A simulation of the core instructions provided to ChatGPT. Useful for studying tool use definitions.', 
+        category: 'System Prompts', 
+        createdAt: Date.now() - 500, 
+    },
+    { 
+        id: 'sys-claude', 
+        historyId: 'sys-claude', 
+        version: 1, 
+        isLatest: true, 
+        title: 'Claude 3 System Artifacts', 
+        promptText: `The assistant is Claude, created by Anthropic.
+The current date is [CURRENT_DATE].
+
+Claude's knowledge base ends in August 2023.
+
+<claude_info>
+Claude is a helpful, harmless, and honest AI assistant.
+Claude cannot access the internet.
+</claude_info>
+
+<artifacts_info>
+The user can see and interact with "artifacts" (substantial, standalone content) in a separate window.
+When the user asks for code, documents, or SVGs, Claude should wrap them in <antArtifact> tags.
+</artifacts_info>`, 
+        description: 'Reconstructed system prompt for Claude 3, emphasizing XML structure and Artifacts behavior.', 
+        category: 'System Prompts', 
+        createdAt: Date.now() - 600, 
+    },
+    { 
+        id: 'sys-dalle', 
+        historyId: 'sys-dalle', 
+        version: 1, 
+        isLatest: true, 
+        title: 'DALL-E 3 Generation Rules', 
+        promptText: `1. **Prompt Diversity**: If the user's prompt is simple, embellish it to be more descriptive and artistic.
+2. **Policy Compliance**: Do not generate images of public figures. Do not generate copyright characters.
+3. **Format**: The prompt passed to the model should be a single, detailed paragraph describing the scene, lighting, style, and mood.
+4. **Resolution**: Default to 1024x1024.
+
+User Request: "A cat in space"
+Enhanced Prompt: "A highly detailed, cinematic digital painting of a fluffy orange tabby cat floating in zero gravity inside a futuristic spaceship..."`, 
+        description: 'Guidelines on how DALL-E 3 transforms simple user requests into detailed image generation prompts.', 
+        category: 'System Prompts', 
+        createdAt: Date.now() - 700, 
+    },
+];
+
 export const PUBLIC_PROMPTS: Prompt[] = [
   ...lyraPrompt,
   ...awesomePrompts,
   ...handbookPrompts,
-  ...daveBirssPrompts
+  ...daveBirssPrompts,
+  ...systemPrompts
 ];
 
 export const PUBLIC_AI_TOOLS: AITool[] = [
@@ -464,6 +539,27 @@ export const PUBLIC_TRAINING_MODULES: TrainingModule[] = [
         title: 'The Vibe Check',
         details: 'Start by describing the "vibe" or emotional intent of the software.',
         example: 'I want a retro-futuristic dashboard that feels like a sci-fi movie interface.'
+      }
+    ]
+  },
+  {
+    id: 'mastering-system-prompts',
+    title: 'Reverse Engineering System Prompts',
+    description: 'Understand how major AI tools are instructed and learn to write your own robust system instructions.',
+    category: 'System Architecture',
+    createdAt: Date.now(),
+    content: [
+      {
+        id: 'msp-1',
+        title: 'What is a System Prompt?',
+        details: 'A system prompt (or system instruction) is the initial set of hidden instructions given to an AI model by its developers. It defines the AI\'s persona, boundaries, tools, and output format before the user ever types a message.',
+        example: 'You are ChatGPT. You are helpful, harmless, and honest. You cannot browse the live web unless using the browser tool.'
+      },
+      {
+        id: 'msp-2',
+        title: 'Anatomy of a System Prompt',
+        details: 'Most system prompts contain: 1. Identity (Who are you?), 2. Knowledge Cutoff (What dates do you know?), 3. Tool Definitions (How to use Python/DALL-E), and 4. Safety Guardrails (What to refuse).',
+        example: '## Tools\n- python: Execute code.\n- dalle: Generate images.\n## Policy\n- Do not generate violent content.'
       }
     ]
   }

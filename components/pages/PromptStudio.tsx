@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { usePrompts } from '../../hooks/usePrompts';
@@ -52,7 +53,7 @@ const PRO_SPEC_TEMPLATE = `# PRO-SPEC: [Feature Name]
 ---
 
 ## [L4] THE ENGINE (UX & Perf)
-1. Optimistic updates for likes/comments.
+1. Optimistic UI updates for likes/comments.
 2. Skeleton loaders for initial fetch.
 
 ---
@@ -95,6 +96,55 @@ const LAYER_SNIPPETS = {
 **Task:** `
 };
 
+const SYSTEM_PROMPT_PRESETS = [
+    {
+        name: "ChatGPT Core",
+        description: "The classic 'You are ChatGPT' instruction set, defining knowledge cutoffs and tool usage.",
+        content: `You are ChatGPT, a large language model trained by OpenAI.
+Knowledge cutoff: 2023-10
+Current date: [CURRENT_DATE]
+
+# Tools
+
+## python
+When you send a message containing Python code to python, it will be executed in a stateful Jupyter notebook environment.
+
+## browser
+You have the tool "browser". Use it to browse the web when the user asks for up-to-date information.`
+    },
+    {
+        name: "Claude 3 Artifacts",
+        description: "Structure for Anthropic's Claude, emphasizing XML tags and artifact generation.",
+        content: `The assistant is Claude, created by Anthropic.
+The current date is [CURRENT_DATE].
+
+<claude_info>
+Claude is a helpful, harmless, and honest AI assistant.
+Claude cannot access the internet.
+</claude_info>
+
+<artifacts_info>
+The user can see and interact with "artifacts" (substantial, standalone content) in a separate window.
+When the user asks for code, documents, or SVGs, Claude should wrap them in <antArtifact> tags.
+</artifacts_info>`
+    },
+    {
+        name: "Gemini Persona",
+        description: "Google's helpful assistant persona with multi-modal awareness.",
+        content: `You are Gemini, a large language model trained by Google.
+You are helpful, harmless, and honest.
+You can perceive text, images, and audio.
+When generating code, always prioritize modern best practices and safety.`
+    },
+    {
+        name: "DALL-E 3 Instructor",
+        description: "Guidelines for transforming simple prompts into detailed image descriptions.",
+        content: `1. **Prompt Diversity**: If the user's prompt is simple, embellish it to be more descriptive and artistic.
+2. **Policy Compliance**: Do not generate images of public figures. Do not generate copyright characters.
+3. **Format**: The prompt passed to the model should be a single, detailed paragraph describing the scene, lighting, style, and mood.`
+    }
+];
+
 const PromptStudio: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -119,6 +169,7 @@ const PromptStudio: React.FC = () => {
   // UI State
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [editorView, setEditorView] = useState<'write' | 'preview'>('write');
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   
   // Save Modal state
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -126,7 +177,7 @@ const PromptStudio: React.FC = () => {
   const [modalDescription, setModalDescription] = useState('');
 
   // Toolkit state
-  const [activeToolTab, setActiveToolTab] = useState<'enhance' | 'structure' | 'vibe' | 'prospec'>('enhance');
+  const [activeToolTab, setActiveToolTab] = useState<'enhance' | 'structure' | 'vibe' | 'prospec' | 'system'>('enhance');
   const [vibeMode, setVibeMode] = useState<'spec' | 'component'>('spec');
   
   // Processing States
@@ -284,6 +335,14 @@ const PromptStudio: React.FC = () => {
     }
     clearResult();
   }
+  
+  const applySystemPreset = (content: string, name: string) => {
+      if (promptText.trim() && !window.confirm("This will replace your current content. Continue?")) return;
+      setPromptText(content);
+      setCategory('System Prompts');
+      setEditorView('write');
+      addNotification(`Loaded ${name} preset.`, 'success');
+  };
 
   const downloadArtifact = () => {
       if (!resultGeneratedText) return;
@@ -375,7 +434,44 @@ const PromptStudio: React.FC = () => {
       addNotification(`${layer} snippet added.`, 'success');
   };
 
-  const TabButton: React.FC<{ tabName: 'enhance' | 'structure' | 'vibe' | 'prospec'; icon: string; label: string }> = ({ tabName, icon, label }) => (
+  const handleClear = () => {
+      if (!promptText) return;
+      if (window.confirm('Are you sure you want to clear the editor? This cannot be undone.')) {
+          setPromptText('');
+          addNotification('Editor cleared.', 'info');
+      }
+  };
+
+  const handlePaste = async () => {
+      try {
+          const text = await navigator.clipboard.readText();
+          if (!text) return;
+
+          if (textAreaRef.current) {
+              const start = textAreaRef.current.selectionStart;
+              const end = textAreaRef.current.selectionEnd;
+              const newText = promptText.substring(0, start) + text + promptText.substring(end);
+              setPromptText(newText);
+              
+              // Restore cursor position after state update
+              setTimeout(() => {
+                   if(textAreaRef.current) {
+                       const newCursorPos = start + text.length;
+                       textAreaRef.current.selectionStart = newCursorPos;
+                       textAreaRef.current.selectionEnd = newCursorPos;
+                       textAreaRef.current.focus();
+                   }
+              }, 0);
+              addNotification('Text pasted!', 'success');
+          } else {
+              setPromptText(prev => prev + text);
+          }
+      } catch (err) {
+          addNotification('Failed to paste from clipboard. Please use Ctrl+V.', 'error');
+      }
+  };
+
+  const TabButton: React.FC<{ tabName: 'enhance' | 'structure' | 'vibe' | 'prospec' | 'system'; icon: string; label: string }> = ({ tabName, icon, label }) => (
     <button
       type="button"
       onClick={() => setActiveToolTab(tabName)}
@@ -435,6 +531,28 @@ const PromptStudio: React.FC = () => {
                      >
                         <span className="material-symbols-outlined text-lg">visibility</span> Preview
                      </button>
+                     
+                     {editorView === 'write' && (
+                        <>
+                            <div className="h-6 w-px bg-slate-200 mx-1 self-center"></div>
+                            <button 
+                                onClick={handleClear} 
+                                className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                title="Clear Editor"
+                            >
+                                <span className="material-symbols-outlined text-lg">delete</span>
+                                <span className="hidden xl:inline">Clear</span>
+                            </button>
+                            <button 
+                                onClick={handlePaste} 
+                                className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                title="Paste from Clipboard"
+                            >
+                                <span className="material-symbols-outlined text-lg">content_paste</span>
+                                <span className="hidden xl:inline">Paste</span>
+                            </button>
+                        </>
+                     )}
                 </div>
 
                 <div className="flex items-center gap-3 px-2">
@@ -465,6 +583,7 @@ const PromptStudio: React.FC = () => {
             {editorView === 'write' ? (
                 <textarea 
                     id="promptText" 
+                    ref={textAreaRef}
                     value={promptText} 
                     onChange={e => setPromptText(e.target.value)} 
                     className={`flex-grow w-full p-6 resize-none focus:outline-none font-mono text-sm text-slate-800 leading-relaxed placeholder-slate-400 ${isFullScreen ? 'md:px-24 lg:px-40 text-base' : ''}`}
@@ -488,8 +607,9 @@ const PromptStudio: React.FC = () => {
              <div className="bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 flex gap-1 flex-shrink-0 overflow-x-auto">
                 <TabButton tabName="enhance" icon="auto_awesome" label="Lyra" />
                 <TabButton tabName="structure" icon="dashboard" label="Struct" />
-                <TabButton tabName="vibe" icon="bolt" label="Vibe Coding" />
+                <TabButton tabName="vibe" icon="bolt" label="Vibe" />
                 <TabButton tabName="prospec" icon="integration_instructions" label="Spec" />
+                <TabButton tabName="system" icon="settings_system_daydream" label="System" />
             </div>
 
             {/* Tool Content */}
@@ -678,6 +798,40 @@ const PromptStudio: React.FC = () => {
                                 
                                 <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600 border border-slate-200 mt-4">
                                     <strong>Tip:</strong> Use the "Preview" tab in the editor to see syntax highlighting for your code blocks.
+                                </div>
+                            </div>
+                        )}
+
+                        {activeToolTab === 'system' && (
+                            <div className="space-y-6 animate-fade-in">
+                                <div className="bg-slate-100 p-4 rounded-xl border border-slate-200">
+                                    <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                                        <span className="material-symbols-outlined">settings_system_daydream</span>
+                                        System Prompt Presets
+                                    </h3>
+                                    <p className="text-sm text-slate-700 mt-1">
+                                        Load reverse-engineered system instructions from major AI models to study or modify them.
+                                    </p>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                    {SYSTEM_PROMPT_PRESETS.map((preset) => (
+                                        <button 
+                                            key={preset.name}
+                                            onClick={() => applySystemPreset(preset.content, preset.name)}
+                                            className="w-full text-left p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group"
+                                        >
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-bold text-slate-800">{preset.name}</span>
+                                                <span className="material-symbols-outlined text-slate-400 group-hover:text-indigo-600">download</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 line-clamp-2">{preset.description}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                                
+                                <div className="bg-yellow-50 p-3 rounded-lg text-xs text-yellow-800 border border-yellow-200 mt-4">
+                                    <strong>Note:</strong> These are simulations based on public research and reverse engineering. They are useful for understanding how to structure your own system instructions.
                                 </div>
                             </div>
                         )}
