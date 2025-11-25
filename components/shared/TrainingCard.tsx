@@ -1,8 +1,8 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
 import { TrainingModule, TrainingCategory } from '../../types';
 import { TRAINING_CATEGORY_COLORS } from '../../constants';
+import Tooltip from './Tooltip';
 
 interface TrainingCardProps {
   module: TrainingModule;
@@ -76,34 +76,39 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ module, onClick, onFavorite
                         </div>
                         <div className="flex-grow">
                             <h3 className="text-lg font-bold text-slate-900 leading-tight">{module.title}</h3>
-                            <button 
-                                onClick={onCategoryClick ? handleCategoryClick : undefined} 
-                                disabled={!onCategoryClick} 
-                                className={`text-xs font-semibold mt-1.5 px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
-                            >
-                                {module.category}
-                            </button>
+                            <Tooltip text={`Filter by Category: ${module.category}`} position="bottom">
+                                <button 
+                                    onClick={onCategoryClick ? handleCategoryClick : undefined} 
+                                    disabled={!onCategoryClick} 
+                                    className={`text-xs font-semibold mt-1.5 px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
+                                >
+                                    {module.category}
+                                </button>
+                            </Tooltip>
                         </div>
                     </div>
                     <p className="text-sm text-slate-600 mt-4 line-clamp-3 leading-relaxed">{module.description}</p>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-200/80 flex justify-end items-center gap-1">
                     {onFavorite && (
-                        <button
-                            onClick={handleFavoriteClick}
-                            title={isFavorited ? "Remove from Favorites" : "Add to Favorites"}
-                            className="p-2 rounded-full hover:bg-amber-100 transition-colors"
-                        >
-                            <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
-                                star
-                            </span>
-                        </button>
+                        <Tooltip text={isFavorited ? "Remove from Favorites" : "Add to Favorites"}>
+                            <button
+                                onClick={handleFavoriteClick}
+                                className="p-2 rounded-full hover:bg-amber-100 transition-colors"
+                            >
+                                <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
+                                    star
+                                </span>
+                            </button>
+                        </Tooltip>
                     )}
                     {onDelete && (
                         <div ref={optionsMenuRef} className="relative">
-                            <button onClick={toggleOptionsMenu} title="More options" className="p-2 rounded-full hover:bg-slate-200 transition-colors">
-                            <span className="material-symbols-outlined text-slate-500 text-xl">more_vert</span>
-                            </button>
+                            <Tooltip text="More Options">
+                                <button onClick={toggleOptionsMenu} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                                <span className="material-symbols-outlined text-slate-500 text-xl">more_vert</span>
+                                </button>
+                            </Tooltip>
                             {optionsMenuOpen && (
                             <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 animate-expand-in">
                                 <div className="py-1">

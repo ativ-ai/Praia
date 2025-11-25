@@ -16,6 +16,7 @@ import { PUBLIC_TRAINING_MODULES } from '../../constants';
 import { useNotification } from '../../hooks/useNotification';
 import usePageTitle from '../../hooks/usePageTitle';
 import Icon from '../shared/Icon';
+import Tooltip from '../shared/Tooltip';
 
 type PraiaItem = (Prompt & { itemType: 'prompt' }) | (AITool & { itemType: 'tool' }) | (TrainingModule & { itemType: 'training' });
 
@@ -234,9 +235,9 @@ const MyPraia: React.FC = () => {
   
 
   const newContentLinks = [
-      { to: "/prompt-studio", label: "New Prompt", icon: "edit" },
-      { to: "/tool-studio", label: "New Tool", icon: "construction" },
-      { to: "/training-studio", label: "New Training", icon: "draw" },
+      { to: "/prompt-studio", label: "New Prompt", icon: "edit", tooltip: "Create a prompt from scratch" },
+      { to: "/tool-studio", label: "New Tool", icon: "construction", tooltip: "Add a tool to your library" },
+      { to: "/training-studio", label: "New Training", icon: "draw", tooltip: "Create a training module" },
   ];
 
   return (
@@ -248,18 +249,26 @@ const MyPraia: React.FC = () => {
             </div>
             <div className="flex-shrink-0 flex flex-wrap gap-2">
                 {newContentLinks.map(link => (
-                    <Link key={link.to} to={link.to} className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-bold rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition-all transform hover:scale-105">
-                        <span className="material-symbols-outlined -ml-1 mr-2">{link.icon}</span>
-                        {link.label}
-                    </Link>
+                    <Tooltip key={link.to} text={link.tooltip}>
+                        <Link to={link.to} className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-bold rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition-all transform hover:scale-105">
+                            <span className="material-symbols-outlined -ml-1 mr-2">{link.icon}</span>
+                            {link.label}
+                        </Link>
+                    </Tooltip>
                 ))}
             </div>
         </div>
         
         <div className="mb-6 bg-slate-100 p-2 rounded-xl inline-flex flex-wrap items-center gap-2 border border-slate-200">
-            <button onClick={() => setActiveTab('prompts')} className={tabClasses('prompts')}><Icon name="lightbulb" className="w-5 h-5" /> Prompts ({prompts.length})</button>
-            <button onClick={() => setActiveTab('tools')} className={tabClasses('tools')}><Icon name="cpuChip" className="w-5 h-5" /> Tools ({tools.length})</button>
-            <button onClick={() => setActiveTab('training')} className={tabClasses('training')}><Icon name="academicCap" className="w-5 h-5" /> Training ({trainings.length})</button>
+            <Tooltip text="View Prompts">
+                <button onClick={() => setActiveTab('prompts')} className={tabClasses('prompts')}><Icon name="lightbulb" className="w-5 h-5" /> Prompts ({prompts.length})</button>
+            </Tooltip>
+            <Tooltip text="View Tools">
+                <button onClick={() => setActiveTab('tools')} className={tabClasses('tools')}><Icon name="cpuChip" className="w-5 h-5" /> Tools ({tools.length})</button>
+            </Tooltip>
+            <Tooltip text="View Training">
+                <button onClick={() => setActiveTab('training')} className={tabClasses('training')}><Icon name="academicCap" className="w-5 h-5" /> Training ({trainings.length})</button>
+            </Tooltip>
         </div>
 
         <div className="relative mb-6">
@@ -305,9 +314,11 @@ const MyPraia: React.FC = () => {
                                 placeholder="New folder name..."
                                 className="w-full text-sm border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                             />
-                            <button type="submit" className="w-full mt-2 bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-slate-300 transition-colors">
-                                Create Folder
-                            </button>
+                            <Tooltip text="Create a new folder to organize prompts" className="w-full mt-2">
+                                <button type="submit" className="w-full bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-slate-300 transition-colors">
+                                    Create Folder
+                                </button>
+                            </Tooltip>
                         </form>
                     </div>
                 </aside>

@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import Tooltip from './Tooltip';
 
 const Dropdown: React.FC<{ title: React.ReactNode; children: React.ReactNode }> = ({ title, children }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -91,15 +92,19 @@ const Header: React.FC = () => {
 
       return (
           <>
-              <NavLink to="/prompt-studio" className={navLinkClasses}>
-                <span className="material-symbols-outlined text-indigo-600">design_services</span>Prompt Studio
-              </NavLink>
-              <Dropdown title={<><span className="material-symbols-outlined text-indigo-600">explore</span>Explore</>}>
+              <Tooltip text="Create & Optimize Prompts" position="bottom">
+                <NavLink to="/prompt-studio" className={navLinkClasses}>
+                    <span className="material-symbols-outlined text-indigo-600">design_services</span>Prompt Studio
+                </NavLink>
+              </Tooltip>
+              
+              <Dropdown title={<Tooltip text="Browse Community Content" position="bottom"><span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-indigo-600">explore</span>Explore</span></Tooltip>}>
                   <NavLink to="/prompts" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">tips_and_updates</span>Prompts</NavLink>
                   <NavLink to="/tools" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">smart_toy</span>AI Tools</NavLink>
                   <NavLink to="/training" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">model_training</span>Training</NavLink>
               </Dropdown>
-              <Dropdown title={<><span className="material-symbols-outlined text-indigo-600">school</span>Resources</>}>
+
+              <Dropdown title={<Tooltip text="Documentation & Guides" position="bottom"><span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-indigo-600">school</span>Resources</span></Tooltip>}>
                   <NavLink to="/about" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">info</span>About</NavLink>
                   <NavLink to="/api-docs" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">code</span>API Docs</NavLink>
                   <NavLink to="/pro-spec" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">integration_instructions</span>PRO-SPEC</NavLink>
@@ -126,10 +131,12 @@ const Header: React.FC = () => {
           <div className="hidden md:flex items-center">
             {user ? (
               <div className="relative" ref={userMenuRef}>
-                <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                  <span className="sr-only">Open user menu</span>
-                  <img className="h-12 w-12 rounded-full" src={user.photoURL} alt="User profile" />
-                </button>
+                <Tooltip text="User Menu" position="left">
+                    <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <span className="sr-only">Open user menu</span>
+                    <img className="h-12 w-12 rounded-full" src={user.photoURL} alt="User profile" />
+                    </button>
+                </Tooltip>
                 {userMenuOpen && (
                   <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 z-50 animate-expand-in">
                     <div className="px-4 py-3 text-sm text-slate-700 border-b border-slate-200">

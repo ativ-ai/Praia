@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { usePrompts } from '../../hooks/usePrompts';
@@ -472,14 +471,16 @@ const PromptStudio: React.FC = () => {
   };
 
   const TabButton: React.FC<{ tabName: 'enhance' | 'structure' | 'vibe' | 'prospec' | 'system'; icon: string; label: string }> = ({ tabName, icon, label }) => (
-    <button
-      type="button"
-      onClick={() => setActiveToolTab(tabName)}
-      className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3 px-2 font-bold text-sm transition-colors rounded-lg ${activeToolTab === tabName ? 'bg-slate-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-200'}`}
-    >
-      <span className="material-symbols-outlined text-xl">{icon}</span>
-      <span className="hidden sm:inline">{label}</span>
-    </button>
+    <Tooltip text={`Switch to ${label} Tool`} className="flex-1" position="top">
+      <button
+        type="button"
+        onClick={() => setActiveToolTab(tabName)}
+        className={`w-full flex flex-col sm:flex-row items-center justify-center gap-2 py-3 px-2 font-bold text-sm transition-colors rounded-lg ${activeToolTab === tabName ? 'bg-slate-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-200'}`}
+      >
+        <span className="material-symbols-outlined text-xl">{icon}</span>
+        <span className="hidden sm:inline">{label}</span>
+      </button>
+    </Tooltip>
   );
 
   const isProcessing = isEnhancing || isApplyingFramework || isVibeProcessing;
@@ -499,17 +500,23 @@ const PromptStudio: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
             {id && !location.state?.prompt && historyId && (
-                <button type="button" onClick={() => setShowHistory(true)} className="text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-2">
-                    <span className="material-symbols-outlined text-xl">history</span>
-                    History
-                </button>
+                <Tooltip text="View Previous Versions">
+                    <button type="button" onClick={() => setShowHistory(true)} className="text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-2">
+                        <span className="material-symbols-outlined text-xl">history</span>
+                        History
+                    </button>
+                </Tooltip>
             )}
-            <button type="button" onClick={() => navigate(-1)} className="text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors">
-                Exit
-            </button>
-            <button type="button" onClick={handleOpenSaveModal} className="bg-slate-900 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg hover:bg-slate-800 transition-all transform hover:scale-105 flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm">save</span> Save
-            </button>
+            <Tooltip text="Return to Previous Page">
+                <button type="button" onClick={() => navigate(-1)} className="text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors">
+                    Exit
+                </button>
+            </Tooltip>
+            <Tooltip text="Save to My Praia">
+                <button type="button" onClick={handleOpenSaveModal} className="bg-slate-900 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg hover:bg-slate-800 transition-all transform hover:scale-105 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm">save</span> Save
+                </button>
+            </Tooltip>
         </div>
       </div>
       
@@ -519,64 +526,72 @@ const PromptStudio: React.FC = () => {
         <div className={`${isFullScreen ? 'fixed inset-0 z-[100] w-full h-full rounded-none' : 'lg:w-2/3 rounded-2xl'} flex flex-col bg-white shadow-sm border border-slate-200 overflow-hidden transition-all duration-300`}>
             <div className="p-2 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                 <div className="flex gap-1">
-                     <button 
-                        onClick={() => setEditorView('write')} 
-                        className={`px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors ${editorView === 'write' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
-                     >
-                        <span className="material-symbols-outlined text-lg">edit_note</span> Write
-                     </button>
-                     <button 
-                        onClick={() => setEditorView('preview')} 
-                        className={`px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors ${editorView === 'preview' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
-                     >
-                        <span className="material-symbols-outlined text-lg">visibility</span> Preview
-                     </button>
+                     <Tooltip text="Switch to Edit Mode">
+                        <button 
+                            onClick={() => setEditorView('write')} 
+                            className={`px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors ${editorView === 'write' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
+                        >
+                            <span className="material-symbols-outlined text-lg">edit_note</span> Write
+                        </button>
+                     </Tooltip>
+                     <Tooltip text="Preview Markdown Rendering">
+                        <button 
+                            onClick={() => setEditorView('preview')} 
+                            className={`px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors ${editorView === 'preview' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
+                        >
+                            <span className="material-symbols-outlined text-lg">visibility</span> Preview
+                        </button>
+                     </Tooltip>
                      
                      {editorView === 'write' && (
                         <>
                             <div className="h-6 w-px bg-slate-200 mx-1 self-center"></div>
-                            <button 
-                                onClick={handleClear} 
-                                className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-                                title="Clear Editor"
-                            >
-                                <span className="material-symbols-outlined text-lg">delete</span>
-                                <span className="hidden xl:inline">Clear</span>
-                            </button>
-                            <button 
-                                onClick={handlePaste} 
-                                className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                title="Paste from Clipboard"
-                            >
-                                <span className="material-symbols-outlined text-lg">content_paste</span>
-                                <span className="hidden xl:inline">Paste</span>
-                            </button>
+                            <Tooltip text="Clear Editor Content">
+                                <button 
+                                    onClick={handleClear} 
+                                    className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-lg">delete</span>
+                                    <span className="hidden xl:inline">Clear</span>
+                                </button>
+                            </Tooltip>
+                            <Tooltip text="Paste from Clipboard">
+                                <button 
+                                    onClick={handlePaste} 
+                                    className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-lg">content_paste</span>
+                                    <span className="hidden xl:inline">Paste</span>
+                                </button>
+                            </Tooltip>
                         </>
                      )}
                 </div>
 
                 <div className="flex items-center gap-3 px-2">
-                    <button
-                        onClick={insertProSpecTemplate}
-                        className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors"
-                        title="Insert PRO-SPEC Template"
-                    >
-                        <span className="material-symbols-outlined text-lg text-emerald-600">integration_instructions</span>
-                        <span className="hidden sm:inline">Insert Template</span>
-                    </button>
+                    <Tooltip text="Insert PRO-SPEC Template">
+                        <button
+                            onClick={insertProSpecTemplate}
+                            className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-lg text-emerald-600">integration_instructions</span>
+                            <span className="hidden sm:inline">Insert Template</span>
+                        </button>
+                    </Tooltip>
                     <div className="h-4 w-px bg-slate-300 mx-1"></div>
                     {promptText.length > 0 && (
                         <span className="text-xs font-mono text-slate-400">{promptText.length} chars</span>
                     )}
-                    <button 
-                        onClick={() => setIsFullScreen(!isFullScreen)} 
-                        className="text-slate-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-slate-100"
-                        title={isFullScreen ? "Exit Full Screen (Esc)" : "Enter Full Screen (Esc)"}
-                    >
-                        <span className="material-symbols-outlined text-xl block">
-                            {isFullScreen ? 'close_fullscreen' : 'open_in_full'}
-                        </span>
-                    </button>
+                    <Tooltip text={isFullScreen ? "Exit Full Screen (Esc)" : "Enter Full Screen (Esc)"}>
+                        <button 
+                            onClick={() => setIsFullScreen(!isFullScreen)} 
+                            className="text-slate-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-slate-100"
+                        >
+                            <span className="material-symbols-outlined text-xl block">
+                                {isFullScreen ? 'close_fullscreen' : 'open_in_full'}
+                            </span>
+                        </button>
+                    </Tooltip>
                 </div>
             </div>
 
@@ -654,9 +669,11 @@ const PromptStudio: React.FC = () => {
                                     </select>
                                 </div>
 
-                                <button onClick={handleEnhance} className="w-full bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
-                                    Enhance Prompt
-                                </button>
+                                <Tooltip text="Optimize Prompt with Lyra">
+                                    <button onClick={handleEnhance} className="w-full bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
+                                        Enhance Prompt
+                                    </button>
+                                </Tooltip>
                             </div>
                         )}
 
@@ -685,9 +702,11 @@ const PromptStudio: React.FC = () => {
                                     )}
                                 </div>
 
-                                <button onClick={handleApplyFramework} disabled={!activeFramework} className="w-full bg-sky-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-sky-700 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                                    Apply Structure
-                                </button>
+                                <Tooltip text="Apply selected framework">
+                                    <button onClick={handleApplyFramework} disabled={!activeFramework} className="w-full bg-sky-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-sky-700 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        Apply Structure
+                                    </button>
+                                </Tooltip>
                             </div>
                         )}
 
@@ -714,28 +733,34 @@ const PromptStudio: React.FC = () => {
                                         <li>Select your target <strong>Artifact</strong> below.</li>
                                         <li>Generate production-ready output.</li>
                                     </ol>
-                                    <button 
-                                        onClick={insertVibeTemplate} 
-                                        className="text-xs font-bold text-fuchsia-600 hover:text-fuchsia-800 hover:bg-fuchsia-50 px-2 py-1 rounded transition-colors flex items-center gap-1"
-                                    >
-                                        <span className="material-symbols-outlined text-sm">add_circle</span> Insert Vibe Template
-                                    </button>
+                                    <Tooltip text="Load Vibe Template">
+                                        <button 
+                                            onClick={insertVibeTemplate} 
+                                            className="text-xs font-bold text-fuchsia-600 hover:text-fuchsia-800 hover:bg-fuchsia-50 px-2 py-1 rounded transition-colors flex items-center gap-1"
+                                        >
+                                            <span className="material-symbols-outlined text-sm">add_circle</span> Insert Vibe Template
+                                        </button>
+                                    </Tooltip>
                                 </div>
 
                                 {/* Mode Switcher */}
                                 <div className="flex p-1 bg-slate-100 rounded-lg">
-                                    <button 
-                                        onClick={() => setVibeMode('spec')}
-                                        className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${vibeMode === 'spec' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                                    >
-                                        Feature Spec
-                                    </button>
-                                    <button 
-                                        onClick={() => setVibeMode('component')}
-                                        className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${vibeMode === 'component' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                                    >
-                                        UI Component
-                                    </button>
+                                    <Tooltip text="Generate Technical Spec" className="flex-1">
+                                        <button 
+                                            onClick={() => setVibeMode('spec')}
+                                            className={`w-full py-2 text-xs font-bold rounded-md transition-all ${vibeMode === 'spec' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            Feature Spec
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip text="Generate React Component" className="flex-1">
+                                        <button 
+                                            onClick={() => setVibeMode('component')}
+                                            className={`w-full py-2 text-xs font-bold rounded-md transition-all ${vibeMode === 'component' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            UI Component
+                                        </button>
+                                    </Tooltip>
                                 </div>
 
                                 <div className="text-sm text-slate-600 space-y-2 px-1">
@@ -752,9 +777,11 @@ const PromptStudio: React.FC = () => {
                                      )}
                                 </div>
 
-                                <button onClick={handleVibeGenerate} className={`w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 ${vibeMode === 'spec' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-fuchsia-600 hover:bg-fuchsia-700'}`}>
-                                    {vibeMode === 'spec' ? 'Generate Spec' : 'Generate Component'}
-                                </button>
+                                <Tooltip text={`Generate ${vibeMode === 'spec' ? 'Specification' : 'Component'}`}>
+                                    <button onClick={handleVibeGenerate} className={`w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 ${vibeMode === 'spec' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-fuchsia-600 hover:bg-fuchsia-700'}`}>
+                                        {vibeMode === 'spec' ? 'Generate Spec' : 'Generate Component'}
+                                    </button>
+                                </Tooltip>
                             </div>
                         )}
 
@@ -771,27 +798,30 @@ const PromptStudio: React.FC = () => {
                                 </div>
                                 
                                 <div className="space-y-3">
-                                    <button onClick={insertProSpecTemplate} className="w-full text-left px-4 py-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-indigo-300 transition-all flex items-center gap-3 group">
-                                        <div className="bg-indigo-100 text-indigo-600 p-2 rounded-md group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                                            <span className="material-symbols-outlined text-lg">description</span>
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-sm text-slate-800">Insert Full Template</div>
-                                            <div className="text-xs text-slate-500">Start a fresh PRO-SPEC file</div>
-                                        </div>
-                                    </button>
+                                    <Tooltip text="Start with a full template">
+                                        <button onClick={insertProSpecTemplate} className="w-full text-left px-4 py-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-indigo-300 transition-all flex items-center gap-3 group">
+                                            <div className="bg-indigo-100 text-indigo-600 p-2 rounded-md group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                                <span className="material-symbols-outlined text-lg">description</span>
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-sm text-slate-800">Insert Full Template</div>
+                                                <div className="text-xs text-slate-500">Start a fresh PRO-SPEC file</div>
+                                            </div>
+                                        </button>
+                                    </Tooltip>
                                     
                                     <h4 className="text-xs font-bold text-slate-400 uppercase pt-2 px-1">Append Layers</h4>
                                     <div className="grid grid-cols-1 gap-2">
                                         {Object.entries(LAYER_SNIPPETS).map(([key, snippet]) => (
-                                            <button 
-                                                key={key}
-                                                onClick={() => insertLayerSnippet(key as keyof typeof LAYER_SNIPPETS)}
-                                                className="text-left px-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded hover:bg-white hover:border-slate-300 transition-colors flex items-center justify-between"
-                                            >
-                                                <span>{key} Snippet</span>
-                                                <span className="material-symbols-outlined text-slate-400 text-sm">add</span>
-                                            </button>
+                                            <Tooltip key={key} text={`Append ${key} Layer`} position="left">
+                                                <button 
+                                                    onClick={() => insertLayerSnippet(key as keyof typeof LAYER_SNIPPETS)}
+                                                    className="w-full text-left px-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded hover:bg-white hover:border-slate-300 transition-colors flex items-center justify-between"
+                                                >
+                                                    <span>{key} Snippet</span>
+                                                    <span className="material-symbols-outlined text-slate-400 text-sm">add</span>
+                                                </button>
+                                            </Tooltip>
                                         ))}
                                     </div>
                                 </div>
@@ -816,17 +846,18 @@ const PromptStudio: React.FC = () => {
                                 
                                 <div className="space-y-3">
                                     {SYSTEM_PROMPT_PRESETS.map((preset) => (
-                                        <button 
-                                            key={preset.name}
-                                            onClick={() => applySystemPreset(preset.content, preset.name)}
-                                            className="w-full text-left p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group"
-                                        >
-                                            <div className="flex justify-between items-center mb-1">
-                                                <span className="font-bold text-slate-800">{preset.name}</span>
-                                                <span className="material-symbols-outlined text-slate-400 group-hover:text-indigo-600">download</span>
-                                            </div>
-                                            <p className="text-xs text-slate-500 line-clamp-2">{preset.description}</p>
-                                        </button>
+                                        <Tooltip key={preset.name} text={`Load ${preset.name} Preset`} position="left">
+                                            <button 
+                                                onClick={() => applySystemPreset(preset.content, preset.name)}
+                                                className="w-full text-left p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group"
+                                            >
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="font-bold text-slate-800">{preset.name}</span>
+                                                    <span className="material-symbols-outlined text-slate-400 group-hover:text-indigo-600">download</span>
+                                                </div>
+                                                <p className="text-xs text-slate-500 line-clamp-2">{preset.description}</p>
+                                            </button>
+                                        </Tooltip>
                                     ))}
                                 </div>
                                 
@@ -846,9 +877,11 @@ const PromptStudio: React.FC = () => {
                                 </span>
                                 {resultType} Result
                             </h3>
-                            <button onClick={clearResult} className="p-1.5 hover:bg-slate-200 rounded-full text-slate-500 transition-colors">
-                                <span className="material-symbols-outlined">close</span>
-                            </button>
+                            <Tooltip text="Close Result View">
+                                <button onClick={clearResult} className="p-1.5 hover:bg-slate-200 rounded-full text-slate-500 transition-colors">
+                                    <span className="material-symbols-outlined">close</span>
+                                </button>
+                            </Tooltip>
                         </div>
                         
                         <div className="flex-grow overflow-y-auto p-4 space-y-4">
@@ -875,12 +908,14 @@ const PromptStudio: React.FC = () => {
                                         <h4 className={`text-xs font-bold uppercase ${resultType === 'PRO-SPEC' ? 'text-emerald-600' : 'text-fuchsia-600'}`}>
                                             {resultType === 'PRO-SPEC' ? 'Generated Spec' : 'Generated Code'}
                                         </h4>
-                                        <button 
-                                            onClick={downloadArtifact} 
-                                            className={`text-xs font-bold flex items-center gap-1 px-2 py-1 rounded transition-colors ${resultType === 'PRO-SPEC' ? 'text-emerald-600 hover:text-emerald-700 bg-emerald-50' : 'text-fuchsia-600 hover:text-fuchsia-700 bg-fuchsia-50'}`}
-                                        >
-                                            <span className="material-symbols-outlined text-sm">download</span> Download .{resultType === 'Component' ? 'tsx' : 'md'}
-                                        </button>
+                                        <Tooltip text="Download File">
+                                            <button 
+                                                onClick={downloadArtifact} 
+                                                className={`text-xs font-bold flex items-center gap-1 px-2 py-1 rounded transition-colors ${resultType === 'PRO-SPEC' ? 'text-emerald-600 hover:text-emerald-700 bg-emerald-50' : 'text-fuchsia-600 hover:text-fuchsia-700 bg-fuchsia-50'}`}
+                                            >
+                                                <span className="material-symbols-outlined text-sm">download</span> Download .{resultType === 'Component' ? 'tsx' : 'md'}
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                     <div className={`p-4 rounded-lg text-sm leading-relaxed whitespace-pre-wrap font-mono border shadow-inner ${resultType === 'PRO-SPEC' ? 'bg-emerald-50 text-emerald-900 border-emerald-100' : 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-100'}`}>
                                         {resultGeneratedText}
@@ -890,12 +925,16 @@ const PromptStudio: React.FC = () => {
                         </div>
 
                         <div className="p-4 border-t border-slate-100 bg-white flex gap-3">
-                             <button onClick={clearResult} className="flex-1 py-3 px-4 font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-                                Discard
-                            </button>
-                            <button onClick={acceptChanges} className={`flex-[2] py-3 px-4 font-bold text-white rounded-lg shadow-md transition-transform hover:scale-[1.02] active:scale-95 ${resultType === 'PRO-SPEC' ? 'bg-emerald-600 hover:bg-emerald-700' : resultType === 'Component' ? 'bg-fuchsia-600 hover:bg-fuchsia-700' : resultType === 'Framework' ? 'bg-sky-600 hover:bg-sky-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
-                                Use in Editor
-                            </button>
+                             <Tooltip text="Discard Results" className="flex-1">
+                                <button onClick={clearResult} className="w-full py-3 px-4 font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                                    Discard
+                                </button>
+                             </Tooltip>
+                             <Tooltip text="Apply to Editor" className="flex-[2]">
+                                <button onClick={acceptChanges} className={`w-full py-3 px-4 font-bold text-white rounded-lg shadow-md transition-transform hover:scale-[1.02] active:scale-95 ${resultType === 'PRO-SPEC' ? 'bg-emerald-600 hover:bg-emerald-700' : resultType === 'Component' ? 'bg-fuchsia-600 hover:bg-fuchsia-700' : resultType === 'Framework' ? 'bg-sky-600 hover:bg-sky-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
+                                    Use in Editor
+                                </button>
+                             </Tooltip>
                         </div>
                     </div>
                 )}
@@ -945,7 +984,11 @@ const PromptStudio: React.FC = () => {
                     </select>
                 </div>
                  <div>
-                    <label className="flex items-center text-sm font-bold text-slate-700 mb-1">Share to Community <Tooltip text="Public prompts are visible to everyone in the Community Hub." /></label>
+                    <label className="flex items-center text-sm font-bold text-slate-700 mb-1">Share to Community 
+                        <Tooltip text="Public prompts are visible to everyone in the Community Hub.">
+                            <span className="material-symbols-outlined text-slate-400 hover:text-slate-600 cursor-help text-base transition-colors ml-1">help</span>
+                        </Tooltip>
+                    </label>
                     <div className={`mt-2 flex items-center p-2 rounded-lg ${isCommunityCopy ? 'bg-slate-100' : ''}`}>
                         <label htmlFor="isPublic" className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -987,9 +1030,11 @@ const PromptStudio: React.FC = () => {
                         </div>
                         <div className="text-xs text-slate-500 mt-0.5">{new Date(v.createdAt).toLocaleString()}</div>
                     </div>
-                    <button onClick={() => handleLoadVersion(v)} className="px-4 py-2 text-sm font-bold text-indigo-700 bg-white border border-indigo-100 hover:bg-indigo-50 rounded-lg shadow-sm transition-colors">
-                        Load
-                    </button>
+                    <Tooltip text="Load this version">
+                        <button onClick={() => handleLoadVersion(v)} className="px-4 py-2 text-sm font-bold text-indigo-700 bg-white border border-indigo-100 hover:bg-indigo-50 rounded-lg shadow-sm transition-colors">
+                            Load
+                        </button>
+                    </Tooltip>
                 </div>
             ))}
             {(!historyId || getPromptHistory(historyId || '').length === 0) && (
