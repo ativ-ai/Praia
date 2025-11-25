@@ -34,7 +34,7 @@ const About: React.FC = () => {
     useSEO({
         title: 'About PRAIA',
         description: 'PRAIA (Prompt Research & AI Architect) is the all-in-one suite for discovering, crafting, and optimizing world-class AI prompts. Learn about our PRO-SPEC methodology.',
-        keywords: ['About PRAIA', 'AI Suite', 'Prompt Engineering', 'PRO-SPEC', 'Vibe Coding', 'AI Architect']
+        keywords: ['About PRAIA', 'AI Suite', 'Prompt Engineering', 'PRO-SPEC', 'Vibe Coding', 'AI Architect', 'Perfect Pitch']
     });
 
     return (
@@ -57,6 +57,15 @@ const About: React.FC = () => {
                 >
                     Explore the Hub
                 </Link>
+            </section>
+
+             {/* The Perfect Pitch Section */}
+            <section className="mb-20 max-w-4xl mx-auto">
+                 <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-8 md:p-12 text-center shadow-sm">
+                    <p className="text-xl md:text-2xl font-medium text-indigo-900 leading-relaxed">
+                        "Most people get generic, low-quality results from AI because they don't know how to structure their prompts effectively. That's why PRAIA acts as a complete prompt engineering package that uses the Lyra AI engine to automatically search, structure, and optimize your inputs, so you can instantly transform vague ideas into professional-level content and code without needing to be an expert."
+                    </p>
+                </div>
             </section>
 
             {/* Core Pillars Section */}

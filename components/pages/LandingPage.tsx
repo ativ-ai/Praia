@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
@@ -82,8 +81,8 @@ const TestimonialCard: React.FC<{ quote: string; author: string; role: string; a
 const LandingPage: React.FC = () => {
     useSEO({
         title: 'Home',
-        description: 'PRAIA is your all-in-one AI suite. Build apps faster with Vibe Coding, discover expert prompts, and optimize your AI interactions.',
-        keywords: ['AI Suite', 'Prompt Helper', 'App Builder', 'Prompt Library', 'Free AI Tools', 'PRAIA']
+        description: 'PRAIA is the definitive AI suite for prompt engineering. Build apps faster with Vibe Coding, discover expert prompts, and optimize your AI interactions with Lyra.',
+        keywords: ['AI Suite', 'Prompt Helper', 'App Builder', 'Prompt Library', 'Free AI Tools', 'PRAIA', 'Prompt Engineering', 'Gemini Prompts']
     });
 
     return (
@@ -208,10 +207,7 @@ const LandingPage: React.FC = () => {
                 </div>
             </section>
             <footer className="w-full text-center py-4 text-sm text-slate-500 border-t border-slate-200">
-                © {new Date().getFullYear()} - PRAIA by{' '}
-                <a href="https://ativ.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
-                  ativ.ai
-                </a>
+                © {new Date().getFullYear()} - <Link to="/about" className="font-medium text-indigo-600 hover:underline">PRAIA</Link>
             </footer>
             <CookieBanner />
         </div>

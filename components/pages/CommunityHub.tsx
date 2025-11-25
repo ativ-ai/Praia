@@ -16,9 +16,9 @@ const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replac
 
 const CommunityHub: React.FC = () => {
   useSEO({
-    title: 'Prompts Hub',
-    description: 'Discover a vast library of curated AI prompts for marketing, coding, writing, and more. Optimized for Gemini, ChatGPT, and Claude.',
-    keywords: ['AI Prompts', 'Prompt Library', 'Prompt Hub', 'Marketing Prompts', 'Coding Prompts']
+    title: 'Prompt Hub & Library',
+    description: 'Explore our curated library of high-performance AI prompts. Find templates for marketing, coding, writing, and productivity optimized for Gemini and ChatGPT.',
+    keywords: ['AI Prompt Library', 'Prompt Hub', 'Marketing Prompts', 'Coding Prompts', 'Best ChatGPT Prompts', 'Gemini Prompts']
   });
 
   const [searchParams] = useSearchParams();

@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Outlet } from 'react-router';
+import { Link } from 'react-router-dom';
 import Header from './Header';
 import CookieBanner from './CookieBanner';
 
@@ -14,10 +14,7 @@ const Layout: React.FC = () => {
         </main>
       </div>
       <footer className="w-full text-center py-4 mt-8 text-sm text-slate-500 border-t border-slate-200 flex-shrink-0">
-        © {new Date().getFullYear()} - PRAIA by{' '}
-        <a href="https://ativ.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
-          ativ.ai
-        </a>
+        © {new Date().getFullYear()} - <Link to="/about" className="font-medium text-indigo-600 hover:underline">PRAIA</Link>
       </footer>
       <CookieBanner />
     </div>
