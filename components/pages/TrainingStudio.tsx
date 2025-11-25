@@ -5,7 +5,7 @@ import { useTraining } from '../../hooks/useTraining';
 import { useNotification } from '../../hooks/useNotification';
 import { TRAINING_CATEGORIES } from '../../constants';
 import { TrainingModule, TrainingContent, TrainingCategory } from '../../types';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 
 const TrainingStudio: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +19,11 @@ const TrainingStudio: React.FC = () => {
   const [content, setContent] = useState<TrainingContent[]>([{ id: `c-${Date.now()}`, title: '', details: '', example: '' }]);
 
   const pageTitle = id ? 'Edit Training Module' : 'Create New Training Module';
-  usePageTitle(pageTitle);
+  useSEO({
+    title: pageTitle,
+    description: 'Create custom training modules for prompt engineering and AI skills. Build your own curriculum.',
+    keywords: ['Course Creator', 'Training Builder', 'AI Education', 'Learning Modules']
+  });
 
   useEffect(() => {
     if (id) {

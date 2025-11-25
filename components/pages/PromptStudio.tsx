@@ -8,7 +8,7 @@ import { PROMPT_FRAMEWORKS, PROMPT_CATEGORIES } from '../../constants';
 import { PromptFramework, PromptCategory, Prompt } from '../../types';
 import { enhancePrompt, applyFrameworkToPrompt, generateProSpec, generateComponent } from '../../services/geminiService';
 import Spinner from '../shared/Spinner';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 import Icon from '../shared/Icon';
 import Tooltip from '../shared/Tooltip';
 import Modal from '../shared/Modal';
@@ -193,7 +193,12 @@ const PromptStudio: React.FC = () => {
   const [resultGeneratedText, setResultGeneratedText] = useState<string | null>(null);
   const [resultType, setResultType] = useState<'Enhancement' | 'Framework' | 'PRO-SPEC' | 'Component' | null>(null);
   
-  usePageTitle(id ? 'Edit Prompt' : 'Prompt Studio');
+  const pageTitle = id && !location.state?.prompt ? 'Edit Prompt' : 'Prompt Studio';
+  useSEO({
+    title: pageTitle,
+    description: 'Craft, optimize, and structure your AI prompts using Lyra AI, PRO-SPEC, and Vibe Coding frameworks. Designed for Gemini, ChatGPT, and Claude.',
+    keywords: ['Prompt Editor', 'Lyra', 'Prompt Optimizer', 'PRO-SPEC', 'Gemini Studio', 'AI Writing Tool', 'System Prompts']
+  });
 
   useEffect(() => {
     const promptFromState = location.state?.prompt as Prompt | undefined;

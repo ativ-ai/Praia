@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 
 const FeaturePillar: React.FC<{ icon: string; title: string; children: React.ReactNode; }> = ({ icon, title, children }) => (
     <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-200 transform hover:-translate-y-1">
@@ -31,7 +31,12 @@ const FAQItem: React.FC<{ question: string; children: React.ReactNode; }> = ({ q
 };
 
 const About: React.FC = () => {
-    usePageTitle('About PRAIA');
+    useSEO({
+        title: 'About PRAIA',
+        description: 'PRAIA (Prompt Research & AI Architect) is the all-in-one suite for discovering, crafting, and optimizing world-class AI prompts. Learn about our PRO-SPEC methodology.',
+        keywords: ['About PRAIA', 'AI Suite', 'Prompt Engineering', 'PRO-SPEC', 'Vibe Coding', 'AI Architect']
+    });
+
     return (
         <div className="max-w-5xl mx-auto animate-fade-in">
             {/* Hero Section */}

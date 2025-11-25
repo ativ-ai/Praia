@@ -5,7 +5,7 @@ import { useAITools } from '../../hooks/useAITools';
 import { useNotification } from '../../hooks/useNotification';
 import { AI_TOOL_CATEGORIES } from '../../constants';
 import { AITool, AIToolCategory } from '../../types';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 
 const ToolStudio: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +20,11 @@ const ToolStudio: React.FC = () => {
   const [iconUrl, setIconUrl] = useState('');
   
   const pageTitle = id ? 'Edit AI Tool' : 'Create New AI Tool';
-  usePageTitle(pageTitle);
+  useSEO({
+    title: pageTitle,
+    description: 'Add or edit AI tools in your personal PRAIA library. Categorize and organize your favorite AI applications.',
+    keywords: ['AI Tool Builder', 'Manage Tools', 'AI Library', 'Tool Organizer']
+  });
 
   useEffect(() => {
     if (id) {

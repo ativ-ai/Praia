@@ -6,12 +6,17 @@ import { useAITools } from '../../hooks/useAITools';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
 import AIToolCard from '../shared/AIToolCard';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 import { AIToolCategory } from '../../types';
 import Icon from '../shared/Icon';
 
 const AIToolsHub: React.FC = () => {
-  usePageTitle('AI Tools Hub');
+  useSEO({
+    title: 'AI Tools Hub',
+    description: 'Explore the definitive directory of AI tools for every task. Filter by category to find the perfect AI solution.',
+    keywords: ['AI Tools Directory', 'Best AI Apps', 'Generative AI Tools', 'Productivity', 'Coding Assistants', 'Design Tools']
+  });
+
   const [selectedCategory, setSelectedCategory] = useState<AIToolCategory | 'All'>('All');
   
   const { user } = useAuth();

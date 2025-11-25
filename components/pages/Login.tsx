@@ -3,10 +3,15 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router';
 import Spinner from '../shared/Spinner';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 
 const Login: React.FC = () => {
-  usePageTitle('Login');
+  useSEO({
+    title: 'Login',
+    description: 'Sign in to PRAIA to access your personal prompt library, saved tools, and training modules.',
+    keywords: ['Login', 'Sign In', 'PRAIA Account', 'User Authentication']
+  });
+
   const { user, login, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

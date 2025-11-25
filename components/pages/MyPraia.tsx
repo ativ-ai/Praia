@@ -14,14 +14,19 @@ import Spinner from '../shared/Spinner';
 import Modal from '../shared/Modal';
 import { PUBLIC_TRAINING_MODULES } from '../../constants';
 import { useNotification } from '../../hooks/useNotification';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 import Icon from '../shared/Icon';
 import Tooltip from '../shared/Tooltip';
 
 type PraiaItem = (Prompt & { itemType: 'prompt' }) | (AITool & { itemType: 'tool' }) | (TrainingModule & { itemType: 'training' });
 
 const MyPraia: React.FC = () => {
-  usePageTitle('My PRAIA');
+  useSEO({
+    title: 'My PRAIA',
+    description: 'Manage your personal library of AI prompts, tools, and training modules. Organize with folders and track version history.',
+    keywords: ['My Library', 'Saved Prompts', 'AI Toolkit', 'Personal Dashboard', 'Prompt Manager']
+  });
+
   const { prompts, folders, loading: promptsLoading, getPromptsInFolder, createFolder, deletePrompt, toggleFavoritePrompt, movePrompt, getPromptHistory, revertToVersion } = usePrompts();
   const { tools, loading: toolsLoading, toggleFavoriteTool, deleteTool } = useAITools();
   const { trainings, loading: trainingsLoading, toggleFavoriteTraining, deleteTraining } = useTraining();

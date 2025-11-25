@@ -1,5 +1,6 @@
+
 import React from 'react';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 
 const CodeBlock: React.FC<{ children: React.ReactNode, language: string }> = ({ children, language }) => (
     <div className="bg-slate-900 rounded-lg my-4 overflow-hidden">
@@ -11,7 +12,12 @@ const CodeBlock: React.FC<{ children: React.ReactNode, language: string }> = ({ 
 );
 
 const ApiDocs: React.FC = () => {
-    usePageTitle('API Documentation');
+    useSEO({
+        title: 'API Documentation',
+        description: 'Integrate the Praia prompt engine into your applications. Programmatically transform structured inputs into fully-formed prompts using our API.',
+        keywords: ['AI API', 'Prompt Generation API', 'Praia Docs', 'Developers', 'REST API']
+    });
+
     const exampleRequest = `{
   "framework": "R-T-F",
   "data": {

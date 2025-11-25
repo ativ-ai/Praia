@@ -120,7 +120,10 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" onClick={closeAllMenus} className="flex-shrink-0 flex items-center gap-3">
               <span className="text-4xl" role="img" aria-label="logo">🏖️</span>
-              <span className="text-3xl font-black text-slate-900 tracking-tighter">PRAIA</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-black text-slate-900 tracking-tighter leading-none">PRAIA</span>
+                <span className="text-[0.65rem] sm:text-xs font-bold text-indigo-600 tracking-wide uppercase">Prompt Research & AI Architect</span>
+              </div>
             </Link>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-2">

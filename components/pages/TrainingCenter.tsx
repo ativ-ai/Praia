@@ -6,12 +6,17 @@ import { useTraining } from '../../hooks/useTraining';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
 import TrainingCard from '../shared/TrainingCard';
-import usePageTitle from '../../hooks/usePageTitle';
+import { useSEO } from '../../hooks/useSEO';
 import { TrainingCategory } from '../../types';
 import Icon from '../shared/Icon';
 
 const TrainingCenter: React.FC = () => {
-  usePageTitle('Training Center');
+  useSEO({
+    title: 'Training Center',
+    description: 'Master prompt engineering with curated training modules. Learn frameworks, system prompting, and Vibe Coding.',
+    keywords: ['AI Training', 'Learn Prompting', 'Prompt Engineering Course', 'Vibe Coding Tutorial', 'AI Education']
+  });
+
   const [selectedCategory, setSelectedCategory] = useState<TrainingCategory | 'All'>('All');
   
   const { user } = useAuth();
