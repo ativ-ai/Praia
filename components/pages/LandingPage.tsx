@@ -145,13 +145,13 @@ const LandingPage: React.FC = () => {
                      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch text-left">
                         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-lg">
                             <h3 className="text-xl font-bold text-red-600 mb-2">Your Idea</h3>
-                            <div className="bg-slate-100 text-slate-700 p-4 rounded-lg font-mono text-sm border border-slate-200 h-full flex items-center">
+                            <div className="bg-slate-100 text-slate-700 p-4 rounded-lg font-mono text-sm border border-slate-200 min-h-[120px] flex items-center justify-center">
                                 write a blog post about dogs
                             </div>
                         </div>
                          <div className="bg-slate-900 p-6 rounded-xl border-2 border-indigo-500 shadow-2xl shadow-indigo-500/20">
                             <h3 className="text-xl font-bold text-indigo-400 mb-2">PRAIA's Structure</h3>
-                             <div className="text-slate-200 p-4 rounded-lg font-mono text-sm h-full space-y-2">
+                             <div className="text-slate-200 p-4 rounded-lg font-mono text-sm space-y-2">
                                 <p className="animate-reveal" style={{ animationDelay: '0.2s' }}><strong className="text-indigo-400">Act as:</strong> Professional pet blogger...</p>
                                 <p className="animate-reveal" style={{ animationDelay: '0.4s' }}><strong className="text-indigo-400">Task:</strong> Write a 500-word blog post...</p>
                                 <p className="animate-reveal" style={{ animationDelay: '0.6s' }}><strong className="text-indigo-400">Format:</strong> A blog post with an intro...</p>
