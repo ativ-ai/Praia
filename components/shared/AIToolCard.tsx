@@ -15,11 +15,38 @@ interface AIToolCardProps {
   isUserOwned?: boolean;
 }
 
+const CATEGORY_EMOJIS: Record<string, string> = {
+  "Image Generation": "🎨",
+  "Video Generation": "🎥",
+  "Writing": "✍️",
+  "Code Assistant": "💻",
+  "Productivity": "⚡",
+  "Audio & Music": "🎵",
+  "Chatbot": "💬",
+  "Marketing": "📢",
+  "Design": "🖌️",
+  "Social Media": "📱",
+  "Research": "🔍",
+  "Presentations": "📊",
+  "Data Analysis": "📈",
+  "3D & VR": "🕶️",
+  "Sales": "💼",
+  "Website": "🌐",
+  "Meeting": "📅",
+  "SEO": "🔎",
+  "Automation": "🤖",
+  "Prompts": "📝",
+  "UI/UX": "✨",
+  "Logo Generator": "🆔"
+};
+
 const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, onClick, onCategoryClick, onDelete, isUserOwned }) => {
   const categoryColorClass = AI_TOOL_CATEGORY_COLORS[tool.category] || 'bg-slate-100 text-slate-800';
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
   
+  const emoji = CATEGORY_EMOJIS[tool.category] || "🤖";
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target as Node)) {
@@ -66,22 +93,24 @@ const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, 
         <div className={`h-1.5 ${categoryColorClass.split(' ')[0]}`}></div>
         <div className="p-5 flex-grow flex flex-col">
             <div className="flex-grow">
-                <div className="flex justify-between items-start gap-4">
-                    <img src={tool.iconUrl} alt={`${tool.name} logo`} className="h-14 w-14 rounded-lg object-cover flex-shrink-0 border border-slate-200 bg-white" />
+                <div className="flex justify-between items-start gap-4 mb-2">
+                    <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
+                        <span className="text-3xl" role="img" aria-label={tool.category}>{emoji}</span>
+                    </div>
                     <div className="flex-grow">
-                        <h3 className="text-lg font-bold text-slate-900 leading-tight">{tool.name}</h3>
+                        <h3 className="text-lg font-bold text-slate-900 leading-tight mb-1">{tool.name}</h3>
                         <Tooltip text={`Filter by Category: ${tool.category}`} position="bottom">
                             <button 
                                 onClick={onCategoryClick ? handleCategoryClick : undefined} 
                                 disabled={!onCategoryClick} 
-                                className={`text-xs font-semibold mt-1.5 px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
+                                className={`text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
                             >
                                 {tool.category}
                             </button>
                         </Tooltip>
                     </div>
                 </div>
-                <p className="text-sm text-slate-600 mt-4 line-clamp-3 leading-relaxed">{tool.description}</p>
+                <p className="text-sm text-slate-600 mt-3 line-clamp-3 leading-relaxed">{tool.description}</p>
             </div>
 
             <div className="mt-4 pt-4 border-t border-slate-200/80 flex justify-between items-center">

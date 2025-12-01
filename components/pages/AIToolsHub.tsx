@@ -12,12 +12,13 @@ import Icon from '../shared/Icon';
 
 const AIToolsHub: React.FC = () => {
   useSEO({
-    title: 'AI Tools Hub',
+    title: 'AI Tools Directory',
     description: 'Explore the definitive directory of AI tools for every task. Filter by category to find the perfect AI solution.',
     keywords: ['AI Tools Directory', 'Best AI Apps', 'Generative AI Tools', 'Productivity', 'Coding Assistants', 'Design Tools']
   });
 
   const [selectedCategory, setSelectedCategory] = useState<AIToolCategory | 'All'>('All');
+  const [searchTerm, setSearchTerm] = useState('');
   
   const { user } = useAuth();
   const { addNotification } = useNotification();
@@ -40,71 +41,121 @@ const AIToolsHub: React.FC = () => {
   };
 
   const filteredTools = useMemo(() => {
-    if (selectedCategory === 'All') {
-      return PUBLIC_AI_TOOLS;
-    }
-    return PUBLIC_AI_TOOLS.filter(tool => tool.category === selectedCategory);
-  }, [selectedCategory]);
+    return PUBLIC_AI_TOOLS.filter(tool => {
+        const matchesCategory = selectedCategory === 'All' || tool.category === selectedCategory;
+        const matchesSearch = searchTerm === '' || 
+                              tool.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              tool.description.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchTerm]);
 
-  const CategoryButton: React.FC<{ category: AIToolCategory | 'All' }> = ({ category }) => {
+  const CategoryPill: React.FC<{ category: AIToolCategory | 'All' }> = ({ category }) => {
     const isActive = selectedCategory === category;
-    const count = category === 'All' ? PUBLIC_AI_TOOLS.length : PUBLIC_AI_TOOLS.filter(t => t.category === category).length;
     
     return (
       <button
         onClick={() => setSelectedCategory(category)}
-        className={`w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+        className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
             isActive
-            ? 'bg-sky-100 text-sky-800'
-            : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-slate-900 text-white border-slate-900 shadow-md transform scale-105'
+            : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
         }`}
       >
-        <span className="truncate">{category}</span>
-        <span className={`px-2 py-0.5 rounded-full text-xs font-mono ${isActive ? 'bg-sky-200 text-sky-900' : 'bg-slate-200 text-slate-700'}`}>{count}</span>
+        {category}
       </button>
     )
   }
 
   return (
-    <div>
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">AI Tools Hub</h1>
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600">Discover the best AI tools for writing, image generation, video, and more.</p>
+    <div className="animate-fade-in min-h-screen">
+      {/* Hero Section */}
+      <div className="relative py-12 md:py-20 text-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/50 to-transparent pointer-events-none"></div>
+        <div className="relative z-10 max-w-3xl mx-auto px-4">
+            <div className="inline-block p-4 bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 animate-bounce-slow">
+                <span className="text-4xl" role="img" aria-label="tools">🛠️</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-4">
+                The AI Tool <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-600">Directory</span>
+            </h1>
+            <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed">
+                Discover the best AI applications for writing, coding, design, and productivity. Curated and categorized for modern builders.
+            </p>
+
+            {/* Search Bar */}
+            <div className="relative max-w-xl mx-auto group">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-fuchsia-500 rounded-2xl opacity-20 group-hover:opacity-30 blur transition-opacity"></div>
+                <div className="relative bg-white rounded-2xl shadow-xl flex items-center p-2 border border-slate-200 focus-within:border-indigo-500 transition-colors">
+                    <span className="material-symbols-outlined text-slate-400 ml-3 text-xl">search</span>
+                    <input
+                        type="text"
+                        placeholder="Search tools (e.g., 'Video Generator', 'Jasper')..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full p-3 bg-transparent border-none focus:ring-0 text-slate-800 placeholder-slate-400 font-medium outline-none"
+                    />
+                     {searchTerm && (
+                        <button 
+                            onClick={() => setSearchTerm('')}
+                            className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-xl block">close</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
       </div>
       
-      <div className="flex flex-col lg:flex-row gap-8">
-        <aside className="lg:w-1/4 xl:w-1/5 flex-shrink-0">
-          <div className="sticky top-24">
-            <h2 className="text-lg font-bold text-slate-800 mb-4 px-3">Categories</h2>
-            <nav className="space-y-1">
-              <CategoryButton category="All" />
-              {AI_TOOL_CATEGORIES.map(cat => <CategoryButton key={cat} category={cat} />)}
-            </nav>
-          </div>
-        </aside>
+      {/* Filters & Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
-        <main className="flex-grow min-w-0">
-          {filteredTools.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredTools.map((tool) => (
-                  <AIToolCard 
-                      key={tool.id}
-                      tool={tool}
-                      onClick={() => navigate(`/detail/tool/${tool.id}`, { state: { background: location } })}
-                      onFavorite={() => handleFavoriteTool(tool.originalPublicId || tool.id)}
-                      isFavorited={isToolFavorited(tool.originalPublicId || tool.id)}
-                      onCategoryClick={handleCategoryClick}
-                    />
-              ))}
+        {/* Category Scroll */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar mask-image-linear-gradient">
+            <CategoryPill category="All" />
+            {AI_TOOL_CATEGORIES.map(cat => <CategoryPill key={cat} category={cat} />)}
+        </div>
+
+        {/* Results Info */}
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-slate-800">
+                {selectedCategory === 'All' ? 'All Tools' : selectedCategory}
+                <span className="ml-2 text-sm font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">{filteredTools.length}</span>
+            </h2>
+        </div>
+
+        {/* Grid */}
+        {filteredTools.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredTools.map((tool) => (
+                <AIToolCard 
+                    key={tool.id}
+                    tool={tool}
+                    onClick={() => navigate(`/detail/tool/${tool.id}`, { state: { background: location } })}
+                    onFavorite={() => handleFavoriteTool(tool.originalPublicId || tool.id)}
+                    isFavorited={isToolFavorited(tool.originalPublicId || tool.id)}
+                    onCategoryClick={handleCategoryClick}
+                />
+            ))}
+        </div>
+        ) : (
+            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
+                <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="material-symbols-outlined text-4xl text-slate-300">search_off</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">No tools found</h3>
+                <p className="text-slate-500 mt-2">
+                    We couldn't find any tools matching "{searchTerm}" in {selectedCategory}.
+                </p>
+                <button 
+                    onClick={() => {setSearchTerm(''); setSelectedCategory('All');}}
+                    className="mt-6 text-indigo-600 font-bold hover:underline"
+                >
+                    Clear all filters
+                </button>
             </div>
-          ) : (
-             <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
-                <Icon name="cpuChip" className="mx-auto h-12 w-12 text-slate-400" />
-                <h3 className="mt-2 text-lg font-medium text-slate-900">No Tools Found</h3>
-                <p className="mt-1 text-sm text-slate-500">There are no tools in this category yet.</p>
-            </div>
-          )}
-        </main>
+        )}
       </div>
     </div>
   );

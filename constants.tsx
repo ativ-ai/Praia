@@ -437,7 +437,7 @@ export const PUBLIC_AI_TOOLS: AITool[] = [
     description: 'OpenAI\'s conversational AI model.',
     link: 'https://chat.openai.com',
     category: 'Chatbot',
-    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg',
+    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png',
     createdAt: Date.now()
   },
   {
@@ -455,7 +455,7 @@ export const PUBLIC_AI_TOOLS: AITool[] = [
     description: 'Google\'s most capable AI model.',
     link: 'https://gemini.google.com',
     category: 'Chatbot',
-    iconUrl: 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg',
+    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png',
     createdAt: Date.now()
   },
    {
@@ -473,7 +473,7 @@ export const PUBLIC_AI_TOOLS: AITool[] = [
     description: 'AI video generation and editing.',
     link: 'https://runwayml.com/',
     category: 'Video Generation',
-    iconUrl: 'https://yt3.googleusercontent.com/ytc/AIdro_k1l0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0=s900-c-k-c0x00ffffff-no-rj',
+    iconUrl: 'https://avatars.githubusercontent.com/u/46606307?s=200&v=4', 
     createdAt: Date.now()
   },
   {
@@ -491,7 +491,7 @@ export const PUBLIC_AI_TOOLS: AITool[] = [
     description: 'AI copywriter for marketing.',
     link: 'https://www.jasper.ai',
     category: 'Marketing',
-    iconUrl: 'https://assets-global.website-files.com/60e5f2de011b86acebc30239/60e5f2de011b86acebc3023e_Jasper%20Logo.svg',
+    iconUrl: 'https://avatars.githubusercontent.com/u/102322472?s=200&v=4',
     createdAt: Date.now()
   },
   {
@@ -500,7 +500,7 @@ export const PUBLIC_AI_TOOLS: AITool[] = [
     description: 'AI design tools suite.',
     link: 'https://www.canva.com/magic-home/',
     category: 'Design',
-    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg',
+    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/512px-Canva_icon_2021.svg.png',
     createdAt: Date.now()
   }
 ];

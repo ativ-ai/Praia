@@ -24,7 +24,7 @@ interface PromptContextType {
   movePrompt: (promptId: string, folderId: string | null) => Promise<void>;
   getPromptsInFolder: (folderId: string | null) => Prompt[];
   getPromptHistory: (historyId: string) => Prompt[];
-  revertToVersion: (versionId: string) => Promise<void>;
+  revertToVersion: (versionId: string) => Promise<Prompt | undefined>;
 }
 
 const PromptContext = createContext<PromptContextType | undefined>(undefined);
@@ -224,12 +224,12 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     return localPrompts.filter(p => p.historyId === historyId).sort((a,b) => b.version - a.version);
   }
 
-  const revertToVersion = async (versionId: string) => {
+  const revertToVersion = async (versionId: string): Promise<Prompt | undefined> => {
       if (!user) throw new Error("User not authenticated");
       const versionToRevert = localPrompts.find(p => p.id === versionId);
       if (!versionToRevert) {
           addNotification('Version not found.', 'error');
-          return;
+          return undefined;
       }
       const { historyId } = versionToRevert;
       const history = localPrompts.filter(p => p.historyId === historyId);
@@ -250,6 +250,7 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setPrompts([...localPrompts]);
       updatePublicPrompts(historyId, newVersion);
       addNotification(`Reverted to version ${versionToRevert.version}.`, 'success');
+      return newVersion;
   };
   
   const latestPrompts = useMemo(() => prompts.filter(p => p.isLatest), [prompts]);

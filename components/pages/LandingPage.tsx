@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
 import CookieBanner from '../shared/CookieBanner';
@@ -17,48 +18,112 @@ const FeatureCard: React.FC<{ icon: string; title: string; children: React.React
 );
 
 const AnimatedPromptBuilder: React.FC = () => {
-    const fullText = `  Act as a: World-class copywriter
-  Task: Write 3 ad headlines for a new sustainable headphone brand
-  Format: A JSON object with a key 'headlines' containing an array of strings`;
+    const fullText = `# PRO-SPEC: SaaS_Launch_Strategy
+> Analyzing Vibe & Intent...
+
+[L1] INTENT:  High-Impact Market Entry
+[L2] ROLE:    Senior Product Architect
+[L3] VIBE:    Professional, Bold, Minimalist
+[L4] TASK:    Generate Landing Page Copy
+
+> Compiling Artifact... Done.`;
+
     const [text, setText] = useState('');
+    const [showCursor, setShowCursor] = useState(true);
 
     useEffect(() => {
         let isMounted = true;
         let currentIndex = 0;
-        setText(''); // Reset text when animation should restart
+        setText(''); 
 
-        // Use a recursive setTimeout for a more robust typing animation
-        // that is less prone to issues with React's component lifecycle (e.g., Strict Mode).
         function type() {
-            if (!isMounted || currentIndex >= fullText.length) {
-                return;
+            if (!isMounted) return;
+            
+            if (currentIndex < fullText.length) {
+                setText(prev => prev + fullText.charAt(currentIndex));
+                currentIndex++;
+                // Vary typing speed slightly for realism
+                setTimeout(type, Math.random() * 30 + 30);
+            } else {
+                // Pause at end then restart
+                setTimeout(() => {
+                    if (isMounted) {
+                        currentIndex = 0;
+                        setText('');
+                        setTimeout(type, 500);
+                    }
+                }, 4000);
             }
-            setText(prevText => prevText + fullText.charAt(currentIndex));
-            currentIndex++;
-            setTimeout(type, 25);
         }
 
-        // Delay starting the animation for a smoother entry effect
-        const startTimeout = setTimeout(type, 500);
+        const startTimeout = setTimeout(type, 800);
+        
+        // Blink cursor interval
+        const cursorInterval = setInterval(() => {
+            setShowCursor(prev => !prev);
+        }, 530);
 
-        // Cleanup function to prevent state updates on an unmounted component
         return () => {
             isMounted = false;
             clearTimeout(startTimeout);
+            clearInterval(cursorInterval);
         };
-    }, [fullText]);
+    }, []);
+
+    // Simple syntax highlighter for the typed text
+    const renderHighlightedText = (content: string) => {
+        return content.split('\n').map((line, i) => {
+            let innerContent: React.ReactNode = line;
+
+            if (line.startsWith('#')) {
+                innerContent = <span className="text-fuchsia-400 font-bold">{line}</span>;
+            } else if (line.startsWith('>')) {
+                innerContent = <span className="text-slate-500 italic">{line}</span>;
+            } else if (line.startsWith('[')) {
+                const parts = line.split(':');
+                if (parts.length > 1) {
+                    innerContent = (
+                        <>
+                            <span className="text-indigo-400 font-bold">{parts[0]}:</span>
+                            <span className="text-emerald-300">{parts.slice(1).join(':')}</span>
+                        </>
+                    );
+                }
+            }
+
+            return (
+                <div key={i} className="min-h-[1.5em]">
+                    {innerContent}
+                </div>
+            );
+        });
+    };
 
     return (
-        <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl max-w-2xl mx-auto mt-16 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-            <div className="p-2 border-b border-slate-700 flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            </div>
-            <div className="p-4 sm:p-6">
-                <pre className="text-indigo-300 text-sm sm:text-base whitespace-pre-wrap animate-typing">
-                    <code>{text}</code>
-                </pre>
+        <div className="relative max-w-2xl mx-auto mt-16 group animate-slide-up" style={{ animationDelay: '0.4s' }}>
+            {/* Glow Effect Background */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            
+            <div className="relative bg-slate-950 ring-1 ring-white/10 rounded-xl shadow-2xl overflow-hidden">
+                {/* Terminal Header */}
+                <div className="bg-slate-900/50 backdrop-blur-md p-3 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-red-500/80 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
+                        <div className="w-3 h-3 rounded-full bg-amber-500/80 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></div>
+                        <div className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+                    </div>
+                    <div className="text-xs font-mono text-slate-500 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm">terminal</span>
+                        praia-architect — v1.0
+                    </div>
+                    <div className="w-10"></div> {/* Spacer for alignment */}
+                </div>
+
+                {/* Terminal Body */}
+                <div className="p-6 sm:p-8 font-mono text-sm sm:text-base text-slate-300 leading-relaxed text-left min-h-[260px]">
+                    {renderHighlightedText(text)}
+                    <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} inline-block w-2.5 h-5 bg-indigo-500 ml-1 align-middle shadow-[0_0_8px_rgba(99,102,241,0.8)]`}></span>
+                </div>
             </div>
         </div>
     );

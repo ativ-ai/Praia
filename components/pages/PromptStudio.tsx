@@ -9,12 +9,11 @@ import { PromptFramework, PromptCategory, Prompt } from '../../types';
 import { enhancePrompt, applyFrameworkToPrompt, generateProSpec, generateComponent } from '../../services/geminiService';
 import Spinner from '../shared/Spinner';
 import { useSEO } from '../../hooks/useSEO';
-import Icon from '../shared/Icon';
-import Tooltip from '../shared/Tooltip';
 import Modal from '../shared/Modal';
+import Tooltip from '../shared/Tooltip';
 import { marked } from 'marked';
 
-// Declare Prism globally to avoid TS errors since we load it via CDN
+// Declare Prism globally
 declare const Prism: any;
 
 const LYRA_ENHANCEMENT_OPTIONS = {
@@ -95,60 +94,11 @@ const LAYER_SNIPPETS = {
 **Task:** `
 };
 
-const SYSTEM_PROMPT_PRESETS = [
-    {
-        name: "ChatGPT Core",
-        description: "The classic 'You are ChatGPT' instruction set, defining knowledge cutoffs and tool usage.",
-        content: `You are ChatGPT, a large language model trained by OpenAI.
-Knowledge cutoff: 2023-10
-Current date: [CURRENT_DATE]
-
-# Tools
-
-## python
-When you send a message containing Python code to python, it will be executed in a stateful Jupyter notebook environment.
-
-## browser
-You have the tool "browser". Use it to browse the web when the user asks for up-to-date information.`
-    },
-    {
-        name: "Claude 3 Artifacts",
-        description: "Structure for Anthropic's Claude, emphasizing XML tags and artifact generation.",
-        content: `The assistant is Claude, created by Anthropic.
-The current date is [CURRENT_DATE].
-
-<claude_info>
-Claude is a helpful, harmless, and honest AI assistant.
-Claude cannot access the internet.
-</claude_info>
-
-<artifacts_info>
-The user can see and interact with "artifacts" (substantial, standalone content) in a separate window.
-When the user asks for code, documents, or SVGs, Claude should wrap them in <antArtifact> tags.
-</artifacts_info>`
-    },
-    {
-        name: "Gemini Persona",
-        description: "Google's helpful assistant persona with multi-modal awareness.",
-        content: `You are Gemini, a large language model trained by Google.
-You are helpful, harmless, and honest.
-You can perceive text, images, and audio.
-When generating code, always prioritize modern best practices and safety.`
-    },
-    {
-        name: "DALL-E 3 Instructor",
-        description: "Guidelines for transforming simple prompts into detailed image descriptions.",
-        content: `1. **Prompt Diversity**: If the user's prompt is simple, embellish it to be more descriptive and artistic.
-2. **Policy Compliance**: Do not generate images of public figures. Do not generate copyright characters.
-3. **Format**: The prompt passed to the model should be a single, detailed paragraph describing the scene, lighting, style, and mood.`
-    }
-];
-
 const PromptStudio: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getPromptById, savePrompt, getPromptHistory } = usePrompts();
+  const { getPromptById, savePrompt, getPromptHistory, revertToVersion } = usePrompts();
   const { addNotification } = useNotification();
   const { user } = useAuth();
 
@@ -164,6 +114,7 @@ const PromptStudio: React.FC = () => {
   // History State
   const [historyId, setHistoryId] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [expandedVersionId, setExpandedVersionId] = useState<string | null>(null);
 
   // UI State
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -176,7 +127,7 @@ const PromptStudio: React.FC = () => {
   const [modalDescription, setModalDescription] = useState('');
 
   // Toolkit state
-  const [activeToolTab, setActiveToolTab] = useState<'enhance' | 'structure' | 'vibe' | 'prospec' | 'system'>('enhance');
+  const [activeToolTab, setActiveToolTab] = useState<'enhance' | 'structure' | 'vibe' | 'prospec'>('enhance');
   const [vibeMode, setVibeMode] = useState<'spec' | 'component'>('spec');
   
   // Processing States
@@ -196,8 +147,8 @@ const PromptStudio: React.FC = () => {
   const pageTitle = id && !location.state?.prompt ? 'Edit Prompt' : 'Prompt Studio';
   useSEO({
     title: pageTitle,
-    description: 'Craft, optimize, and structure your AI prompts using Lyra AI, PRO-SPEC, and Vibe Coding frameworks. Designed for Gemini, ChatGPT, and Claude.',
-    keywords: ['Prompt Editor', 'Lyra', 'Prompt Optimizer', 'PRO-SPEC', 'Gemini Studio', 'AI Writing Tool', 'System Prompts']
+    description: 'Craft, optimize, and structure your AI prompts using Lyra AI, PRO-SPEC, and Vibe Coding frameworks.',
+    keywords: ['Prompt Editor', 'Lyra', 'Prompt Optimizer', 'PRO-SPEC']
   });
 
   useEffect(() => {
@@ -211,7 +162,7 @@ const PromptStudio: React.FC = () => {
         setActiveFramework(promptFromState.framework || null);
         setIsPublic(false);
         setIsCommunityCopy(false);
-        setHistoryId(null); // Copies start with new history
+        setHistoryId(null);
     } else if (id) {
       const promptToEdit = getPromptById(id);
       if (promptToEdit) {
@@ -228,23 +179,18 @@ const PromptStudio: React.FC = () => {
         navigate('/my-praia');
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, location.state, navigate, addNotification]);
 
-  // Highlight Code when entering Preview Mode
   useEffect(() => {
     if (editorView === 'preview' && typeof Prism !== 'undefined') {
         setTimeout(() => Prism.highlightAll(), 0);
     }
   }, [editorView, promptText]);
 
-  // Handle Escape key to enter/exit full screen
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        // Prevent toggling if modals are open
         if (isSaveModalOpen || showHistory) return;
-        
         setIsFullScreen(prev => !prev);
       }
     };
@@ -260,7 +206,7 @@ const PromptStudio: React.FC = () => {
 
   const handleEnhance = async () => {
     if (!promptText.trim()) {
-      addNotification('Please enter some text in the prompt editor to enhance.', 'info');
+      addNotification('Please enter text to enhance.', 'info');
       return;
     }
     clearResult();
@@ -280,11 +226,11 @@ const PromptStudio: React.FC = () => {
 
   const handleApplyFramework = async () => {
     if (!promptText.trim()) {
-      addNotification('Please enter your original prompt text before applying a framework.', 'info');
+      addNotification('Please enter text before applying a framework.', 'info');
       return;
     }
     if (!activeFramework) {
-      addNotification('Please select a framework to apply from the dropdown.', 'info');
+      addNotification('Please select a framework.', 'info');
       return;
     }
     clearResult();
@@ -304,7 +250,7 @@ const PromptStudio: React.FC = () => {
 
   const handleVibeGenerate = async () => {
     if (!promptText.trim()) {
-        addNotification('Please describe your product idea, vibe, or requirements in the editor first.', 'info');
+        addNotification('Please describe your product vibe first.', 'info');
         return;
     }
     clearResult();
@@ -331,7 +277,7 @@ const PromptStudio: React.FC = () => {
   const acceptChanges = () => {
     if (resultGeneratedText) {
         setPromptText(resultGeneratedText);
-        addNotification('Content applied to editor!', 'success');
+        addNotification('Applied to editor!', 'success');
         if (resultType === 'PRO-SPEC' || resultType === 'Component') {
             if (!title) setTitle(resultType === 'PRO-SPEC' ? 'New PRO-SPEC' : 'New Component');
             if (!category) setCategory('Code Generation');
@@ -340,14 +286,6 @@ const PromptStudio: React.FC = () => {
     clearResult();
   }
   
-  const applySystemPreset = (content: string, name: string) => {
-      if (promptText.trim() && !window.confirm("This will replace your current content. Continue?")) return;
-      setPromptText(content);
-      setCategory('System Prompts');
-      setEditorView('write');
-      addNotification(`Loaded ${name} preset.`, 'success');
-  };
-
   const downloadArtifact = () => {
       if (!resultGeneratedText) return;
       const extension = resultType === 'Component' ? 'tsx' : 'md';
@@ -363,16 +301,16 @@ const PromptStudio: React.FC = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      addNotification('File downloaded successfully.', 'success');
+      addNotification('Downloaded.', 'success');
   }
   
   const handleOpenSaveModal = () => {
     if (!promptText.trim()) {
-      addNotification('Please enter some prompt text before saving.', 'error');
+      addNotification('Editor is empty.', 'error');
       return;
     }
     if (!user) {
-        addNotification('Please log in to save your prompt.', 'info');
+        addNotification('Please log in to save.', 'info');
         navigate('/login', { state: { from: location } });
         return;
     }
@@ -384,11 +322,11 @@ const PromptStudio: React.FC = () => {
   const handleFinalSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!modalTitle.trim() || !modalDescription.trim()) {
-      addNotification('Please fill out the Title and Description fields.', 'error');
+      addNotification('Title and Description required.', 'error');
       return;
     }
     
-    const promptToSave: Omit<Prompt, 'id' | 'createdAt' | 'uid' | 'isFavorited' | 'originalPublicId' | 'historyId' | 'version' | 'isLatest'> & { id?: string } = {
+    const promptToSave: any = {
       title: modalTitle,
       promptText,
       description: modalDescription,
@@ -406,7 +344,7 @@ const PromptStudio: React.FC = () => {
   };
 
   const handleLoadVersion = (version: Prompt) => {
-    if (window.confirm('Loading a previous version will replace your current editor content. Are you sure?')) {
+    if (window.confirm('Replace editor content with this version?')) {
         setTitle(version.title);
         setPromptText(version.promptText);
         setDescription(version.description);
@@ -416,23 +354,32 @@ const PromptStudio: React.FC = () => {
         addNotification(`Version ${version.version} loaded.`, 'success');
     }
   };
+
+  const handleRevertVersion = async (version: Prompt) => {
+      if (window.confirm(`Revert to Version ${version.version}? This creates a new latest version.`)) {
+          const newVersion = await revertToVersion(version.id);
+          if (newVersion) {
+              setShowHistory(false);
+              navigate(`/prompt-studio/${newVersion.id}`, { replace: true });
+          }
+      }
+  };
   
-  const insertProSpecTemplate = () => {
-    if (promptText.trim() && !window.confirm("This will replace your current content. Continue?")) return;
-    setPromptText(PRO_SPEC_TEMPLATE);
-    setCategory('Code Generation');
-    setEditorView('write'); // Switch to write mode
-    addNotification('PRO-SPEC template inserted.', 'success');
+  const insertTemplate = (template: string, cat: string = 'Code Generation', msg: string = 'Template inserted.') => {
+    if (promptText.trim() && !window.confirm("Replace current content?")) return;
+    setPromptText(template);
+    if(cat) setCategory(cat as PromptCategory);
+    setActiveFramework(null); // Clear framework selection as we are inserting a template
+    setEditorView('write');
+    addNotification(msg, 'success');
   };
 
-  const insertVibeTemplate = () => {
-    if (promptText.trim() && !window.confirm("This will replace your current content. Continue?")) return;
-    setPromptText(VIBE_TEMPLATE);
-    setEditorView('write');
-    addNotification('Vibe Coding template inserted.', 'success');
-  };
-  
   const insertLayerSnippet = (layer: keyof typeof LAYER_SNIPPETS) => {
+      // Check if the layer already exists in the prompt text
+      if (promptText.includes(`[${layer}]`)) {
+          addNotification(`Layer [${layer}] is already present.`, 'info');
+          return;
+      }
       setPromptText(prev => prev + (prev ? '\n\n' : '') + LAYER_SNIPPETS[layer]);
       setEditorView('write');
       addNotification(`${layer} snippet added.`, 'success');
@@ -440,9 +387,12 @@ const PromptStudio: React.FC = () => {
 
   const handleClear = () => {
       if (!promptText) return;
-      if (window.confirm('Are you sure you want to clear the editor? This cannot be undone.')) {
+      if (window.confirm('Clear editor?')) {
           setPromptText('');
-          addNotification('Editor cleared.', 'info');
+          addNotification('Cleared.', 'info');
+          if (textAreaRef.current) {
+              textAreaRef.current.focus();
+          }
       }
   };
 
@@ -450,603 +400,492 @@ const PromptStudio: React.FC = () => {
       try {
           const text = await navigator.clipboard.readText();
           if (!text) return;
-
           if (textAreaRef.current) {
-              const start = textAreaRef.current.selectionStart;
-              const end = textAreaRef.current.selectionEnd;
-              const newText = promptText.substring(0, start) + text + promptText.substring(end);
+              const textarea = textAreaRef.current;
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              // Use textarea.value instead of promptText to avoid stale state in async closure
+              const currentVal = textarea.value;
+              const newText = currentVal.substring(0, start) + text + currentVal.substring(end);
               setPromptText(newText);
-              
-              // Restore cursor position after state update
               setTimeout(() => {
                    if(textAreaRef.current) {
                        const newCursorPos = start + text.length;
-                       textAreaRef.current.selectionStart = newCursorPos;
-                       textAreaRef.current.selectionEnd = newCursorPos;
                        textAreaRef.current.focus();
+                       textAreaRef.current.setSelectionRange(newCursorPos, newCursorPos);
                    }
               }, 0);
-              addNotification('Text pasted!', 'success');
+              addNotification('Pasted!', 'success');
           } else {
               setPromptText(prev => prev + text);
           }
       } catch (err) {
-          addNotification('Failed to paste from clipboard. Please use Ctrl+V.', 'error');
+          addNotification('Paste failed. Use Ctrl+V.', 'error');
       }
   };
-
-  const TabButton: React.FC<{ tabName: 'enhance' | 'structure' | 'vibe' | 'prospec' | 'system'; icon: string; label: string }> = ({ tabName, icon, label }) => (
-    <Tooltip text={`Switch to ${label} Tool`} className="flex-1" position="top">
-      <button
-        type="button"
-        onClick={() => setActiveToolTab(tabName)}
-        className={`w-full flex flex-col sm:flex-row items-center justify-center gap-2 py-3 px-2 font-bold text-sm transition-colors rounded-lg ${activeToolTab === tabName ? 'bg-slate-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-200'}`}
-      >
-        <span className="material-symbols-outlined text-xl">{icon}</span>
-        <span className="hidden sm:inline">{label}</span>
-      </button>
-    </Tooltip>
-  );
 
   const isProcessing = isEnhancing || isApplyingFramework || isVibeProcessing;
 
   return (
-    <div className="max-w-[1600px] mx-auto animate-fade-in h-[calc(100vh-8rem)] flex flex-col">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 flex-shrink-0">
-        <div className="flex items-center gap-4">
-             <div className="bg-indigo-600 text-white p-3 rounded-xl shadow-lg">
-                <span className="material-symbols-outlined text-2xl">design_services</span>
+    <div className={`flex flex-col animate-fade-in ${isFullScreen ? 'fixed inset-0 z-50 bg-slate-50' : 'h-[calc(100vh-8rem)]'}`}>
+      
+      {/* 1. Simplified Top Header */}
+      {!isFullScreen && (
+        <div className="flex justify-between items-center mb-6 flex-shrink-0 px-1">
+            <div className="flex items-center gap-3">
+                <div className="bg-white p-2 rounded-lg shadow-sm border border-slate-200">
+                    <span className="material-symbols-outlined text-indigo-600 text-2xl">design_services</span>
+                </div>
+                <div>
+                    <h1 className="text-xl font-black text-slate-800 tracking-tight leading-none">
+                        {id && !location.state?.prompt ? 'Edit Prompt' : 'Prompt Studio'}
+                    </h1>
+                    <p className="text-xs text-slate-500 font-medium mt-0.5">Design. Refine. Engineer.</p>
+                </div>
             </div>
-            <div>
-                <h1 className="text-2xl font-black text-slate-900">{id && !location.state?.prompt ? 'Edit Prompt' : 'Prompt Studio'}</h1>
-                <p className="text-sm text-slate-500 font-medium">Design, Refine, Engineer.</p>
-            </div>
-        </div>
-        <div className="flex items-center gap-3">
-            {id && !location.state?.prompt && historyId && (
-                <Tooltip text="View Previous Versions">
-                    <button type="button" onClick={() => setShowHistory(true)} className="text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-2">
-                        <span className="material-symbols-outlined text-xl">history</span>
-                        History
+
+            <div className="flex items-center gap-2">
+                 {id && !location.state?.prompt && historyId && (
+                    <Tooltip text="Versions" position="bottom">
+                         <button onClick={() => setShowHistory(true)} className="p-2 text-slate-500 hover:bg-white hover:text-slate-800 rounded-lg transition-all border border-transparent hover:border-slate-200 hover:shadow-sm">
+                            <span className="material-symbols-outlined text-xl">history</span>
+                        </button>
+                    </Tooltip>
+                 )}
+                 <div className="h-6 w-px bg-slate-300 mx-1"></div>
+                 <Tooltip text="Exit Studio" position="bottom">
+                    <button onClick={() => navigate(-1)} className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
+                        Exit
                     </button>
                 </Tooltip>
-            )}
-            <Tooltip text="Return to Previous Page">
-                <button type="button" onClick={() => navigate(-1)} className="text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors">
-                    Exit
-                </button>
-            </Tooltip>
-            <Tooltip text="Save to My Praia">
-                <button type="button" onClick={handleOpenSaveModal} className="bg-slate-900 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg hover:bg-slate-800 transition-all transform hover:scale-105 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">save</span> Save
-                </button>
-            </Tooltip>
+                 <Tooltip text="Save Prompt" position="bottom">
+                    <button onClick={handleOpenSaveModal} className="px-5 py-2 text-sm font-bold bg-slate-900 text-white rounded-lg shadow-md hover:bg-slate-800 hover:shadow-lg transition-all transform hover:scale-[1.02] flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm">save</span> Save
+                    </button>
+                </Tooltip>
+            </div>
         </div>
-      </div>
-      
-      <div className="flex flex-col lg:flex-row gap-6 h-full min-h-0 relative">
+      )}
+
+      {/* 2. Main Work Area */}
+      <div className={`flex-grow flex gap-6 min-h-0 ${isFullScreen ? 'p-4' : ''}`}>
         
-        {/* Main Editor Area */}
-        <div className={`${isFullScreen ? 'fixed inset-0 z-[100] w-full h-full rounded-none' : 'lg:w-2/3 rounded-2xl'} flex flex-col bg-white shadow-sm border border-slate-200 overflow-hidden transition-all duration-300`}>
-            <div className="p-2 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                <div className="flex gap-1">
-                     <Tooltip text="Switch to Edit Mode">
-                        <button 
-                            onClick={() => setEditorView('write')} 
-                            className={`px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors ${editorView === 'write' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
-                        >
-                            <span className="material-symbols-outlined text-lg">edit_note</span> Write
+        {/* LEFT COLUMN: The Document Editor (Canvas) */}
+        <div className={`flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 relative ${isFullScreen ? 'w-full max-w-5xl mx-auto shadow-2xl' : 'w-full lg:w-2/3'}`}>
+            
+            {/* Editor Toolbar */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-white z-10">
+                 <div className="flex bg-slate-100 p-1 rounded-lg">
+                    <button 
+                        onClick={() => setEditorView('write')}
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${editorView === 'write' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                        Write
+                    </button>
+                    <button 
+                        onClick={() => setEditorView('preview')}
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${editorView === 'preview' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                        Preview
+                    </button>
+                 </div>
+
+                 <div className="flex items-center gap-1">
+                    {promptText.length > 0 && (
+                        <span className="text-[10px] font-mono text-slate-400 mr-3 hidden sm:inline-block">{promptText.length} chars</span>
+                    )}
+                    <Tooltip text="Copy" position="bottom">
+                        <button onClick={() => {navigator.clipboard.writeText(promptText); addNotification('Copied', 'success')}} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors">
+                            <span className="material-symbols-outlined text-lg">content_copy</span>
                         </button>
-                     </Tooltip>
-                     <Tooltip text="Preview Markdown Rendering">
-                        <button 
-                            onClick={() => setEditorView('preview')} 
-                            className={`px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors ${editorView === 'preview' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
-                        >
-                            <span className="material-symbols-outlined text-lg">visibility</span> Preview
-                        </button>
-                     </Tooltip>
-                     
-                     {editorView === 'write' && (
+                    </Tooltip>
+                    {editorView === 'write' && (
                         <>
-                            <div className="h-6 w-px bg-slate-200 mx-1 self-center"></div>
-                            <Tooltip text="Clear Editor Content">
-                                <button 
-                                    onClick={handleClear} 
-                                    className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-                                >
-                                    <span className="material-symbols-outlined text-lg">delete</span>
-                                    <span className="hidden xl:inline">Clear</span>
+                            <Tooltip text="Paste" position="bottom">
+                                <button onClick={handlePaste} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
+                                    <span className="material-symbols-outlined text-lg">content_paste</span>
                                 </button>
                             </Tooltip>
-                            <Tooltip text="Paste from Clipboard">
-                                <button 
-                                    onClick={handlePaste} 
-                                    className="px-3 py-1.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                >
-                                    <span className="material-symbols-outlined text-lg">content_paste</span>
-                                    <span className="hidden xl:inline">Paste</span>
+                            <Tooltip text="Clear" position="bottom">
+                                <button onClick={handleClear} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
+                                    <span className="material-symbols-outlined text-lg">delete</span>
                                 </button>
                             </Tooltip>
                         </>
-                     )}
-                </div>
-
-                <div className="flex items-center gap-3 px-2">
-                    <Tooltip text="Insert PRO-SPEC Template">
-                        <button
-                            onClick={insertProSpecTemplate}
-                            className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors"
-                        >
-                            <span className="material-symbols-outlined text-lg text-emerald-600">integration_instructions</span>
-                            <span className="hidden sm:inline">Insert Template</span>
+                    )}
+                    <div className="w-px h-4 bg-slate-200 mx-1"></div>
+                    <Tooltip text={isFullScreen ? "Exit Full Screen" : "Focus Mode"} position="bottom">
+                        <button onClick={() => setIsFullScreen(!isFullScreen)} className={`p-1.5 rounded-md transition-colors ${isFullScreen ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'}`}>
+                            <span className="material-symbols-outlined text-lg">{isFullScreen ? 'close_fullscreen' : 'open_in_full'}</span>
                         </button>
                     </Tooltip>
-                    <div className="h-4 w-px bg-slate-300 mx-1"></div>
-                    {promptText.length > 0 && (
-                        <span className="text-xs font-mono text-slate-400">{promptText.length} chars</span>
-                    )}
-                    <Tooltip text={isFullScreen ? "Exit Full Screen (Esc)" : "Enter Full Screen (Esc)"}>
-                        <button 
-                            onClick={() => setIsFullScreen(!isFullScreen)} 
-                            className="text-slate-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-slate-100"
-                        >
-                            <span className="material-symbols-outlined text-xl block">
-                                {isFullScreen ? 'close_fullscreen' : 'open_in_full'}
-                            </span>
-                        </button>
-                    </Tooltip>
-                </div>
+                 </div>
             </div>
 
-            {editorView === 'write' ? (
-                <textarea 
-                    id="promptText" 
-                    ref={textAreaRef}
-                    value={promptText} 
-                    onChange={e => setPromptText(e.target.value)} 
-                    className={`flex-grow w-full p-6 resize-none focus:outline-none font-mono text-sm text-slate-800 leading-relaxed placeholder-slate-400 ${isFullScreen ? 'md:px-24 lg:px-40 text-base' : ''}`}
-                    placeholder="Start typing your prompt, vibe, or PRO-SPEC here..." 
-                    spellCheck={false}
-                ></textarea>
-            ) : (
-                <div className={`flex-grow w-full p-8 overflow-y-auto prose prose-slate max-w-none ${isFullScreen ? 'md:px-24 lg:px-40' : ''}`}>
-                    {promptText ? (
-                        <div dangerouslySetInnerHTML={{ __html: marked.parse(promptText) }}></div>
-                    ) : (
-                        <p className="text-slate-400 italic text-center mt-10">Nothing to preview yet.</p>
-                    )}
-                </div>
-            )}
-        </div>
-          
-        {/* Tools Sidebar */}
-        <div className="lg:w-1/3 flex flex-col gap-4 min-h-0">
-             {/* Tab Navigation */}
-             <div className="bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 flex gap-1 flex-shrink-0 overflow-x-auto">
-                <TabButton tabName="enhance" icon="auto_awesome" label="Lyra" />
-                <TabButton tabName="structure" icon="dashboard" label="Struct" />
-                <TabButton tabName="vibe" icon="bolt" label="Vibe" />
-                <TabButton tabName="prospec" icon="integration_instructions" label="Spec" />
-                <TabButton tabName="system" icon="settings_system_daydream" label="System" />
-            </div>
-
-            {/* Tool Content */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex-grow flex flex-col overflow-hidden relative">
-                
-                {/* Processing Overlay */}
-                {isProcessing && (
-                    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4 animate-fade-in">
-                        <Spinner size="h-10 w-10" />
-                        <p className="font-bold text-slate-700 animate-pulse">
-                            {isEnhancing ? 'Lyra is optimizing...' : isApplyingFramework ? 'Structuring prompt...' : 'Generating Vibe Artifact...'}
-                        </p>
+            {/* The Canvas */}
+            <div className="flex-grow relative overflow-hidden flex flex-col">
+                {editorView === 'write' ? (
+                    <textarea 
+                        id="promptText" 
+                        ref={textAreaRef}
+                        value={promptText} 
+                        onChange={e => setPromptText(e.target.value)} 
+                        className="flex-grow w-full p-6 sm:p-8 resize-none focus:outline-none font-mono text-sm sm:text-base text-slate-800 leading-relaxed placeholder-slate-300"
+                        placeholder="Start typing your prompt, vibe, or spec here..." 
+                        spellCheck={false}
+                    ></textarea>
+                ) : (
+                    <div className="flex-grow w-full p-6 sm:p-8 overflow-y-auto prose prose-slate prose-sm sm:prose-base max-w-none">
+                        {promptText ? (
+                            <div dangerouslySetInnerHTML={{ __html: marked.parse(promptText) }}></div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-slate-300">
+                                <span className="material-symbols-outlined text-4xl mb-2">visibility_off</span>
+                                <p>No content to preview.</p>
+                            </div>
+                        )}
                     </div>
                 )}
+            </div>
+        </div>
 
-                {/* Tool Panel Content */}
-                {!resultGeneratedText ? (
-                    <div className="p-6 overflow-y-auto">
-                         {activeToolTab === 'enhance' && (
-                            <div className="space-y-6 animate-fade-in">
-                                <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                                    <h3 className="font-bold text-indigo-900 flex items-center gap-2">
-                                        <span className="material-symbols-outlined">auto_awesome</span>
-                                        Lyra Optimizer
-                                    </h3>
-                                    <p className="text-sm text-indigo-700 mt-1">
-                                        Uses the 4-D methodology to clarify intent and maximize AI performance.
-                                    </p>
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Target AI Model</label>
-                                    <select value={enhancementTargetAI} onChange={e => setEnhancementTargetAI(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                        {LYRA_ENHANCEMENT_OPTIONS.targetAI.map(ai => <option key={ai} value={ai}>{ai}</option>)}
-                                    </select>
-                                </div>
+        {/* RIGHT COLUMN: The Toolkit */}
+        {!isFullScreen && (
+            <div className="w-full lg:w-1/3 flex flex-col min-h-0">
+                {/* Toolkit Tabs - Segmented Control Style */}
+                <div className="bg-slate-200 p-1 rounded-xl flex mb-4 overflow-x-auto no-scrollbar">
+                    {[
+                        { id: 'enhance', icon: 'auto_awesome', label: 'Lyra' },
+                        { id: 'structure', icon: 'dashboard', label: 'Struct' },
+                        { id: 'vibe', icon: 'bolt', label: 'Vibe' },
+                        { id: 'prospec', icon: 'integration_instructions', label: 'Spec' },
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveToolTab(tab.id as any)}
+                            className={`flex-1 min-w-[60px] flex items-center justify-center gap-1.5 py-2 px-1 rounded-lg text-xs font-bold transition-all ${
+                                activeToolTab === tab.id 
+                                ? 'bg-white text-slate-900 shadow-sm' 
+                                : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                            <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+                            <span className="hidden xl:inline">{tab.label}</span>
+                        </button>
+                    ))}
+                </div>
 
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Optimization Style</label>
-                                    <select value={enhancementStyle} onChange={e => setEnhancementStyle(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                        {LYRA_ENHANCEMENT_OPTIONS.style.map(s => <option key={s} value={s}>{s}</option>)}
-                                    </select>
-                                </div>
-
-                                <Tooltip text="Optimize Prompt with Lyra">
-                                    <button onClick={handleEnhance} className="w-full bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
-                                        Enhance Prompt
-                                    </button>
-                                </Tooltip>
-                            </div>
-                        )}
-
-                        {activeToolTab === 'structure' && (
-                            <div className="space-y-6 animate-fade-in">
-                                <div className="bg-sky-50 p-4 rounded-xl border border-sky-100">
-                                    <h3 className="font-bold text-sky-900 flex items-center gap-2">
-                                        <span className="material-symbols-outlined">dashboard</span>
-                                        Framework Applicator
-                                    </h3>
-                                    <p className="text-sm text-sky-700 mt-1">
-                                        Rewrite your prompt to fit a proven engineering framework.
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Select Framework</label>
-                                    <select value={activeFramework || ''} onChange={e => setActiveFramework(e.target.value as PromptFramework)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-sky-500 outline-none transition-all">
-                                        <option value="">Choose a framework...</option>
-                                        {Object.entries(PROMPT_FRAMEWORKS).map(([key, fw]) => <option key={key} value={key}>{fw.name}</option>)}
-                                    </select>
-                                    {activeFramework && (
-                                        <p className="mt-3 text-xs text-slate-500 bg-slate-100 p-3 rounded-lg border border-slate-200">
-                                            {PROMPT_FRAMEWORKS[activeFramework].description}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <Tooltip text="Apply selected framework">
-                                    <button onClick={handleApplyFramework} disabled={!activeFramework} className="w-full bg-sky-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-sky-700 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        Apply Structure
-                                    </button>
-                                </Tooltip>
-                            </div>
-                        )}
-
-                        {activeToolTab === 'vibe' && (
-                             <div className="space-y-6 animate-fade-in">
-                                <div className="bg-fuchsia-50 p-4 rounded-xl border border-fuchsia-100">
-                                    <h3 className="font-bold text-fuchsia-900 flex items-center gap-2">
-                                        <span className="material-symbols-outlined">bolt</span>
-                                        Vibe Coding Studio
-                                    </h3>
-                                    <p className="text-sm text-fuchsia-700 mt-1">
-                                        Transform abstract feelings and high-level requirements into concrete code artifacts using Praia's generative frameworks.
-                                    </p>
-                                </div>
-
-                                {/* Guide Section */}
-                                <div className="bg-white border border-slate-200 rounded-lg p-4 text-sm text-slate-600">
-                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-base text-fuchsia-500">school</span>
-                                        How to Vibe Code
-                                    </h4>
-                                    <ol className="list-decimal list-inside space-y-1 mb-3 ml-1">
-                                        <li>Define the <strong>Vibe</strong> & <strong>Intent</strong> in the editor.</li>
-                                        <li>Select your target <strong>Artifact</strong> below.</li>
-                                        <li>Generate production-ready output.</li>
-                                    </ol>
-                                    <Tooltip text="Load Vibe Template">
-                                        <button 
-                                            onClick={insertVibeTemplate} 
-                                            className="text-xs font-bold text-fuchsia-600 hover:text-fuchsia-800 hover:bg-fuchsia-50 px-2 py-1 rounded transition-colors flex items-center gap-1"
-                                        >
-                                            <span className="material-symbols-outlined text-sm">add_circle</span> Insert Vibe Template
-                                        </button>
-                                    </Tooltip>
-                                </div>
-
-                                {/* Mode Switcher */}
-                                <div className="flex p-1 bg-slate-100 rounded-lg">
-                                    <Tooltip text="Generate Technical Spec" className="flex-1">
-                                        <button 
-                                            onClick={() => setVibeMode('spec')}
-                                            className={`w-full py-2 text-xs font-bold rounded-md transition-all ${vibeMode === 'spec' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                                        >
-                                            Feature Spec
-                                        </button>
-                                    </Tooltip>
-                                    <Tooltip text="Generate React Component" className="flex-1">
-                                        <button 
-                                            onClick={() => setVibeMode('component')}
-                                            className={`w-full py-2 text-xs font-bold rounded-md transition-all ${vibeMode === 'component' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                                        >
-                                            UI Component
-                                        </button>
-                                    </Tooltip>
-                                </div>
-
-                                <div className="text-sm text-slate-600 space-y-2 px-1">
-                                     {vibeMode === 'spec' ? (
-                                         <>
-                                            <p className="font-medium text-slate-800">AI-Generated 5-Layer Spec</p>
-                                            <p className="text-xs text-slate-500">Automatically writes a full PRO-SPEC based on your vibe description.</p>
-                                         </>
-                                     ) : (
-                                         <>
-                                            <p className="font-medium text-slate-800">AI-Generated Component</p>
-                                            <p className="text-xs text-slate-500">Automatically codes a React+Tailwind component based on your description.</p>
-                                         </>
-                                     )}
-                                </div>
-
-                                <Tooltip text={`Generate ${vibeMode === 'spec' ? 'Specification' : 'Component'}`}>
-                                    <button onClick={handleVibeGenerate} className={`w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 ${vibeMode === 'spec' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-fuchsia-600 hover:bg-fuchsia-700'}`}>
-                                        {vibeMode === 'spec' ? 'Generate Spec' : 'Generate Component'}
-                                    </button>
-                                </Tooltip>
-                            </div>
-                        )}
-
-                        {activeToolTab === 'prospec' && (
-                            <div className="space-y-6 animate-fade-in">
-                                <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-                                    <h3 className="font-bold text-emerald-900 flex items-center gap-2">
-                                        <span className="material-symbols-outlined">integration_instructions</span>
-                                        PRO-SPEC Builder
-                                    </h3>
-                                    <p className="text-sm text-emerald-700 mt-1">
-                                        Manually architect rigorous specs to eliminate AI context drift.
-                                    </p>
-                                </div>
-                                
-                                <div className="space-y-3">
-                                    <Tooltip text="Start with a full template">
-                                        <button onClick={insertProSpecTemplate} className="w-full text-left px-4 py-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-indigo-300 transition-all flex items-center gap-3 group">
-                                            <div className="bg-indigo-100 text-indigo-600 p-2 rounded-md group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                                                <span className="material-symbols-outlined text-lg">description</span>
-                                            </div>
-                                            <div>
-                                                <div className="font-bold text-sm text-slate-800">Insert Full Template</div>
-                                                <div className="text-xs text-slate-500">Start a fresh PRO-SPEC file</div>
-                                            </div>
-                                        </button>
-                                    </Tooltip>
-                                    
-                                    <h4 className="text-xs font-bold text-slate-400 uppercase pt-2 px-1">Append Layers</h4>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {Object.entries(LAYER_SNIPPETS).map(([key, snippet]) => (
-                                            <Tooltip key={key} text={`Append ${key} Layer`} position="left">
-                                                <button 
-                                                    onClick={() => insertLayerSnippet(key as keyof typeof LAYER_SNIPPETS)}
-                                                    className="w-full text-left px-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded hover:bg-white hover:border-slate-300 transition-colors flex items-center justify-between"
-                                                >
-                                                    <span>{key} Snippet</span>
-                                                    <span className="material-symbols-outlined text-slate-400 text-sm">add</span>
-                                                </button>
-                                            </Tooltip>
-                                        ))}
-                                    </div>
-                                </div>
-                                
-                                <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600 border border-slate-200 mt-4">
-                                    <strong>Tip:</strong> Use the "Preview" tab in the editor to see syntax highlighting for your code blocks.
-                                </div>
-                            </div>
-                        )}
-
-                        {activeToolTab === 'system' && (
-                            <div className="space-y-6 animate-fade-in">
-                                <div className="bg-slate-100 p-4 rounded-xl border border-slate-200">
-                                    <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                                        <span className="material-symbols-outlined">settings_system_daydream</span>
-                                        System Prompt Presets
-                                    </h3>
-                                    <p className="text-sm text-slate-700 mt-1">
-                                        Load reverse-engineered system instructions from major AI models to study or modify them.
-                                    </p>
-                                </div>
-                                
-                                <div className="space-y-3">
-                                    {SYSTEM_PROMPT_PRESETS.map((preset) => (
-                                        <Tooltip key={preset.name} text={`Load ${preset.name} Preset`} position="left">
-                                            <button 
-                                                onClick={() => applySystemPreset(preset.content, preset.name)}
-                                                className="w-full text-left p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group"
-                                            >
-                                                <div className="flex justify-between items-center mb-1">
-                                                    <span className="font-bold text-slate-800">{preset.name}</span>
-                                                    <span className="material-symbols-outlined text-slate-400 group-hover:text-indigo-600">download</span>
-                                                </div>
-                                                <p className="text-xs text-slate-500 line-clamp-2">{preset.description}</p>
-                                            </button>
-                                        </Tooltip>
-                                    ))}
-                                </div>
-                                
-                                <div className="bg-yellow-50 p-3 rounded-lg text-xs text-yellow-800 border border-yellow-200 mt-4">
-                                    <strong>Note:</strong> These are simulations based on public research and reverse engineering. They are useful for understanding how to structure your own system instructions.
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    // Result View
-                    <div className="flex flex-col h-full animate-slide-up">
-                        <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/80 backdrop-blur-sm sticky top-0 z-10">
-                            <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                                <span className={`material-symbols-outlined ${resultType === 'PRO-SPEC' ? 'text-emerald-600' : resultType === 'Component' ? 'text-fuchsia-600' : resultType === 'Framework' ? 'text-sky-600' : 'text-indigo-600'}`}>
-                                    {resultType === 'PRO-SPEC' ? 'integration_instructions' : resultType === 'Component' ? 'code_blocks' : resultType === 'Framework' ? 'dashboard' : 'auto_awesome'}
-                                </span>
-                                {resultType} Result
-                            </h3>
-                            <Tooltip text="Close Result View">
-                                <button onClick={clearResult} className="p-1.5 hover:bg-slate-200 rounded-full text-slate-500 transition-colors">
-                                    <span className="material-symbols-outlined">close</span>
-                                </button>
-                            </Tooltip>
+                {/* Toolkit Panel */}
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex-grow flex flex-col overflow-hidden relative">
+                    
+                    {/* Processing Overlay */}
+                    {isProcessing && (
+                        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-3 animate-fade-in">
+                            <Spinner size="h-8 w-8" />
+                            <p className="text-xs font-bold text-indigo-600 uppercase tracking-wide animate-pulse">
+                                {isEnhancing ? 'Lyra Optimizing...' : isApplyingFramework ? 'Structuring...' : 'Generating...'}
+                            </p>
                         </div>
-                        
-                        <div className="flex-grow overflow-y-auto p-4 space-y-4">
-                            {resultType !== 'PRO-SPEC' && resultType !== 'Component' && (
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <h4 className="text-xs font-bold text-slate-400 uppercase mb-2">Original</h4>
-                                        <div className="p-3 bg-slate-100 rounded-lg text-xs text-slate-500 border border-slate-200 font-mono h-full overflow-y-auto max-h-96">
-                                            {resultOriginalText}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xs font-bold text-indigo-600 uppercase mb-2">Optimized</h4>
-                                        <div className={`p-3 rounded-lg text-xs border font-mono h-full overflow-y-auto max-h-96 whitespace-pre-wrap ${resultType === 'Framework' ? 'bg-sky-50 text-sky-900 border-sky-100' : 'bg-indigo-50 text-indigo-900 border-indigo-100'}`}>
-                                            {resultGeneratedText}
-                                        </div>
-                                    </div>
+                    )}
+
+                    {/* Result View (Overlay Mode) */}
+                    {resultGeneratedText ? (
+                        <div className="absolute inset-0 bg-white z-40 flex flex-col animate-slide-up">
+                            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-indigo-50">
+                                <h3 className="text-sm font-bold text-indigo-900 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-lg">check_circle</span>
+                                    Result Ready
+                                </h3>
+                                <div className="flex gap-2">
+                                     <button onClick={downloadArtifact} className="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded-md" title="Download">
+                                        <span className="material-symbols-outlined text-lg">download</span>
+                                    </button>
+                                    <button onClick={clearResult} className="p-1.5 text-slate-400 hover:bg-white rounded-md">
+                                        <span className="material-symbols-outlined text-lg">close</span>
+                                    </button>
                                 </div>
-                            )}
+                            </div>
                             
-                            {(resultType === 'PRO-SPEC' || resultType === 'Component') && (
-                                <div>
-                                    <div className="flex justify-between items-end mb-2">
-                                        <h4 className={`text-xs font-bold uppercase ${resultType === 'PRO-SPEC' ? 'text-emerald-600' : 'text-fuchsia-600'}`}>
-                                            {resultType === 'PRO-SPEC' ? 'Generated Spec' : 'Generated Code'}
-                                        </h4>
-                                        <Tooltip text="Download File">
-                                            <button 
-                                                onClick={downloadArtifact} 
-                                                className={`text-xs font-bold flex items-center gap-1 px-2 py-1 rounded transition-colors ${resultType === 'PRO-SPEC' ? 'text-emerald-600 hover:text-emerald-700 bg-emerald-50' : 'text-fuchsia-600 hover:text-fuchsia-700 bg-fuchsia-50'}`}
-                                            >
-                                                <span className="material-symbols-outlined text-sm">download</span> Download .{resultType === 'Component' ? 'tsx' : 'md'}
-                                            </button>
-                                        </Tooltip>
+                            <div className="flex-grow overflow-hidden flex flex-col">
+                                {resultType === 'Enhancement' || resultType === 'Framework' ? (
+                                    <div className="grid grid-rows-2 h-full divide-y divide-slate-100">
+                                        <div className="p-4 overflow-y-auto bg-slate-50">
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Original</div>
+                                            <div className="text-xs text-slate-500 font-mono whitespace-pre-wrap">{resultOriginalText}</div>
+                                        </div>
+                                        <div className="p-4 overflow-y-auto bg-white">
+                                            <div className="text-[10px] font-bold text-emerald-600 uppercase mb-2">Optimized Output</div>
+                                            <div className="text-xs text-slate-800 font-mono whitespace-pre-wrap">{resultGeneratedText}</div>
+                                        </div>
                                     </div>
-                                    <div className={`p-4 rounded-lg text-sm leading-relaxed whitespace-pre-wrap font-mono border shadow-inner ${resultType === 'PRO-SPEC' ? 'bg-emerald-50 text-emerald-900 border-emerald-100' : 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-100'}`}>
-                                        {resultGeneratedText}
+                                ) : (
+                                    <div className="p-4 overflow-y-auto h-full bg-slate-50">
+                                        <div className="text-xs text-slate-800 font-mono whitespace-pre-wrap">{resultGeneratedText}</div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
 
-                        <div className="p-4 border-t border-slate-100 bg-white flex gap-3">
-                             <Tooltip text="Discard Results" className="flex-1">
-                                <button onClick={clearResult} className="w-full py-3 px-4 font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                            <div className="p-4 border-t border-slate-100 flex gap-3 bg-white">
+                                <button onClick={clearResult} className="flex-1 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
                                     Discard
                                 </button>
-                             </Tooltip>
-                             <Tooltip text="Apply to Editor" className="flex-[2]">
-                                <button onClick={acceptChanges} className={`w-full py-3 px-4 font-bold text-white rounded-lg shadow-md transition-transform hover:scale-[1.02] active:scale-95 ${resultType === 'PRO-SPEC' ? 'bg-emerald-600 hover:bg-emerald-700' : resultType === 'Component' ? 'bg-fuchsia-600 hover:bg-fuchsia-700' : resultType === 'Framework' ? 'bg-sky-600 hover:bg-sky-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
-                                    Use in Editor
+                                <button onClick={acceptChanges} className="flex-[2] py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md transition-colors">
+                                    Apply to Editor
                                 </button>
-                             </Tooltip>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
-        </div>
+                    ) : (
+                        // Tool Content
+                        <div className="p-5 overflow-y-auto flex-grow custom-scrollbar">
+                            
+                            {/* Lyra */}
+                            {activeToolTab === 'enhance' && (
+                                <div className="space-y-5 animate-fade-in">
+                                    <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 p-4 rounded-xl">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="bg-indigo-100 p-1.5 rounded-md text-indigo-600">
+                                                <span className="material-symbols-outlined text-lg">auto_awesome</span>
+                                            </div>
+                                            <h3 className="font-bold text-indigo-900 text-sm">Lyra Optimizer</h3>
+                                        </div>
+                                        <p className="text-xs text-indigo-700/80 leading-relaxed">
+                                            Enhance prompt clarity using the 4-D methodology.
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Target Model</label>
+                                            <select value={enhancementTargetAI} onChange={e => setEnhancementTargetAI(e.target.value)} className="w-full text-sm p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                                                {LYRA_ENHANCEMENT_OPTIONS.targetAI.map(ai => <option key={ai} value={ai}>{ai}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Style</label>
+                                            <select value={enhancementStyle} onChange={e => setEnhancementStyle(e.target.value)} className="w-full text-sm p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                                                {LYRA_ENHANCEMENT_OPTIONS.style.map(s => <option key={s} value={s}>{s}</option>)}
+                                            </select>
+                                        </div>
+                                        <button onClick={handleEnhance} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+                                            <span>Enhance Prompt</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
+                            {/* Structure */}
+                            {activeToolTab === 'structure' && (
+                                <div className="space-y-5 animate-fade-in">
+                                    <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 p-4 rounded-xl">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="bg-sky-100 p-1.5 rounded-md text-sky-600">
+                                                <span className="material-symbols-outlined text-lg">dashboard</span>
+                                            </div>
+                                            <h3 className="font-bold text-sky-900 text-sm">Framework Applicator</h3>
+                                        </div>
+                                        <p className="text-xs text-sky-700/80 leading-relaxed">
+                                            Restructure content into a proven engineering format.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Framework</label>
+                                        <select value={activeFramework || ''} onChange={e => setActiveFramework(e.target.value as PromptFramework)} className="w-full text-sm p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none">
+                                            <option value="">Select a framework...</option>
+                                            {Object.entries(PROMPT_FRAMEWORKS).map(([key, fw]) => <option key={key} value={key}>{fw.name}</option>)}
+                                        </select>
+                                    </div>
+                                    
+                                    {activeFramework && (
+                                        <div className="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                            {PROMPT_FRAMEWORKS[activeFramework].description}
+                                        </div>
+                                    )}
+
+                                    <button onClick={handleApplyFramework} disabled={!activeFramework} className="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        Apply Structure
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Vibe */}
+                            {activeToolTab === 'vibe' && (
+                                <div className="space-y-5 animate-fade-in">
+                                     <div className="bg-gradient-to-br from-fuchsia-50 to-white border border-fuchsia-100 p-4 rounded-xl">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="bg-fuchsia-100 p-1.5 rounded-md text-fuchsia-600">
+                                                <span className="material-symbols-outlined text-lg">bolt</span>
+                                            </div>
+                                            <h3 className="font-bold text-fuchsia-900 text-sm">Vibe Coding</h3>
+                                        </div>
+                                        <p className="text-xs text-fuchsia-700/80 leading-relaxed">
+                                            Turn abstract vibes into concrete code artifacts.
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-lg">
+                                        <button onClick={() => setVibeMode('spec')} className={`py-1.5 text-xs font-bold rounded-md transition-all ${vibeMode === 'spec' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500'}`}>
+                                            Spec
+                                        </button>
+                                        <button onClick={() => setVibeMode('component')} className={`py-1.5 text-xs font-bold rounded-md transition-all ${vibeMode === 'component' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500'}`}>
+                                            Component
+                                        </button>
+                                    </div>
+
+                                    <button onClick={() => insertTemplate(VIBE_TEMPLATE, 'Code Generation', 'Vibe Template Added')} className="w-full py-2 border border-dashed border-fuchsia-300 text-fuchsia-600 hover:bg-fuchsia-50 rounded-lg text-xs font-bold transition-colors">
+                                        + Insert Vibe Template
+                                    </button>
+
+                                    <button onClick={handleVibeGenerate} className="w-full py-3 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95">
+                                        Generate {vibeMode === 'spec' ? 'Spec' : 'Component'}
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Pro-Spec */}
+                            {activeToolTab === 'prospec' && (
+                                <div className="space-y-5 animate-fade-in">
+                                    <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 p-4 rounded-xl">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="bg-emerald-100 p-1.5 rounded-md text-emerald-600">
+                                                <span className="material-symbols-outlined text-lg">integration_instructions</span>
+                                            </div>
+                                            <h3 className="font-bold text-emerald-900 text-sm">PRO-SPEC Builder</h3>
+                                        </div>
+                                        <p className="text-xs text-emerald-700/80 leading-relaxed">
+                                            Construct rigorous 5-layer specs to prevent context drift.
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Layers</div>
+                                        {Object.entries(LAYER_SNIPPETS).map(([key, snippet]) => {
+                                            const isPresent = promptText.includes(`[${key}]`);
+                                            return (
+                                                <button 
+                                                    key={key}
+                                                    onClick={() => !isPresent && insertLayerSnippet(key as any)}
+                                                    disabled={isPresent}
+                                                    className={`w-full flex items-center justify-between px-3 py-2 border rounded-lg text-xs font-bold transition-all ${
+                                                        isPresent 
+                                                        ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' 
+                                                        : 'bg-slate-50 hover:bg-white border-slate-100 hover:border-slate-300 text-slate-600 hover:text-emerald-700'
+                                                    }`}
+                                                >
+                                                    <span>{key} Snippet</span>
+                                                    <span className="material-symbols-outlined text-sm opacity-50">
+                                                        {isPresent ? 'check' : 'add'}
+                                                    </span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    )}
+                </div>
+            </div>
+        )}
       </div>
 
-      {/* Save Modal */}
+      {/* Modals */}
       <Modal isOpen={isSaveModalOpen} onClose={() => setIsSaveModalOpen(false)} title="Save to My Praia">
         <form onSubmit={handleFinalSave} className="space-y-6">
           <div>
-            <label htmlFor="modalTitle" className="block text-sm font-bold text-slate-700 mb-1">
-              Title <span className="text-red-500">*</span>
-            </label>
+            <label htmlFor="modalTitle" className="block text-sm font-bold text-slate-700 mb-1">Title</label>
             <input 
               type="text" 
               id="modalTitle" 
               value={modalTitle} 
               onChange={e => setModalTitle(e.target.value)} 
-              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" 
+              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all" 
               required 
-              placeholder="e.g., Creative Blog Post Ideas"
+              placeholder="e.g., Blog Post Generator"
             />
           </div>
-          
           <div>
-            <label htmlFor="modalDescription" className="block text-sm font-bold text-slate-700 mb-1">
-              Description <span className="text-red-500">*</span>
-            </label>
+            <label htmlFor="modalDescription" className="block text-sm font-bold text-slate-700 mb-1">Description</label>
             <textarea 
               id="modalDescription" 
               value={modalDescription} 
               onChange={e => setModalDescription(e.target.value)} 
               rows={3} 
-              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" 
+              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all" 
               required
-              placeholder="e.g., Generates 10 SEO-friendly titles for a blog about sustainable fashion."
+              placeholder="What does this prompt do?"
             ></textarea>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label htmlFor="category" className="block text-sm font-bold text-slate-700 mb-1">Category</label>
-                    <select id="category" value={category} onChange={e => setCategory(e.target.value as PromptCategory)} className="w-full p-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Category</label>
+                    <select value={category} onChange={e => setCategory(e.target.value as PromptCategory)} className="w-full p-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
                         {PROMPT_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                     </select>
                 </div>
                  <div>
-                    <label className="flex items-center text-sm font-bold text-slate-700 mb-1">Share to Community 
-                        <Tooltip text="Public prompts are visible to everyone in the Community Hub.">
-                            <span className="material-symbols-outlined text-slate-400 hover:text-slate-600 cursor-help text-base transition-colors ml-1">help</span>
-                        </Tooltip>
-                    </label>
-                    <div className={`mt-2 flex items-center p-2 rounded-lg ${isCommunityCopy ? 'bg-slate-100' : ''}`}>
-                        <label htmlFor="isPublic" className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                id="isPublic"
-                                checked={isPublic}
-                                onChange={e => setIsPublic(e.target.checked)}
-                                className="sr-only peer"
-                                disabled={isCommunityCopy}
-                            />
-                            <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
-                            <span className="ml-3 text-sm font-medium text-slate-600">{isPublic ? 'Public' : 'Private'}</span>
-                        </label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Visibility</label>
+                    <div className={`flex items-center p-3 border border-slate-300 rounded-lg ${isCommunityCopy ? 'bg-slate-100' : 'bg-white'}`}>
+                        <input
+                            type="checkbox"
+                            checked={isPublic}
+                            onChange={e => setIsPublic(e.target.checked)}
+                            className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                            disabled={isCommunityCopy}
+                        />
+                        <span className="ml-2 text-sm text-slate-700">Public (Community Hub)</span>
                     </div>
-                     {isCommunityCopy && <p className="text-xs text-slate-500 mt-1">Community copies cannot be re-shared publicly.</p>}
                 </div>
             </div>
             
-          <div className="flex justify-end gap-3 pt-6 border-t border-slate-200">
-            <button type="button" onClick={() => setIsSaveModalOpen(false)} className="bg-white text-slate-700 font-bold py-3 px-6 rounded-lg hover:bg-slate-100 border border-slate-300 transition-colors">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+            <button type="button" onClick={() => setIsSaveModalOpen(false)} className="px-5 py-2.5 rounded-lg text-slate-600 font-bold hover:bg-slate-100 transition-colors">
                 Cancel
             </button>
-            <button type="submit" className="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-[1.02]">
+            <button type="submit" className="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
                 Save Prompt
             </button>
           </div>
         </form>
       </Modal>
       
-      {/* History Modal */}
       <Modal isOpen={showHistory} onClose={() => setShowHistory(false)} title="Version History">
         <div className="space-y-3">
             {historyId && getPromptHistory(historyId).map((v) => (
-                <div key={v.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <div>
-                        <div className="font-bold text-slate-800 flex items-center">
-                            Version {v.version} 
-                            {v.isLatest && <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded-full ml-2 font-semibold uppercase tracking-wide">Latest</span>}
+                <div key={v.id} className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                        className="flex justify-between items-center p-3 cursor-pointer hover:bg-slate-100"
+                        onClick={() => setExpandedVersionId(expandedVersionId === v.id ? null : v.id)}
+                    >
+                        <div>
+                            <div className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                <span className={`material-symbols-outlined text-slate-400 text-base transition-transform ${expandedVersionId === v.id ? 'rotate-90' : ''}`}>chevron_right</span>
+                                v{v.version} 
+                                {v.isLatest && <span className="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase">Latest</span>}
+                            </div>
+                            <div className="text-[10px] text-slate-500 mt-0.5 pl-6">{new Date(v.createdAt).toLocaleString()}</div>
                         </div>
-                        <div className="text-xs text-slate-500 mt-0.5">{new Date(v.createdAt).toLocaleString()}</div>
+                        <div className="flex gap-2">
+                            <button onClick={(e) => { e.stopPropagation(); handleLoadVersion(v); }} className="px-3 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors">
+                                Load
+                            </button>
+                            {!v.isLatest && (
+                                <button onClick={(e) => { e.stopPropagation(); handleRevertVersion(v); }} className="px-3 py-1 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors">
+                                    Revert
+                                </button>
+                            )}
+                        </div>
                     </div>
-                    <Tooltip text="Load this version">
-                        <button onClick={() => handleLoadVersion(v)} className="px-4 py-2 text-sm font-bold text-indigo-700 bg-white border border-indigo-100 hover:bg-indigo-50 rounded-lg shadow-sm transition-colors">
-                            Load
-                        </button>
-                    </Tooltip>
+                    {expandedVersionId === v.id && (
+                        <div className="p-3 bg-white border-t border-slate-200 text-xs font-mono text-slate-600 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                            {v.promptText}
+                        </div>
+                    )}
                 </div>
             ))}
             {(!historyId || getPromptHistory(historyId || '').length === 0) && (
-                <div className="text-center py-8">
-                     <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">history_toggle_off</span>
-                     <p className="text-slate-500">No history available for this prompt.</p>
-                </div>
+                <p className="text-center text-slate-500 py-4 text-sm">No history available.</p>
             )}
         </div>
       </Modal>

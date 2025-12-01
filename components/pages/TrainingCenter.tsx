@@ -10,6 +10,27 @@ import { useSEO } from '../../hooks/useSEO';
 import { TrainingCategory } from '../../types';
 import Icon from '../shared/Icon';
 
+interface CategoryPillProps {
+  category: TrainingCategory | 'All';
+  isSelected: boolean;
+  onClick: (category: TrainingCategory | 'All') => void;
+}
+
+const CategoryPill: React.FC<CategoryPillProps> = ({ category, isSelected, onClick }) => {
+  return (
+    <button
+      onClick={() => onClick(category)}
+      className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
+          isSelected
+          ? 'bg-slate-900 text-white border-slate-900 shadow-md transform scale-105'
+          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+      }`}
+    >
+      {category}
+    </button>
+  );
+};
+
 const TrainingCenter: React.FC = () => {
   useSEO({
     title: 'Training Center',
@@ -18,6 +39,7 @@ const TrainingCenter: React.FC = () => {
   });
 
   const [selectedCategory, setSelectedCategory] = useState<TrainingCategory | 'All'>('All');
+  const [searchTerm, setSearchTerm] = useState('');
   
   const { user } = useAuth();
   const { addNotification } = useNotification();
@@ -37,56 +59,92 @@ const TrainingCenter: React.FC = () => {
   
   const handleCategoryClick = (category: TrainingCategory) => {
     setSelectedCategory(category);
+    setSearchTerm('');
   };
 
   const filteredModules = useMemo(() => {
     const sortedModules = [...PUBLIC_TRAINING_MODULES].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-    if (selectedCategory === 'All') {
-      return sortedModules;
-    }
-    return sortedModules.filter(module => module.category === selectedCategory);
-  }, [selectedCategory]);
-
-  const CategoryButton: React.FC<{ category: TrainingCategory | 'All' }> = ({ category }) => {
-    const isActive = selectedCategory === category;
-    const count = category === 'All' ? PUBLIC_TRAINING_MODULES.length : PUBLIC_TRAINING_MODULES.filter(m => m.category === category).length;
-    
-    return (
-      <button
-        onClick={() => setSelectedCategory(category)}
-        className={`w-full flex justify-between items-center px-4 py-2.5 text-sm font-bold rounded-lg transition-colors text-left ${
-            isActive
-            ? 'bg-indigo-600 text-white shadow-md'
-            : 'text-slate-700 hover:bg-slate-200'
-        }`}
-      >
-        <span className="truncate">{category}</span>
-        <span className={`px-2 py-0.5 rounded-full text-xs font-mono ${isActive ? 'bg-indigo-400 text-white' : 'bg-slate-200 text-slate-700'}`}>{count}</span>
-      </button>
-    )
-  }
+    return sortedModules.filter(module => {
+        const matchesCategory = selectedCategory === 'All' || module.category === selectedCategory;
+        const matchesSearch = searchTerm === '' || 
+                              module.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              module.description.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchTerm]);
 
   return (
-    <div className="animate-fade-in">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-6xl">Training Center</h1>
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed">Level up your AI skills with curated guides and best practices.</p>
+    <div className="animate-fade-in min-h-screen">
+      {/* Hero Section */}
+      <div className="relative py-12 md:py-20 text-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent pointer-events-none"></div>
+        <div className="relative z-10 max-w-3xl mx-auto px-4">
+             <div className="inline-block p-3 bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 animate-bounce-slow">
+                <span className="text-4xl" role="img" aria-label="student">👨‍🎓</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-4">
+                The Training <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">Center</span>
+            </h1>
+            <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed">
+                Level up your AI skills. From prompting fundamentals to advanced Vibe Coding architectures.
+            </p>
+
+            {/* Search Bar */}
+            <div className="relative max-w-xl mx-auto group">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl opacity-20 group-hover:opacity-30 blur transition-opacity"></div>
+                <div className="relative bg-white rounded-2xl shadow-xl flex items-center p-2 border border-slate-200 focus-within:border-emerald-500 transition-colors">
+                    <span className="material-symbols-outlined text-slate-400 ml-3 text-xl">search</span>
+                    <input
+                        type="text"
+                        placeholder="Search modules (e.g., 'Vibe Coding', 'Basics')..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full p-3 bg-transparent border-none focus:ring-0 text-slate-800 placeholder-slate-400 font-medium outline-none"
+                    />
+                     {searchTerm && (
+                        <button 
+                            onClick={() => setSearchTerm('')}
+                            className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-xl block">close</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
       </div>
       
-      <div className="flex flex-col lg:flex-row gap-12">
-        <aside className="lg:w-1/4 xl:w-1/5 flex-shrink-0">
-          <div className="sticky top-28 bg-white p-4 rounded-xl shadow-lg border border-slate-200">
-            <h2 className="text-lg font-bold text-slate-800 mb-4 px-3">Categories</h2>
-            <nav className="space-y-1.5">
-              <CategoryButton category="All" />
-              {TRAINING_CATEGORIES.map(cat => <CategoryButton key={cat} category={cat} />)}
-            </nav>
-          </div>
-        </aside>
+      {/* Content Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
-        <main className="flex-grow min-w-0">
-          {filteredModules.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
+        {/* Category Scroll */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar mask-image-linear-gradient">
+            <CategoryPill 
+                category="All" 
+                isSelected={selectedCategory === 'All'} 
+                onClick={setSelectedCategory} 
+            />
+            {TRAINING_CATEGORIES.map(cat => (
+                <CategoryPill 
+                    key={cat} 
+                    category={cat} 
+                    isSelected={selectedCategory === cat} 
+                    onClick={setSelectedCategory} 
+                />
+            ))}
+        </div>
+
+        {/* Results Info */}
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-slate-800">
+                {selectedCategory === 'All' ? 'All Modules' : selectedCategory}
+                <span className="ml-2 text-sm font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">{filteredModules.length}</span>
+            </h2>
+        </div>
+        
+        {/* Grid */}
+        {filteredModules.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredModules.map((module) => (
                   <TrainingCard 
                       key={module.id}
@@ -98,14 +156,23 @@ const TrainingCenter: React.FC = () => {
                     />
               ))}
             </div>
-          ) : (
-             <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
-                <Icon name="academicCap" className="mx-auto h-12 w-12 text-slate-400" />
-                <h3 className="mt-2 text-lg font-medium text-slate-900">No Training Modules Found</h3>
-                <p className="mt-1 text-sm text-slate-500">There are no training modules in this category yet.</p>
+        ) : (
+             <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
+                <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Icon name="academicCap" className="h-10 w-10 text-slate-300" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">No training modules found</h3>
+                <p className="text-slate-500 mt-2">
+                   We couldn't find anything matching "{searchTerm}" in {selectedCategory}.
+                </p>
+                <button 
+                    onClick={() => {setSearchTerm(''); setSelectedCategory('All');}}
+                    className="mt-6 text-emerald-600 font-bold hover:underline"
+                >
+                    Clear all filters
+                </button>
             </div>
-          )}
-        </main>
+        )}
       </div>
     </div>
   );

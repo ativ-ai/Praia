@@ -1,29 +1,39 @@
-
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSEO } from '../../hooks/useSEO';
 import mermaid from 'mermaid';
 
-// Reusing existing CodeBlock, Section, ConceptCard components
-const CodeBlock: React.FC<{ children: React.ReactNode, language?: string, title?: string }> = ({ children, language = 'text', title }) => (
-    <div className="bg-slate-900 rounded-lg my-6 overflow-hidden border border-slate-700 shadow-md group relative">
-        {(title || language) && (
-            <div className="bg-slate-800 text-slate-300 text-xs font-sans px-4 py-2 flex justify-between items-center border-b border-slate-700">
-                <span className="font-bold">{title || 'Code'}</span>
-                <span className="uppercase opacity-70">{language}</span>
-            </div>
-        )}
-        <pre className={`text-slate-200 p-4 overflow-x-auto text-sm font-mono leading-relaxed`}>
-            <code>{children}</code>
-        </pre>
-        <button 
-            onClick={() => navigator.clipboard.writeText(children?.toString() || '')}
-            className="absolute top-10 right-4 text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
-            title="Copy to clipboard"
-        >
-            <span className="material-symbols-outlined text-lg">content_copy</span>
-        </button>
-    </div>
-);
+const CodeBlock: React.FC<{ children: React.ReactNode, language?: string, title?: string }> = ({ children, language = 'text', title }) => {
+    const [copied, setCopied] = useState(false);
+    
+    const handleCopy = () => {
+        navigator.clipboard.writeText(String(children));
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className="bg-slate-900 rounded-lg my-6 overflow-hidden border border-slate-700 shadow-md group relative">
+            {(title || language) && (
+                <div className="bg-slate-800 text-slate-300 text-xs font-sans px-4 py-2 flex justify-between items-center border-b border-slate-700">
+                    <span className="font-bold">{title || 'Code'}</span>
+                    <span className="uppercase opacity-70">{language}</span>
+                </div>
+            )}
+            <pre className={`text-slate-200 p-4 overflow-x-auto text-sm font-mono leading-relaxed`}>
+                <code>{children}</code>
+            </pre>
+            <button 
+                onClick={handleCopy}
+                className="absolute top-10 right-4 text-slate-400 hover:text-white transition-colors p-1 rounded-md bg-slate-800/50 backdrop-blur opacity-0 group-hover:opacity-100"
+                title="Copy to clipboard"
+            >
+                <span className="material-symbols-outlined text-lg">
+                    {copied ? 'check' : 'content_copy'}
+                </span>
+            </button>
+        </div>
+    );
+};
 
 const Section: React.FC<{ title: string, children: React.ReactNode, id?: string }> = ({ title, children, id }) => (
     <section className="mb-20 scroll-mt-28" id={id}>
@@ -38,14 +48,14 @@ const Section: React.FC<{ title: string, children: React.ReactNode, id?: string 
 );
 
 const ConceptCard: React.FC<{ title: string, icon: string, children: React.ReactNode }> = ({ title, icon, children }) => (
-    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow hover:border-indigo-200">
+    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow hover:border-indigo-200 flex flex-col h-full">
         <div className="flex items-center gap-3 mb-3">
             <div className="bg-indigo-50 p-2 rounded-lg text-indigo-600">
                 <span className="material-symbols-outlined text-2xl">{icon}</span>
             </div>
             <h3 className="text-xl font-bold text-slate-900">{title}</h3>
         </div>
-        <p className="text-slate-600 text-sm leading-relaxed">{children}</p>
+        <p className="text-slate-600 text-sm leading-relaxed flex-grow">{children}</p>
     </div>
 );
 
@@ -75,7 +85,7 @@ const MermaidDiagram: React.FC<{ chart: string }> = ({ chart }) => {
                     elementRef.current.innerHTML = svg;
                 } catch (error) {
                     console.error('Failed to render mermaid chart', error);
-                    elementRef.current.innerHTML = '<p class="text-red-500">Failed to render diagram.</p>';
+                    elementRef.current.innerHTML = '<p class="text-red-500 text-sm p-4">Failed to render diagram.</p>';
                 }
             }
         };
@@ -102,7 +112,6 @@ const ProSpecFramework: React.FC = () => {
       A[💡 Raw Idea / The Vibe] -->|Input| B(Prompt Studio);
       B -->|Select Tool| C{PRO-SPEC Builder};
       
-      %% Corrected order: Define L1 first to ensure it renders on the Left (for Top-Down graphs, siblings often render Left-to-Right)
       C --> D[L1: Intent & Vibe];
       C --> E[L2: Contracts];
       C --> F[L3: Security];
@@ -165,7 +174,7 @@ const ProSpecFramework: React.FC = () => {
                     
                     {/* 1. The Manifesto */}
                     <Section title="The 3 Laws of Vibe Architecture" id="manifesto">
-                        <div className="grid md:grid-cols-3 gap-4">
+                        <div className="grid md:grid-cols-3 gap-6">
                             <ConceptCard title="Law I: The Artifact is Sovereign" icon="description">
                                 The Markdown file is the single source of truth. If it's not in the Spec, it doesn't exist. We iterate on the file, never on the chat history.
                             </ConceptCard>
@@ -180,50 +189,53 @@ const ProSpecFramework: React.FC = () => {
 
                     {/* 2. The Problem */}
                     <Section title="Escaping The Chat Trap" id="chat-trap">
+                        <p className="mb-6">
+                            Most developers fall into the "Chat Loop"—an endless cycle of requesting tweaks that eventually causes the AI to forget previous instructions. PRO-SPEC solves this by decoupling intent from implementation.
+                        </p>
                         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                             <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200">
                                 <div className="p-8 bg-slate-50">
-                                    <h3 className="text-red-600 font-bold mb-4 flex items-center gap-2">
+                                    <h3 className="text-red-600 font-bold mb-6 flex items-center gap-2">
                                         <span className="material-symbols-outlined">chat_error</span>
                                         The Chat Loop (Fragile)
                                     </h3>
-                                    <ul className="space-y-4 text-sm text-slate-600">
-                                        <li className="flex gap-3">
-                                            <span className="text-red-400 font-mono">01.</span>
+                                    <ul className="space-y-6 text-sm text-slate-600">
+                                        <li className="flex gap-4">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs">1</span>
                                             <span>You ask for a button. AI builds it.</span>
                                         </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-red-400 font-mono">02.</span>
-                                            <span>You ask to make it blue. AI builds it blue, but forgets it needed to be accessible.</span>
+                                        <li className="flex gap-4">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs">2</span>
+                                            <span>You ask to make it blue. AI builds it blue, but <strong>forgets it needed to be accessible.</strong></span>
                                         </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-red-400 font-mono">03.</span>
-                                            <span>You ask for an icon. AI adds an icon, but reverts it to the default color.</span>
+                                        <li className="flex gap-4">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs">3</span>
+                                            <span>You ask for an icon. AI adds an icon, but <strong>reverts it to the default color.</strong></span>
                                         </li>
-                                        <li className="mt-4 pt-4 border-t border-slate-200 font-bold text-red-700">
+                                        <li className="mt-4 pt-4 border-t border-slate-200 font-bold text-red-700 bg-red-50 p-2 rounded-lg text-center">
                                             Result: Context Drift & Regression.
                                         </li>
                                     </ul>
                                 </div>
-                                <div className="p-8 bg-indigo-50/50">
-                                    <h3 className="text-indigo-600 font-bold mb-4 flex items-center gap-2">
+                                <div className="p-8 bg-indigo-50/30">
+                                    <h3 className="text-indigo-600 font-bold mb-6 flex items-center gap-2">
                                         <span className="material-symbols-outlined">file_present</span>
                                         The Artifact Loop (Robust)
                                     </h3>
-                                    <ul className="space-y-4 text-sm text-slate-700">
-                                        <li className="flex gap-3">
-                                            <span className="text-indigo-400 font-mono">01.</span>
+                                    <ul className="space-y-6 text-sm text-slate-700">
+                                        <li className="flex gap-4">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">1</span>
                                             <span>You define the button in <strong>L2</strong> and its style in <strong>L1</strong> (The Vibe).</span>
                                         </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-indigo-400 font-mono">02.</span>
-                                            <span>You generate the component.</span>
+                                        <li className="flex gap-4">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">2</span>
+                                            <span>You generate the component from the Artifact.</span>
                                         </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-indigo-400 font-mono">03.</span>
+                                        <li className="flex gap-4">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">3</span>
                                             <span>You want it blue? You update <strong>L1</strong> in the Spec and re-generate.</span>
                                         </li>
-                                        <li className="mt-4 pt-4 border-t border-indigo-200 font-bold text-indigo-700">
+                                        <li className="mt-4 pt-4 border-t border-indigo-200 font-bold text-indigo-700 bg-indigo-50 p-2 rounded-lg text-center">
                                             Result: Deterministic Evolution.
                                         </li>
                                     </ul>
@@ -249,7 +261,7 @@ const ProSpecFramework: React.FC = () => {
                         <div className="space-y-8">
                             {/* L1 */}
                             <div className="relative pl-8 border-l-4 border-slate-200 hover:border-fuchsia-500 transition-colors group">
-                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-fuchsia-500 rounded-full z-10"></div>
+                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-fuchsia-500 rounded-full z-10 transition-colors"></div>
                                 <h3 className="text-2xl font-bold text-slate-900 group-hover:text-fuchsia-600 transition-colors">
                                     L1: The Soul (Product Intent)
                                 </h3>
@@ -263,7 +275,7 @@ const ProSpecFramework: React.FC = () => {
 
                             {/* L2 */}
                             <div className="relative pl-8 border-l-4 border-slate-200 hover:border-sky-500 transition-colors group">
-                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-sky-500 rounded-full z-10"></div>
+                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-sky-500 rounded-full z-10 transition-colors"></div>
                                 <h3 className="text-2xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
                                     L2: The Skeleton (Contracts)
                                 </h3>
@@ -274,7 +286,7 @@ const ProSpecFramework: React.FC = () => {
 
                             {/* L3 */}
                             <div className="relative pl-8 border-l-4 border-slate-200 hover:border-amber-500 transition-colors group">
-                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-amber-500 rounded-full z-10"></div>
+                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-amber-500 rounded-full z-10 transition-colors"></div>
                                 <h3 className="text-2xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors flex items-center gap-3">
                                     L3: The Shield (Security)
                                     <span className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">Critical</span>
@@ -286,7 +298,7 @@ const ProSpecFramework: React.FC = () => {
 
                             {/* L4 */}
                             <div className="relative pl-8 border-l-4 border-slate-200 hover:border-emerald-500 transition-colors group">
-                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-emerald-500 rounded-full z-10"></div>
+                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-emerald-500 rounded-full z-10 transition-colors"></div>
                                 <h3 className="text-2xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
                                     L4: The Engine (UX & Perf)
                                 </h3>
@@ -297,7 +309,7 @@ const ProSpecFramework: React.FC = () => {
 
                             {/* L5 */}
                             <div className="relative pl-8 border-l-4 border-slate-200 hover:border-indigo-500 transition-colors group">
-                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-indigo-500 rounded-full z-10"></div>
+                                <div className="absolute -left-3 top-0 w-6 h-6 bg-white border-2 border-slate-300 group-hover:border-indigo-500 rounded-full z-10 transition-colors"></div>
                                 <h3 className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
                                     L5: The Command (Orchestration)
                                 </h3>
