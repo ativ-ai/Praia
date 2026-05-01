@@ -109,7 +109,7 @@ const ProSpecFramework: React.FC = () => {
 
     const workflowDiagram = `
     graph TD
-      A[💡 Raw Idea / The Vibe] -->|Input| B(Prompt Studio);
+      A[Raw Idea / The Vibe] -->|Input| B(Prompt Studio);
       B -->|Select Tool| C{PRO-SPEC Builder};
       
       C --> D[L1: Intent & Vibe];
@@ -120,8 +120,8 @@ const ProSpecFramework: React.FC = () => {
       
       D & E & F & G & H --> I[Artifact: .prospec.md];
       
-      I -->|Feed to AI| J[🤖 AI Code Generator];
-      J -->|Output| K[🚀 Production Code];
+      I -->|Feed to AI| J[AI Code Generator];
+      J -->|Output| K[Production Code];
       K -->|Review| L{Matches Spec?};
       L -->|No| M[Update Spec Layers];
       M --> I;

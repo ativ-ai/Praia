@@ -23,16 +23,11 @@ export const PROMPT_CATEGORIES: PromptCategory[] = [
 ];
 
 export const TRAINING_CATEGORIES: TrainingCategory[] = [
-  "Fundamentals", "Advanced Techniques", "Business & Marketing",
-  "Frameworks & Patterns", "Education", "Creative & Media", "Career", "System Architecture"
+  "Fundamentals", "Advanced", "Frameworks", "Masterclass", "Code & Tech"
 ];
 
 export const AI_TOOL_CATEGORIES: AIToolCategory[] = [
-  "Image Generation", "Video Generation", "Writing", "Code Assistant",
-  "Productivity", "Audio & Music", "Chatbot", "Marketing", "Design",
-  "Social Media", "Research", "Presentations", "Data Analysis", "3D & VR",
-  "Sales", "Website", "Meeting", "SEO", "Automation", "Prompts", "UI/UX",
-  "Logo Generator"
+  "Assistant", "Image", "Video", "Audio", "Writing", "Productivity", "Design", "Education", "Code", "Lifestyle", "Business", "Gaming"
 ];
 
 export const PROMPT_CATEGORY_COLORS: Record<string, string> = {
@@ -91,56 +86,89 @@ export const ITEM_TYPE_COLORS = {
 };
 
 export const AI_TOOL_CATEGORY_COLORS: Record<string, string> = {
-  "Image Generation": "bg-purple-100 text-purple-800",
-  "Writing": "bg-blue-100 text-blue-800",
+  "Assistant": "bg-indigo-100 text-indigo-800",
+  "Image": "bg-fuchsia-100 text-fuchsia-800",
+  "Video": "bg-rose-100 text-rose-800",
+  "Audio": "bg-orange-100 text-orange-800",
+  "Writing": "bg-amber-100 text-amber-800",
   "Productivity": "bg-green-100 text-green-800",
-  "Video Generation": "bg-red-100 text-red-800",
-  "Code Assistant": "bg-slate-100 text-slate-800",
-  "Audio & Music": "bg-orange-100 text-orange-800",
-  "Chatbot": "bg-indigo-100 text-indigo-800",
-  "Marketing": "bg-pink-100 text-pink-800",
-  "Design": "bg-teal-100 text-teal-800",
-  "Social Media": "bg-cyan-100 text-cyan-800",
-  "Research": "bg-yellow-100 text-yellow-800",
-  "Presentations": "bg-rose-100 text-rose-800",
-  "Data Analysis": "bg-sky-100 text-sky-800",
-  "3D & VR": "bg-violet-100 text-violet-800",
-  "Sales": "bg-emerald-100 text-emerald-800",
-  "Website": "bg-gray-100 text-gray-800",
-  "Meeting": "bg-lime-100 text-lime-800",
-  "SEO": "bg-amber-100 text-amber-800",
-  "Automation": "bg-fuchsia-100 text-fuchsia-800",
-  "Prompts": "bg-zinc-100 text-zinc-800",
-  "UI/UX": "bg-blue-50 text-blue-900",
-  "Logo Generator": "bg-red-50 text-red-900"
+  "Design": "bg-cyan-100 text-cyan-800",
+  "Education": "bg-yellow-100 text-yellow-800",
+  "Code": "bg-slate-800 text-slate-100",
+  "Lifestyle": "bg-pink-100 text-pink-800",
+  "Business": "bg-sky-100 text-sky-800",
+  "Gaming": "bg-emerald-100 text-emerald-800"
 };
 
 export const TRAINING_CATEGORY_COLORS: Record<string, string> = {
   "Fundamentals": "bg-blue-100 text-blue-800",
-  "Advanced Techniques": "bg-purple-100 text-purple-800",
-  "Business & Marketing": "bg-green-100 text-green-800",
-  "Frameworks & Patterns": "bg-orange-100 text-orange-800",
-  "Education": "bg-yellow-100 text-yellow-800",
-  "Creative & Media": "bg-pink-100 text-pink-800",
-  "Career": "bg-slate-100 text-slate-800",
-  "System Architecture": "bg-slate-800 text-slate-100"
+  "Advanced": "bg-purple-100 text-purple-800",
+  "Frameworks": "bg-orange-100 text-orange-800",
+  "Masterclass": "bg-emerald-100 text-emerald-800",
+  "Code & Tech": "bg-slate-800 text-slate-100"
+};
+
+export const TRAINING_CATEGORY_DISPLAY: Record<string, string> = {
+  "Fundamentals": "Fundamentals",
+  "Advanced": "Advanced",
+  "Frameworks": "Frameworks",
+  "Masterclass": "Masterclass",
+  "Code & Tech": "Code & Tech"
+};
+
+export const TRAINING_CATEGORY_ICONS: Record<string, string> = {
+  "Fundamentals": "menu_book",
+  "Advanced": "bolt",
+  "Frameworks": "extension",
+  "Masterclass": "diamond",
+  "Code & Tech": "terminal"
+};
+
+export const AI_TOOL_CATEGORY_DISPLAY: Record<string, string> = {
+  "Assistant": "Assistant",
+  "Image": "Image",
+  "Video": "Video",
+  "Audio": "Audio",
+  "Writing": "Writing",
+  "Productivity": "Productivity",
+  "Design": "Design",
+  "Education": "Education",
+  "Code": "Code",
+  "Lifestyle": "Lifestyle",
+  "Business": "Business",
+  "Gaming": "Gaming"
+};
+
+export const AI_TOOL_CATEGORY_ICONS: Record<string, string> = {
+  "Assistant": "smart_toy",
+  "Image": "image",
+  "Video": "movie",
+  "Audio": "music_note",
+  "Writing": "edit_note",
+  "Productivity": "task_alt",
+  "Design": "palette",
+  "Education": "school",
+  "Code": "code",
+  "Lifestyle": "self_improvement",
+  "Business": "business_center",
+  "Gaming": "sports_esports"
 };
 
 export const PROMPT_ICONS: Record<string, string> = {
-  "lyra-prompt-optimizer": "✨",
-  "awesome-prompt-0": "🐧",
-  "awesome-prompt-1": "🌍",
-  "awesome-prompt-2": "👔",
-  "awesome-prompt-3": "💻",
-  "awesome-prompt-4": "📊",
-  "awesome-prompt-5": "🗣️",
-  "awesome-prompt-6": "🎓",
-  "awesome-prompt-7": "🗺️",
-  "awesome-prompt-8": "📖",
-  "awesome-prompt-9": "✍️",
-  "sys-chatgpt": "🟢",
-  "sys-claude": "🟣",
-  "sys-dalle": "🎨",
+  "lyra-prompt-optimizer": "auto_awesome",
+  "awesome-prompt-0": "terminal",
+  "awesome-prompt-1": "language",
+  "awesome-prompt-2": "work",
+  "awesome-prompt-3": "code",
+  "awesome-prompt-4": "analytics",
+  "awesome-prompt-5": "chat",
+  "awesome-prompt-6": "school",
+  "awesome-prompt-7": "map",
+  "awesome-prompt-8": "book",
+  "awesome-prompt-9": "draw",
+  "sys-chatgpt": "smart_toy",
+  "sys-claude": "model_training",
+  "sys-dalle": "brush",
 };
 
 export const PROMPT_FRAMEWORKS: Record<PromptFramework, PromptFrameworkDefinition> = {
@@ -431,78 +459,66 @@ export const PUBLIC_PROMPTS: Prompt[] = [
 ];
 
 export const PUBLIC_AI_TOOLS: AITool[] = [
-  {
-    id: 'tool-chatgpt',
-    name: 'ChatGPT',
-    description: 'OpenAI\'s conversational AI model.',
-    link: 'https://chat.openai.com',
-    category: 'Chatbot',
-    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png',
-    createdAt: Date.now()
-  },
-  {
-    id: 'tool-midjourney',
-    name: 'Midjourney',
-    description: 'Generates images from text prompts.',
-    link: 'https://www.midjourney.com',
-    category: 'Image Generation',
-    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Midjourney_Emblem.png',
-    createdAt: Date.now()
-  },
-  {
-    id: 'tool-gemini',
-    name: 'Gemini',
-    description: 'Google\'s most capable AI model.',
-    link: 'https://gemini.google.com',
-    category: 'Chatbot',
-    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png',
-    createdAt: Date.now()
-  },
-   {
-    id: 'tool-notion-ai',
-    name: 'Notion AI',
-    description: 'Integrated AI writing assistant in Notion.',
-    link: 'https://www.notion.so/product/ai',
-    category: 'Writing',
-    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',
-    createdAt: Date.now()
-  },
-  {
-    id: 'tool-runway',
-    name: 'Runway Gen-2',
-    description: 'AI video generation and editing.',
-    link: 'https://runwayml.com/',
-    category: 'Video Generation',
-    iconUrl: 'https://avatars.githubusercontent.com/u/46606307?s=200&v=4', 
-    createdAt: Date.now()
-  },
-  {
-    id: 'tool-github-copilot',
-    name: 'GitHub Copilot',
-    description: 'AI pair programmer.',
-    link: 'https://github.com/features/copilot',
-    category: 'Code Assistant',
-    iconUrl: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
-    createdAt: Date.now()
-  },
-  {
-    id: 'tool-jasper',
-    name: 'Jasper',
-    description: 'AI copywriter for marketing.',
-    link: 'https://www.jasper.ai',
-    category: 'Marketing',
-    iconUrl: 'https://avatars.githubusercontent.com/u/102322472?s=200&v=4',
-    createdAt: Date.now()
-  },
-  {
-    id: 'tool-canva',
-    name: 'Canva Magic Studio',
-    description: 'AI design tools suite.',
-    link: 'https://www.canva.com/magic-home/',
-    category: 'Design',
-    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/512px-Canva_icon_2021.svg.png',
-    createdAt: Date.now()
-  }
+  { id: 'chatgpt', name: 'ChatGPT', description: 'AI chatbot from OpenAI for conversational AI, content creation, coding assistance, and more.', link: 'https://chat.openai.com', category: 'Assistant', priceModel: 'Freemium', iconUrl: 'https://chat.openai.com/favicon.ico' },
+  { id: 'midjourney', name: 'Midjourney', description: 'AI image generator that creates stunning, detailed images from textual descriptions.', link: 'https://www.midjourney.com', category: 'Image', priceModel: 'Paid', iconUrl: 'https://www.midjourney.com/favicon.ico' },
+  { id: 'claude', name: 'Claude', description: 'A next-generation AI assistant from Anthropic for conversational and text-processing tasks.', link: 'https://claude.ai', category: 'Assistant', priceModel: 'Freemium', iconUrl: 'https://claude.ai/favicon.ico' },
+  { id: 'github-copilot', name: 'GitHub Copilot', description: 'AI pair programmer that suggests code and entire functions in real-time inside your IDE.', link: 'https://copilot.github.com', category: 'Code', priceModel: 'Freemium', iconUrl: 'https://github.com/favicon.ico' },
+  { id: 'synthesia', name: 'Synthesia', description: 'AI video generation platform that creates professional videos with realistic AI avatars.', link: 'https://www.synthesia.io', category: 'Video', priceModel: 'Paid', iconUrl: 'https://www.synthesia.io/favicon.ico' },
+  { id: 'eleven-labs', name: 'Eleven Labs', description: 'AI voice generator for creating realistic, human-like speech and voiceovers in any language.', link: 'https://elevenlabs.io', category: 'Audio', priceModel: 'Freemium', iconUrl: 'https://elevenlabs.io/favicon.ico' },
+  { id: 'dalle-3', name: 'DALL-E 3', description: 'AI system from OpenAI that can create realistic images and art from natural language descriptions.', link: 'https://openai.com/dall-e-3', category: 'Image', priceModel: 'Paid', iconUrl: 'https://openai.com/favicon.ico' },
+  { id: 'runway', name: 'Runway', description: 'AI-powered video editing and generation tools for creators and filmmakers.', link: 'https://runwayml.com', category: 'Video', priceModel: 'Freemium', iconUrl: 'https://runwayml.com/favicon.ico' },
+  { id: 'grammarly', name: 'Grammarly', description: 'AI-powered writing assistant for checking grammar, spelling, style, and tone.', link: 'https://www.grammarly.com', category: 'Writing', priceModel: 'Freemium', iconUrl: 'https://www.grammarly.com/favicon.ico' },
+  { id: 'notion-ai', name: 'Notion AI', description: 'AI-powered workspace for notes, docs, and project management with smart writing tools.', link: 'https://www.notion.so/ai', category: 'Productivity', priceModel: 'Paid', iconUrl: 'https://www.notion.so/favicon.ico' },
+  { id: 'canva-ai', name: 'Canva AI', description: 'AI-powered design tools within Canva for creating graphics, presentations, and more.', link: 'https://www.canva.com/ai-image-generator/', category: 'Design', priceModel: 'Freemium', iconUrl: 'https://www.canva.com/favicon.ico' },
+  { id: 'stable-diffusion', name: 'Stable Diffusion', description: 'A powerful, free and open-source AI image generation model for creating detailed artwork.', link: 'https://stability.ai/stablediffusion', category: 'Image', priceModel: 'Free', iconUrl: 'https://stability.ai/favicon.ico' },
+  { id: 'copy-ai', name: 'Copy.ai', description: 'AI-powered copywriter for generating marketing copy, blog posts, and social media content.', link: 'https://www.copy.ai', category: 'Writing', priceModel: 'Freemium', iconUrl: 'https://www.copy.ai/favicon.ico' },
+  { id: 'fireflies-ai', name: 'Fireflies.ai', description: 'AI assistant for meetings that records, transcribes, and analyzes conversations automatically.', link: 'https://fireflies.ai', category: 'Productivity', priceModel: 'Freemium', iconUrl: 'https://fireflies.ai/favicon.ico' },
+  { id: 'duolingo', name: 'Duolingo', description: 'AI-powered language learning app with gamified lessons and personalized learning paths.', link: 'https://www.duolingo.com', category: 'Education', priceModel: 'Freemium', iconUrl: 'https://www.duolingo.com/favicon.ico' },
+  { id: 'jasper', name: 'Jasper', description: 'AI copywriter and content generator for marketing, social media, and blog posts at scale.', link: 'https://www.jasper.ai', category: 'Writing', priceModel: 'Paid', iconUrl: 'https://www.jasper.ai/favicon.ico' },
+  { id: 'tabnine', name: 'Tabnine', description: 'AI code completion assistant for developers that integrates with your favorite IDE.', link: 'https://www.tabnine.com', category: 'Code', priceModel: 'Freemium', iconUrl: 'https://www.tabnine.com/favicon.ico' },
+  { id: 'replit-ghostwriter', name: 'Replit Ghostwriter', description: 'AI coding assistant built into the Replit online IDE for faster development.', link: 'https://replit.com', category: 'Code', priceModel: 'Paid', iconUrl: 'https://replit.com/favicon.ico' },
+  { id: 'amazon-codewhisperer', name: 'Amazon CodeWhisperer', description: 'AI coding companion from AWS that generates code recommendations in real-time.', link: 'https://aws.amazon.com/codewhisperer', category: 'Code', priceModel: 'Free', iconUrl: 'https://aws.amazon.com/favicon.ico' },
+  { id: 'sourcegraph-cody', name: 'Sourcegraph Cody', description: 'AI coding assistant that has context of your entire codebase for intelligent suggestions.', link: 'https://sourcegraph.com/cody', category: 'Code', priceModel: 'Freemium', iconUrl: 'https://sourcegraph.com/favicon.ico' },
+  { id: 'invideo', name: 'InVideo', description: 'Online video editor with AI features for quick and easy professional video creation.', link: 'https://invideo.io', category: 'Video', priceModel: 'Freemium', iconUrl: 'https://invideo.io/favicon.ico' },
+  { id: 'pictory', name: 'Pictory', description: 'AI video creator that automatically turns long-form content into short, sharable videos.', link: 'https://pictory.ai', category: 'Video', priceModel: 'Paid', iconUrl: 'https://pictory.ai/favicon.ico' },
+  { id: 'lumen5', name: 'Lumen5', description: 'AI-powered video creation platform for turning blog posts and articles into engaging videos.', link: 'https://lumen5.com', category: 'Video', priceModel: 'Freemium', iconUrl: 'https://lumen5.com/favicon.ico' },
+  { id: 'descript', name: 'Descript', description: 'All-in-one audio and video editor with powerful AI transcription and editing features.', link: 'https://www.descript.com', category: 'Audio', priceModel: 'Freemium', iconUrl: 'https://www.descript.com/favicon.ico' },
+  { id: 'writesonic', name: 'Writesonic', description: 'AI writer for creating SEO-friendly articles, blog posts, ads, and landing pages.', link: 'https://writesonic.com', category: 'Writing', priceModel: 'Freemium', iconUrl: 'https://writesonic.com/favicon.ico' },
+  { id: 'wordtune', name: 'Wordtune', description: 'AI-powered writing companion that helps you rephrase and rewrite sentences for clarity.', link: 'https://www.wordtune.com', category: 'Writing', priceModel: 'Freemium', iconUrl: 'https://www.wordtune.com/favicon.ico' },
+  { id: 'rytr', name: 'Rytr', description: 'AI writing assistant for generating content across various use cases and formats.', link: 'https://rytr.me', category: 'Writing', priceModel: 'Freemium', iconUrl: 'https://rytr.me/favicon.ico' },
+  { id: 'mem', name: 'Mem', description: 'AI-powered workspace that organizes your notes and knowledge automatically.', link: 'https://get.mem.ai', category: 'Productivity', priceModel: 'Freemium', iconUrl: 'https://get.mem.ai/favicon.ico' },
+  { id: 'taskade', name: 'Taskade', description: 'AI-powered team collaboration and task management tool with smart workflows.', link: 'https://www.taskade.com', category: 'Productivity', priceModel: 'Freemium', iconUrl: 'https://www.taskade.com/favicon.ico' },
+  { id: 'tome', name: 'Tome', description: 'AI-powered storytelling and presentation tool for creating compelling narratives.', link: 'https://tome.app', category: 'Productivity', priceModel: 'Freemium', iconUrl: 'https://tome.app/favicon.ico' },
+  { id: 'uizard', name: 'Uizard', description: 'AI-powered UI design tool for creating wireframes, mockups, and prototypes rapidly.', link: 'https://uizard.io', category: 'Design', priceModel: 'Freemium', iconUrl: 'https://uizard.io/favicon.ico' },
+  { id: 'looka', name: 'Looka', description: 'AI-powered platform to design a logo and build a complete brand identity kit.', link: 'https://looka.com', category: 'Design', priceModel: 'Paid', iconUrl: 'https://looka.com/favicon.ico' },
+  { id: 'designs-ai', name: 'Designs.ai', description: 'AI-powered creative suite for making logos, videos, banners, and mockups.', link: 'https://designs.ai', category: 'Design', priceModel: 'Paid', iconUrl: 'https://designs.ai/favicon.ico' },
+  { id: 'khroma', name: 'Khroma', description: 'AI color tool for designers that generates personalized color palettes based on your preferences.', link: 'https://www.khroma.co', category: 'Design', priceModel: 'Free', iconUrl: 'https://www.khroma.co/favicon.ico' },
+  { id: 'artbreeder', name: 'Artbreeder', description: 'AI art and image creation tool for generating, blending, and modifying images collaboratively.', link: 'https://www.artbreeder.com', category: 'Image', priceModel: 'Freemium', iconUrl: 'https://www.artbreeder.com/favicon.ico' },
+  { id: 'nightcafe', name: 'NightCafe Creator', description: 'AI Art Generator for creating, printing, and sharing AI-generated artwork with multiple models.', link: 'https://creator.nightcafe.studio', category: 'Image', priceModel: 'Freemium', iconUrl: 'https://creator.nightcafe.studio/favicon.ico' },
+  { id: 'murf-ai', name: 'Murf.ai', description: 'AI voice generator for creating studio-quality voiceovers in minutes with 120+ voices.', link: 'https://murf.ai', category: 'Audio', priceModel: 'Freemium', iconUrl: 'https://murf.ai/favicon.ico' },
+  { id: 'lalal-ai', name: 'LALAL.AI', description: 'AI-powered stem splitter for extracting vocals, instruments from any audio or video.', link: 'https://www.lalal.ai', category: 'Audio', priceModel: 'Freemium', iconUrl: 'https://www.lalal.ai/favicon.ico' },
+  { id: 'aiva', name: 'AIVA', description: 'AI music composer that creates original, emotional soundtracks in various styles.', link: 'https://www.aiva.ai', category: 'Audio', priceModel: 'Freemium', iconUrl: 'https://www.aiva.ai/favicon.ico' },
+  { id: 'soundraw', name: 'Soundraw', description: 'AI music generator that creates customizable royalty-free music for your projects.', link: 'https://soundraw.io', category: 'Audio', priceModel: 'Freemium', iconUrl: 'https://soundraw.io/favicon.ico' },
+  { id: 'you-com', name: 'You.com', description: 'AI-powered search engine and chatbot that summarizes the web for you intelligently.', link: 'https://you.com', category: 'Assistant', priceModel: 'Freemium', iconUrl: 'https://you.com/favicon.ico' },
+  { id: 'replika', name: 'Replika', description: 'The AI companion who cares — an AI chatbot friend for meaningful conversations.', link: 'https://replika.ai', category: 'Lifestyle', priceModel: 'Freemium', iconUrl: 'https://replika.ai/favicon.ico' },
+  { id: 'character-ai', name: 'Character.AI', description: 'AI-powered character chatbots for entertainment, roleplay, and creative conversation.', link: 'https://character.ai', category: 'Lifestyle', priceModel: 'Freemium', iconUrl: 'https://character.ai/favicon.ico' },
+  { id: 'endel', name: 'Endel', description: 'AI-powered personalized soundscapes for focus, sleep, relaxation, and productivity.', link: 'https://endel.io', category: 'Lifestyle', priceModel: 'Freemium', iconUrl: 'https://endel.io/favicon.ico' },
+  { id: 'wysa', name: 'Wysa', description: 'AI-powered mental health chatbot for emotional support, well-being, and stress management.', link: 'https://www.wysa.io', category: 'Lifestyle', priceModel: 'Freemium', iconUrl: 'https://www.wysa.io/favicon.ico' },
+  { id: 'gong', name: 'Gong', description: 'AI-powered revenue intelligence platform that analyzes sales conversations for insights.', link: 'https://www.gong.io', category: 'Business', priceModel: 'Paid', iconUrl: 'https://www.gong.io/favicon.ico' },
+  { id: 'drift', name: 'Drift', description: 'AI-powered conversational marketing and sales platform for engaging website visitors.', link: 'https://www.drift.com', category: 'Business', priceModel: 'Paid', iconUrl: 'https://www.drift.com/favicon.ico' },
+  { id: 'harvey-ai', name: 'Harvey AI', description: 'AI platform for legal professionals, providing legal research, insights, and analysis.', link: 'https://www.harvey.ai', category: 'Business', priceModel: 'Paid', iconUrl: 'https://www.harvey.ai/favicon.ico' },
+  { id: 'decktopus-ai', name: 'Decktopus AI', description: 'AI-powered presentation maker for creating stunning presentations in minutes.', link: 'https://www.decktopus.com', category: 'Business', priceModel: 'Paid', iconUrl: 'https://www.decktopus.com/favicon.ico' },
+  { id: 'gradescope', name: 'Gradescope', description: 'AI-assisted grading and assessment platform for educators to save time.', link: 'https://www.gradescope.com', category: 'Education', priceModel: 'Paid', iconUrl: 'https://www.gradescope.com/favicon.ico' },
+  { id: 'socratic-by-google', name: 'Socratic by Google', description: 'AI-powered learning app from Google that helps students understand homework concepts.', link: 'https://socratic.org', category: 'Education', priceModel: 'Free', iconUrl: 'https://www.google.com/favicon.ico' },
+  { id: 'quizlet', name: 'Quizlet', description: 'AI-powered flashcards, study sets, and adaptive learning tools for any subject.', link: 'https://quizlet.com', category: 'Education', priceModel: 'Freemium', iconUrl: 'https://quizlet.com/favicon.ico' },
+  { id: 'latitude', name: 'Latitude', description: 'AI-powered games and experiences, including the popular AI Dungeon text adventure.', link: 'https://latitude.io', category: 'Gaming', priceModel: 'Freemium', iconUrl: 'https://latitude.io/favicon.ico' },
+  { id: 'inworld-ai', name: 'Inworld AI', description: 'AI character engine for creating intelligent and believable NPCs in games and experiences.', link: 'https://inworld.ai', category: 'Gaming', priceModel: 'Freemium', iconUrl: 'https://inworld.ai/favicon.ico' },
+  { id: 'scenario', name: 'Scenario', description: 'AI-generated game assets, including textures, concept art, and 3D models.', link: 'https://www.scenario.com', category: 'Gaming', priceModel: 'Freemium', iconUrl: 'https://www.scenario.com/favicon.ico' },
+  { id: 'ludo-ai', name: 'Ludo.ai', description: 'AI-powered game research and design tool for developers and studios.', link: 'https://ludo.ai', category: 'Gaming', priceModel: 'Freemium', iconUrl: 'https://ludo.ai/favicon.ico' },
+  { id: 'mutable-ai', name: 'Mutable.ai', description: 'AI-accelerated software development for improving code quality and speed.', link: 'https://mutable.ai', category: 'Code', priceModel: 'Freemium', iconUrl: 'https://mutable.ai/favicon.ico' },
+  { id: 'sanebox', name: 'SaneBox', description: 'AI for email management that automatically prioritizes your inbox and saves time.', link: 'https://www.sanebox.com', category: 'Productivity', priceModel: 'Paid', iconUrl: 'https://www.sanebox.com/favicon.ico' },
+  { id: 'figma', name: 'Figma', description: 'Collaborative design tool with emerging AI features for UI/UX design at scale.', link: 'https://www.figma.com', category: 'Design', priceModel: 'Freemium', iconUrl: 'https://www.figma.com/favicon.ico' },
+  { id: 'beatoven-ai', name: 'Beatoven.ai', description: 'AI music generator for creating unique, royalty-free background music.', link: 'https://www.beatoven.ai', category: 'Audio', priceModel: 'Freemium', iconUrl: 'https://www.beatoven.ai/favicon.ico' }
 ];
 
 export const PUBLIC_TRAINING_MODULES: TrainingModule[] = [
@@ -528,10 +544,40 @@ export const PUBLIC_TRAINING_MODULES: TrainingModule[] = [
     ]
   },
   {
+    id: 'ethics-safe-ai',
+    title: 'Ethics & Safe AI Interaction',
+    description: 'Learn how to identify hallucinations and ensure responsible AI usage.',
+    category: 'Fundamentals',
+    createdAt: Date.now() - 1000,
+    content: [
+      {
+        id: 'safety-1',
+        title: 'Identifying Hallucinations',
+        details: 'AI can confidently state false information. Always verify facts from primary sources.',
+        example: 'Ask the AI to provide citations, then check if those URLs actually exist and contain the info.'
+      }
+    ]
+  },
+  {
+    id: 'agentic-workflows-101',
+    title: 'Agentic Workflows 101',
+    description: 'Understanding how AI can move from passive chat to active task execution.',
+    category: 'Advanced',
+    createdAt: Date.now() - 2000,
+    content: [
+      {
+        id: 'agents-1',
+        title: 'Loops and Iteration',
+        details: 'Agents use loops to self-correct. They plan, execute, observe, and refine.',
+        example: 'A coding agent writes code, runs a compiler, reads the error, and fixes the code.'
+      }
+    ]
+  },
+  {
     id: 'vibe-coding-intro',
     title: 'Introduction to Vibe Coding',
     description: 'Learn how to use natural language to build software without writing code.',
-    category: 'Advanced Techniques',
+    category: 'Advanced',
     createdAt: Date.now(),
     content: [
       {
@@ -543,10 +589,40 @@ export const PUBLIC_TRAINING_MODULES: TrainingModule[] = [
     ]
   },
   {
+    id: 'prompt-chaining-langchain',
+    title: 'Prompt Chaining with LangChain',
+    description: 'Techniques for linking multiple LLM calls together for complex reasoning.',
+    category: 'Code & Tech',
+    createdAt: Date.now() - 3000,
+    content: [
+      {
+        id: 'lc-1',
+        title: 'Chain-of-Thought Chaining',
+        details: 'Pass the output of one prompt as the input to the next to build deep context.',
+        example: 'Step 1: Summarize user request. Step 2: Extract technical requirements from summary. Step 3: Generate code.'
+      }
+    ]
+  },
+  {
+    id: 'multi-modal-masterclass',
+    title: 'Multi-Modal Prompting Masterclass',
+    description: 'How to combine text, images, and audio in a single prompt for Gemini and GPT-4o.',
+    category: 'Masterclass',
+    createdAt: Date.now() - 4000,
+    content: [
+      {
+        id: 'mm-1',
+        title: 'Visual Reasoning',
+        details: 'Upload an image and ask specific questions about the spatial relationships within it.',
+        example: 'Upload a website screenshot: "List all buttons that do not meet WCAG contrast ratios."'
+      }
+    ]
+  },
+  {
     id: 'mastering-system-prompts',
     title: 'Reverse Engineering System Prompts',
     description: 'Understand how major AI tools are instructed and learn to write your own robust system instructions.',
-    category: 'System Architecture',
+    category: 'Masterclass',
     createdAt: Date.now(),
     content: [
       {

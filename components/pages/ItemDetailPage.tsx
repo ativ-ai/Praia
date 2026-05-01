@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { GroupedPrompt, AITool, TrainingModule, Prompt, PromptFramework } from '../../types';
-import { PUBLIC_PROMPTS, PUBLIC_AI_TOOLS, PUBLIC_TRAINING_MODULES, PROMPT_CATEGORY_COLORS, AI_TOOL_CATEGORY_COLORS, TRAINING_CATEGORY_COLORS, ITEM_TYPE_COLORS } from '../../constants';
+import { PUBLIC_PROMPTS, PUBLIC_AI_TOOLS, PUBLIC_TRAINING_MODULES, PROMPT_CATEGORY_COLORS, AI_TOOL_CATEGORY_COLORS, TRAINING_CATEGORY_COLORS, ITEM_TYPE_COLORS, TRAINING_CATEGORY_DISPLAY, AI_TOOL_CATEGORY_DISPLAY } from '../../constants';
 import { usePrompts } from '../../hooks/usePrompts';
 import { useAITools } from '../../hooks/useAITools';
 import { useTraining } from '../../hooks/useTraining';
@@ -245,16 +245,16 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
                       <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
                           <div className="flex gap-2">
                               <button onClick={() => handleUseAsTemplate(activePrompt)} className="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
-                                  <span className="text-xl" role="img" aria-label="edit">✏️</span>
+                                  <span className="material-symbols-outlined text-xl">edit</span>
                                   Use as Template
                               </button>
                               <button onClick={handleCopy} className="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
-                                  <span className="text-xl" role="img" aria-label="copy">📋</span>
+                                  <span className="material-symbols-outlined text-xl">content_copy</span>
                                   Copy
                               </button>
                           </div>
                           <button onClick={() => handleFavoritePrompt(activePrompt.id)} className="bg-amber-100 text-amber-800 font-bold py-2 px-4 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
-                               <span className="text-xl" role="img" aria-label="favorite star">{isFavorited ? '⭐' : '☆'}</span>
+                               <span className={`material-symbols-outlined text-xl ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{ fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}` }}>star</span>
                                {isFavorited ? 'Favorited' : 'Favorite'}
                           </button>
                       </div>
@@ -270,17 +270,18 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
                      {!isModal && (
                         <div className="flex items-center gap-2 mb-4 flex-wrap">
                             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${ITEM_TYPE_COLORS.tool}`}>Tool</span>
-                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${AI_TOOL_CATEGORY_COLORS[item.category]}`}>{item.category}</span>
+                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${AI_TOOL_CATEGORY_COLORS[item.category]}`}>{AI_TOOL_CATEGORY_DISPLAY[item.category] || item.category}</span>
+                            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">{item.priceModel}</span>
                         </div>
                      )}
                     <p className="text-base text-slate-600 mb-4">{item.description}</p>
                     
                     <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
-                        <a href={item.link} target="_blank" rel="noopener noreferrer" className="bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-2">
-                             Visit Tool <span className="text-base" role="img" aria-label="link">🔗</span>
+                        <a href={item.link} target="_blank" rel="noopener noreferrer" className="bg-sky-500 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-2">
+                             Visit Tool <span className="material-symbols-outlined text-xl">open_in_new</span>
                         </a>
-                        <button onClick={() => handleFavoriteTool(item.id)} className="bg-amber-100 text-amber-800 font-bold py-2 px-4 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
-                            <span className="text-xl" role="img" aria-label="favorite star">{isFavorited ? '⭐' : '☆'}</span>
+                        <button onClick={() => handleFavoriteTool(item.id)} className="bg-amber-100 text-amber-800 font-bold py-2.5 px-4 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
+                            <span className={`material-symbols-outlined text-xl ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{ fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}` }}>star</span>
                              {isFavorited ? 'Favorited' : 'Add to Favorites'}
                         </button>
                     </div>
@@ -295,7 +296,7 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
                     {!isModal && (
                         <div className="flex items-center gap-2 mb-4 flex-wrap">
                             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${ITEM_TYPE_COLORS.training}`}>Training</span>
-                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${TRAINING_CATEGORY_COLORS[item.category]}`}>{item.category}</span>
+                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${TRAINING_CATEGORY_COLORS[item.category]}`}>{TRAINING_CATEGORY_DISPLAY[item.category] || item.category}</span>
                         </div>
                     )}
                     <p className="text-base text-slate-600 mb-4">{item.description}</p>
@@ -335,8 +336,8 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
                     </div>
     
                     <div className="mt-6 pt-4 border-t border-slate-200 flex justify-end">
-                        <button onClick={() => handleFavoriteTraining(item.id)} className="bg-amber-100 text-amber-800 font-bold py-2 px-4 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
-                            <span className="text-xl" role="img" aria-label="favorite star">{isFavorited ? '⭐' : '☆'}</span>
+                        <button onClick={() => handleFavoriteTraining(item.id)} className="bg-amber-100 text-amber-800 font-bold py-2.5 px-4 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2">
+                            <span className={`material-symbols-outlined text-xl ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{ fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}` }}>star</span>
                             {isFavorited ? 'Favorited' : 'Add to Favorites'}
                         </button>
                     </div>
@@ -354,7 +355,7 @@ const ItemDetailPage: React.FC<ItemDetailPageProps> = ({ isModal = false, setMod
     if (item === null) {
         return (
             <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
-                <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="Not found">🤷</span>
+                <span className="material-symbols-outlined mx-auto text-5xl text-slate-300">search_off</span>
                 <h3 className="mt-2 text-2xl font-bold text-slate-900">Item Not Found</h3>
                 <p className="mt-1 text-base text-slate-500">The item you are looking for does not exist.</p>
                 <div className="mt-6">

@@ -346,7 +346,7 @@ const MyPraia: React.FC = () => {
                         </div>
                     ) : (
                          <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
-                            <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="folder">📁</span>
+                            <span className="material-symbols-outlined text-5xl text-slate-400">folder_off</span>
                             <h3 className="mt-2 text-lg font-medium text-slate-900">
                                 {searchTerm ? 'No matches found' : selectedFolderId ? 'This folder is empty' : 'No Prompts Yet'}
                             </h3>
@@ -377,7 +377,7 @@ const MyPraia: React.FC = () => {
                     </div>
                 ) : (
                     <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
-                        <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="tools">🛠️</span>
+                        <span className="material-symbols-outlined text-5xl text-slate-400">construction</span>
                         <h3 className="mt-2 text-lg font-medium text-slate-900">No Tools Saved</h3>
                         <p className="mt-1 text-sm text-slate-500">
                            {searchTerm ? 'No tools match your search.' : <>Create your first tool, or discover new ones in the <Link to="/tools" className="text-indigo-600 font-medium hover:underline">Tools Hub</Link>.</>}
@@ -411,7 +411,7 @@ const MyPraia: React.FC = () => {
                     </div>
                 ) : (
                     <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md">
-                        <span className="mx-auto text-5xl text-slate-400" role="img" aria-label="academic cap">🎓</span>
+                        <span className="material-symbols-outlined text-5xl text-slate-400">school</span>
                         <h3 className="mt-2 text-lg font-medium text-slate-900">No Training Saved</h3>
                         <p className="mt-1 text-sm text-slate-500">
                            {searchTerm ? 'No training modules match your search.' : <>Create a module, or explore the <Link to="/training" className="text-indigo-600 font-medium hover:underline">Training Center</Link> to find and save helpful lessons.</>}

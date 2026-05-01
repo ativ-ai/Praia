@@ -22,7 +22,6 @@ import About from './components/pages/About';
 import ItemDetailPage from './components/pages/ItemDetailPage';
 import AIToolsHub from './components/pages/AIToolsHub';
 import TrainingCenter from './components/pages/TrainingCenter';
-import ApiDocs from './components/pages/ApiDocs';
 import ProSpecFramework from './components/pages/ProSpecFramework';
 
 const ItemDetailModal: React.FC = () => {
@@ -52,7 +51,6 @@ const AppRoutes: React.FC = () => {
           <Route path="/tools" element={<AIToolsHub />} />
           <Route path="/training" element={<TrainingCenter />} />
           <Route path="/about" element={<About />} />
-          <Route path="/api-docs" element={<ApiDocs />} />
           <Route path="/pro-spec" element={<ProSpecFramework />} />
           
           <Route path="/detail/:itemType/:itemId" element={<ItemDetailPage />} />

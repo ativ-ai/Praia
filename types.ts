@@ -5,6 +5,7 @@ export interface User {
   displayName: string;
   email: string;
   photoURL: string;
+  isPro?: boolean;
 }
 
 export type PromptCategory = "Marketing" | "Code Generation" | "Copywriting" | "Ideation" | "Image Generation" | "Productivity" | "Data Analysis" | "Personal Development" | "Sales" | "Business" | "Role-Playing" | "Advertising" | "Content Creation" | "Creative Writing" | "E-Commerce" | "Editing & Proofreading" | "Goal Setting" | "Graphic Design" | "Personal Finance" | "Persuasion & Influence" | "Social Media" | "Frameworks" | "Learning" | "Career" | "Self Help" | "Education" | "Research" | "Fundamentals" | "Advanced Techniques" | "System Prompts";
@@ -74,7 +75,7 @@ export interface PromptFrameworkDefinition {
   description: string;
 }
 
-export type TrainingCategory = "Fundamentals" | "Advanced Techniques" | "Business & Marketing" | "Frameworks & Patterns" | "Education" | "Creative & Media" | "Career" | "System Architecture";
+export type TrainingCategory = "Fundamentals" | "Advanced" | "Frameworks" | "Masterclass" | "Code & Tech";
 
 export interface TrainingModule {
     id: string;
@@ -97,7 +98,7 @@ export interface TrainingContent {
     mediaType?: 'image' | 'video';
 }
 
-export type AIToolCategory = "Image Generation" | "Video Generation" | "Writing" | "Code Assistant" | "Productivity" | "Audio & Music" | "Chatbot" | "Marketing" | "Design" | "Social Media" | "Research" | "Presentations" | "Data Analysis" | "3D & VR" | "Sales" | "Website" | "Meeting" | "SEO" | "Automation" | "Prompts" | "UI/UX" | "Logo Generator";
+export type AIToolCategory = "Assistant" | "Image" | "Video" | "Audio" | "Writing" | "Productivity" | "Design" | "Education" | "Code" | "Lifestyle" | "Business" | "Gaming" | "Creative Studio" | "Content & Marketing" | "Tech & Development" | "Workflow & Planning";
 
 export interface AITool {
   id: string;
@@ -106,6 +107,7 @@ export interface AITool {
   description: string;
   link: string;
   category: AIToolCategory;
+  priceModel: string;
   iconUrl: string;
   isFavorited?: boolean;
   originalPublicId?: string;

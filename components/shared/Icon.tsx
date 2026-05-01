@@ -8,17 +8,12 @@ interface IconProps {
 
 const Icon: React.FC<IconProps> = ({ name, className }) => {
   if (name === 'logo') {
-    // Determine font size based on height class passed in props.
-    // This keeps the change contained to this component.
     const sizeClass = className?.includes('h-12') ? 'text-4xl' : 'text-2xl';
     return (
       <span
-        role="img"
-        aria-label="beach with umbrella"
-        // We add flex properties to center the emoji within the sized span
-        className={`${className} ${sizeClass} flex items-center justify-center`}
+        className={`${className} ${sizeClass} material-symbols-outlined flex items-center justify-center text-indigo-600`}
       >
-        🏖️
+        beach_access
       </span>
     );
   }
@@ -47,7 +42,7 @@ const Icon: React.FC<IconProps> = ({ name, className }) => {
     academicCap: <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0l-1.07-1.07a9 9 0 013.189-3.19l2.4 1.593m15.482 0l1.07-1.07a9 9 0 00-3.19-3.19l-2.4 1.593" />,
     briefcase: <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.098a2.25 2.25 0 01-2.25 2.25h-12a2.25 2.25 0 01-2.25-2.25v-4.098m16.5 0a2.25 2.25 0 00-2.25-2.25h-12a2.25 2.25 0 00-2.25 2.25m16.5 0v-4.098a2.25 2.25 0 00-2.25-2.25h-12a2.25 2.25 0 00-2.25 2.25v4.098" />,
     menu: <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />,
-    compass: <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 10.5V18m-4.5-6H3m15.75 0h-4.5m-3.44-5.56l-1.06-1.06m7.072 7.072l-1.06-1.06M9.44 9.44l-1.06 1.06m7.072 7.072l-1.06 1.06" />,
+    compass: <React.Fragment><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 10.5V18m-4.5-6H3m15.75 0h-4.5m-3.44-5.56l-1.06-1.06m7.072 7.072l-1.06-1.06M9.44 9.44l-1.06 1.06m7.072 7.072l-1.06 1.06" /></React.Fragment>,
     documentText: <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />,
     download: <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />,
     compare_arrows: <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />,

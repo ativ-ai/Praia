@@ -1,9 +1,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { AITool, AIToolCategory } from '../../types';
-import { AI_TOOL_CATEGORY_COLORS } from '../../constants';
+import { AI_TOOL_CATEGORY_COLORS, AI_TOOL_CATEGORY_DISPLAY, AI_TOOL_CATEGORY_ICONS } from '../../constants';
 import Icon from './Icon';
-import Tooltip from './Tooltip';
 
 interface AIToolCardProps {
   tool: AITool;
@@ -15,37 +14,13 @@ interface AIToolCardProps {
   isUserOwned?: boolean;
 }
 
-const CATEGORY_EMOJIS: Record<string, string> = {
-  "Image Generation": "🎨",
-  "Video Generation": "🎥",
-  "Writing": "✍️",
-  "Code Assistant": "💻",
-  "Productivity": "⚡",
-  "Audio & Music": "🎵",
-  "Chatbot": "💬",
-  "Marketing": "📢",
-  "Design": "🖌️",
-  "Social Media": "📱",
-  "Research": "🔍",
-  "Presentations": "📊",
-  "Data Analysis": "📈",
-  "3D & VR": "🕶️",
-  "Sales": "💼",
-  "Website": "🌐",
-  "Meeting": "📅",
-  "SEO": "🔎",
-  "Automation": "🤖",
-  "Prompts": "📝",
-  "UI/UX": "✨",
-  "Logo Generator": "🆔"
-};
-
 const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, onClick, onCategoryClick, onDelete, isUserOwned }) => {
   const categoryColorClass = AI_TOOL_CATEGORY_COLORS[tool.category] || 'bg-slate-100 text-slate-800';
+  const displayCategory = AI_TOOL_CATEGORY_DISPLAY[tool.category] || tool.category;
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
   
-  const emoji = CATEGORY_EMOJIS[tool.category] || "🤖";
+  const iconName = AI_TOOL_CATEGORY_ICONS[tool.category] || "smart_toy";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -95,53 +70,50 @@ const AIToolCard: React.FC<AIToolCardProps> = ({ tool, onFavorite, isFavorited, 
             <div className="flex-grow">
                 <div className="flex justify-between items-start gap-4 mb-2">
                     <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
-                        <span className="text-3xl" role="img" aria-label={tool.category}>{emoji}</span>
+                        <span className="material-symbols-outlined text-3xl text-indigo-500">{iconName}</span>
                     </div>
-                    <div className="flex-grow">
-                        <h3 className="text-lg font-bold text-slate-900 leading-tight mb-1">{tool.name}</h3>
-                        <Tooltip text={`Filter by Category: ${tool.category}`} position="bottom">
-                            <button 
-                                onClick={onCategoryClick ? handleCategoryClick : undefined} 
-                                disabled={!onCategoryClick} 
-                                className={`text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
-                            >
-                                {tool.category}
-                            </button>
-                        </Tooltip>
-                    </div>
+                        <div className="flex-grow">
+                            <h3 className="text-lg font-bold text-slate-900 leading-tight mb-1">{tool.name}</h3>
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={onCategoryClick ? handleCategoryClick : undefined} 
+                                    disabled={!onCategoryClick} 
+                                    className={`text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-md inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
+                                >
+                                    {displayCategory}
+                                </button>
+                                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
+                                    {tool.priceModel}
+                                </span>
+                            </div>
+                        </div>
                 </div>
                 <p className="text-sm text-slate-600 mt-3 line-clamp-3 leading-relaxed">{tool.description}</p>
             </div>
 
             <div className="mt-4 pt-4 border-t border-slate-200/80 flex justify-between items-center">
-                <Tooltip text={`Visit ${tool.name} website`}>
-                    <a 
-                        href={tool.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        onClick={handleLinkClick}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
-                    >
-                        Visit Tool <Icon name="link" className="w-4 h-4" />
-                    </a>
-                </Tooltip>
+                <a 
+                    href={tool.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    onClick={handleLinkClick}
+                    className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+                >
+                    Visit Tool <Icon name="link" className="w-4 h-4" />
+                </a>
                 <div className="flex items-center gap-1">
                     {onFavorite && (
-                        <Tooltip text={isFavorited ? "Remove from Favorites" : "Add to Favorites"}>
-                            <button onClick={handleFavoriteClick} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
-                                <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
-                                    star
-                                </span>
-                            </button>
-                        </Tooltip>
+                        <button onClick={handleFavoriteClick} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
+                            <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
+                                star
+                            </span>
+                        </button>
                     )}
                     {onDelete && (
                       <div ref={optionsMenuRef} className="relative">
-                        <Tooltip text="More Options">
-                            <button onClick={toggleOptionsMenu} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                        <button onClick={toggleOptionsMenu} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
                             <span className="material-symbols-outlined text-slate-500 text-xl">more_vert</span>
-                            </button>
-                        </Tooltip>
+                        </button>
                         {optionsMenuOpen && (
                           <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 animate-expand-in">
                             <div className="py-1">

@@ -2,5 +2,6 @@
   "name": "PRAIA: Prompt Research & AI Architect",
   "description": "PRAIA (Prompt Research & AI Architect) is a comprehensive AI suite to help you discover, create, save, and masterfully optimize AI prompts. Features a hub, personal library, AI-powered prompt studio, and training content.",
   "requestFramePermissions": [],
-  "prompt": ""
+  "prompt": "",
+  "majorCapabilities": []
 }

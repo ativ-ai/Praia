@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { TrainingModule, TrainingCategory } from '../../types';
-import { TRAINING_CATEGORY_COLORS } from '../../constants';
+import { TRAINING_CATEGORY_COLORS, TRAINING_CATEGORY_DISPLAY, TRAINING_CATEGORY_ICONS } from '../../constants';
 import Tooltip from './Tooltip';
 
 interface TrainingCardProps {
@@ -15,16 +15,17 @@ interface TrainingCardProps {
 }
 
 const ICONS: Record<string, string> = {
-    'google-prompting-essentials': '📋',
-    'vibe-coding-intro': '💻',
-    'master-chatgpt-prompt-guide': '🔥',
-    '135-ai-tools-infographic': '🧰',
-    'craft-framework-guide': '👷',
+    'google-prompting-essentials': 'assignment',
+    'vibe-coding-intro': 'code',
+    'master-chatgpt-prompt-guide': 'local_fire_department',
+    '135-ai-tools-infographic': 'grid_view',
+    'craft-framework-guide': 'architecture',
 };
 
 const TrainingCard: React.FC<TrainingCardProps> = ({ module, onClick, onFavorite, isFavorited, onCategoryClick, onDelete, isUserOwned }) => {
     const categoryColorClass = TRAINING_CATEGORY_COLORS[module.category] || 'bg-slate-200 text-slate-800';
-    const icon = ICONS[module.id] || '🎓';
+    const displayCategory = TRAINING_CATEGORY_DISPLAY[module.category] || module.category;
+    const iconName = ICONS[module.id] || TRAINING_CATEGORY_ICONS[module.category] || 'school';
     const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
     const optionsMenuRef = useRef<HTMLDivElement>(null);
     
@@ -72,7 +73,7 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ module, onClick, onFavorite
                 <div className="flex-grow">
                     <div className="flex justify-between items-start gap-4">
                         <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center bg-slate-100 rounded-lg">
-                            <span className="text-3xl" role="img" aria-label="training icon">{icon}</span>
+                            <span className="material-symbols-outlined text-3xl text-emerald-600">{iconName}</span>
                         </div>
                         <div className="flex-grow">
                             <h3 className="text-lg font-bold text-slate-900 leading-tight">{module.title}</h3>
@@ -82,7 +83,7 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ module, onClick, onFavorite
                                     disabled={!onCategoryClick} 
                                     className={`text-xs font-semibold mt-1.5 px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
                                 >
-                                    {module.category}
+                                    {displayCategory}
                                 </button>
                             </Tooltip>
                         </div>

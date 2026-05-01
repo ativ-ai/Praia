@@ -115,23 +115,35 @@ export const PromptProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 ...promptData,
             };
             localPrompts.push(newVersion);
-        } else { // It's a direct edit, so create a new version
-            const { historyId } = existingVersion;
-            const history = localPrompts.filter(p => p.historyId === historyId);
-            const maxVersion = Math.max(...history.map(p => p.version));
-            
-            // Mark all old versions as not latest
-            localPrompts = localPrompts.map(p => p.historyId === historyId ? { ...p, isLatest: false } : p);
-            
-            newVersion = {
-                ...existingVersion, // carry over folderId, originalPublicId etc.
-                ...promptData, // apply changes from form
-                id: `user-prompt-${Date.now()}`,
-                version: maxVersion + 1,
-                isLatest: true,
-                createdAt: Date.now(),
-            };
-            localPrompts.push(newVersion);
+        } else { // It's a direct edit
+            if (user.isPro) {
+                // Pro User: Create new version in history
+                const { historyId } = existingVersion;
+                const history = localPrompts.filter(p => p.historyId === historyId);
+                const maxVersion = Math.max(...history.map(p => p.version));
+                
+                // Mark all old versions as not latest
+                localPrompts = localPrompts.map(p => p.historyId === historyId ? { ...p, isLatest: false } : p);
+                
+                newVersion = {
+                    ...existingVersion, // carry over folderId, originalPublicId etc.
+                    ...promptData, // apply changes from form
+                    id: `user-prompt-${Date.now()}`,
+                    version: maxVersion + 1,
+                    isLatest: true,
+                    createdAt: Date.now(),
+                };
+                localPrompts.push(newVersion);
+            } else {
+                // Free User: Overwrite existing version
+                localPrompts = localPrompts.map(p => 
+                    p.id === existingVersion.id 
+                    ? { ...p, ...promptData, createdAt: Date.now() }
+                    : p
+                );
+                // In this case, we just updated the existing record, so find it to pass to updatePublicPrompts
+                newVersion = localPrompts.find(p => p.id === existingVersion.id)!;
+            }
         }
     } else { // Creating a brand new prompt
         const newHistoryId = `history-${Date.now()}`;

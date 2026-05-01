@@ -222,7 +222,7 @@ const CommunityHub: React.FC = () => {
         </>
       ) : (
         <div className="text-center py-16 px-6 bg-white rounded-lg shadow-md animate-fade-in">
-            <span className="mx-auto text-6xl text-slate-400" role="img" aria-label="search">🔍</span>
+            <span className="material-symbols-outlined text-6xl text-slate-400">search_off</span>
             <h3 className="mt-4 text-xl font-semibold text-slate-900">No Prompts Found</h3>
             <p className="mt-2 text-base text-slate-500">Try adjusting your search or filters to find what you're looking for.</p>
             <div className="mt-6">

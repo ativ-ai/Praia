@@ -9,7 +9,7 @@ const FeatureCard: React.FC<{ icon: string; title: string; children: React.React
     <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-xl hover:border-indigo-300 transform hover:-translate-y-1">
         <div className="flex items-center gap-4 mb-4">
             <div className="bg-indigo-100 text-indigo-600 p-3 rounded-lg">
-                <span className="text-3xl" role="img" aria-label={title}>{icon}</span>
+                <span className="material-symbols-outlined text-3xl">{icon}</span>
             </div>
         </div>
         <h3 className="text-xl font-bold text-slate-900">{title}</h3>
@@ -131,7 +131,7 @@ const AnimatedPromptBuilder: React.FC = () => {
 
 const TestimonialCard: React.FC<{ quote: string; author: string; role: string; avatar: string; }> = ({ quote, author, role, avatar }) => (
     <div className="bg-white p-6 rounded-xl shadow-lg text-slate-800 border border-slate-200/80 h-full flex flex-col">
-         <p className="text-6xl text-indigo-200 font-serif leading-none">“</p>
+                                    <p className="text-6xl text-indigo-200 font-serif leading-none">"</p>
         <p className="italic text-slate-600 flex-grow -mt-4">"{quote}"</p>
         <div className="flex items-center mt-4 pt-4 border-t border-slate-200">
             <img className="h-12 w-12 rounded-full" src={avatar} alt={author} />
@@ -186,16 +186,16 @@ const LandingPage: React.FC = () => {
                         <p className="mt-4 text-lg text-slate-600">Everything you need to go from beginner to expert, all in one place.</p>
                     </div>
                     <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <FeatureCard icon="🧭" title="Discover">
+                        <FeatureCard icon="explore" title="Discover">
                             Explore a vast library of expert-curated prompts, tools, and training modules. Find the perfect starting point for any task.
                         </FeatureCard>
-                        <FeatureCard icon="✨" title="Create & Refine">
+                        <FeatureCard icon="auto_awesome" title="Create & Refine">
                             Craft prompts with powerful frameworks and our AI-powered Lyra enhancer to ensure perfect, consistent results every time.
                         </FeatureCard>
-                        <FeatureCard icon="📚" title="Organize">
+                        <FeatureCard icon="inventory_2" title="Organize">
                             Build your personal toolkit. Save, categorize, and edit your favorite prompts, tools, and training in one central library.
                         </FeatureCard>
-                         <FeatureCard icon="🎓" title="Master">
+                         <FeatureCard icon="school" title="Master">
                             Level up your skills with our integrated Training Center. Our bite-sized modules make learning prompt engineering easy and accessible.
                         </FeatureCard>
                     </div>

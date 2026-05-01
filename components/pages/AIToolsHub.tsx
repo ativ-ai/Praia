@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { PUBLIC_AI_TOOLS, AI_TOOL_CATEGORIES } from '../../constants';
+import { PUBLIC_AI_TOOLS, AI_TOOL_CATEGORIES, AI_TOOL_CATEGORY_DISPLAY, AI_TOOL_CATEGORY_ICONS } from '../../constants';
 import { useAITools } from '../../hooks/useAITools';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
@@ -56,51 +56,57 @@ const AIToolsHub: React.FC = () => {
     return (
       <button
         onClick={() => setSelectedCategory(category)}
-        className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
+        className={`px-6 py-2.5 rounded-2xl text-sm font-bold whitespace-nowrap transition-all duration-300 border flex items-center gap-2 ${
             isActive
-            ? 'bg-slate-900 text-white border-slate-900 shadow-md transform scale-105'
-            : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+            ? 'bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200 transform -translate-y-0.5'
+            : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md'
         }`}
       >
-        {category}
+        <span className="material-symbols-outlined text-lg">{category === 'All' ? 'auto_awesome' : (AI_TOOL_CATEGORY_ICONS[category] || 'smart_toy')}</span>
+        {category === 'All' ? 'All Tools' : (AI_TOOL_CATEGORY_DISPLAY[category] || category)}
       </button>
     )
   }
 
   return (
-    <div className="animate-fade-in min-h-screen">
+    <div className="animate-fade-in min-h-screen pb-20">
       {/* Hero Section */}
-      <div className="relative py-12 md:py-20 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/50 to-transparent pointer-events-none"></div>
-        <div className="relative z-10 max-w-3xl mx-auto px-4">
-            <div className="inline-block p-4 bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 animate-bounce-slow">
-                <span className="text-4xl" role="img" aria-label="tools">🛠️</span>
+      <div className="relative py-16 md:py-24 text-center overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.05),transparent)] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.05),transparent)] pointer-events-none"></div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto px-4">
+            <div className="inline-flex items-center gap-3 px-4 py-2 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-700 text-sm font-bold mb-8 animate-bounce-slow">
+                <span className="flex h-2 w-2 rounded-full bg-indigo-600"></span>
+                Curated AI Directory
             </div>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-4">
-                The AI Tool <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-600">Directory</span>
+            
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight text-slate-900 mb-6 leading-[1.1]">
+                Master the <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">AI Ecosystem</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed">
-                Discover the best AI applications for writing, coding, design, and productivity. Curated and categorized for modern builders.
+            
+            <p className="text-xl md:text-2xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed">
+                Unlock peak productivity with the most powerful AI tools for design, writing, coding, productivity and more.
             </p>
 
             {/* Search Bar */}
-            <div className="relative max-w-xl mx-auto group">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-fuchsia-500 rounded-2xl opacity-20 group-hover:opacity-30 blur transition-opacity"></div>
-                <div className="relative bg-white rounded-2xl shadow-xl flex items-center p-2 border border-slate-200 focus-within:border-indigo-500 transition-colors">
-                    <span className="material-symbols-outlined text-slate-400 ml-3 text-xl">search</span>
+            <div className="relative max-w-2xl mx-auto group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-20 group-hover:opacity-40 blur-xl transition duration-500"></div>
+                <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl flex items-center p-3 border border-white/50 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+                    <span className="material-symbols-outlined text-slate-400 ml-4 text-2xl">search</span>
                     <input
                         type="text"
-                        placeholder="Search tools (e.g., 'Video Generator', 'Jasper')..."
+                        placeholder="Search for tools, features or workflows..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full p-3 bg-transparent border-none focus:ring-0 text-slate-800 placeholder-slate-400 font-medium outline-none"
+                        className="w-full p-4 bg-transparent border-none focus:ring-0 text-slate-800 placeholder-slate-400 font-semibold text-lg outline-none"
                     />
                      {searchTerm && (
                         <button 
                             onClick={() => setSearchTerm('')}
-                            className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                            className="mr-3 p-2 text-slate-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-all"
                         >
-                            <span className="material-symbols-outlined text-xl block">close</span>
+                            <span className="material-symbols-outlined text-2xl block">close</span>
                         </button>
                     )}
                 </div>
@@ -109,20 +115,28 @@ const AIToolsHub: React.FC = () => {
       </div>
       
       {/* Filters & Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Category Scroll */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar mask-image-linear-gradient">
+        <div className="flex items-center gap-3 overflow-x-auto pb-10 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
             <CategoryPill category="All" />
             {AI_TOOL_CATEGORIES.map(cat => <CategoryPill key={cat} category={cat} />)}
         </div>
 
         {/* Results Info */}
-        <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-slate-800">
-                {selectedCategory === 'All' ? 'All Tools' : selectedCategory}
-                <span className="ml-2 text-sm font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">{filteredTools.length}</span>
-            </h2>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-4 border-b border-slate-100">
+            <div>
+                <h2 className="text-3xl font-black text-slate-900">
+                    {selectedCategory === 'All' ? 'All Resources' : (AI_TOOL_CATEGORY_DISPLAY[selectedCategory] || selectedCategory)}
+                </h2>
+                <p className="text-slate-500 font-medium mt-1">
+                    Showing available solutions in the current workspace
+                </p>
+            </div>
+            <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Tool Count</span>
+                <span className="flex items-center justify-center min-w-[3rem] h-10 px-4 bg-slate-900 text-white rounded-xl font-black text-lg">{filteredTools.length}</span>
+            </div>
         </div>
 
         {/* Grid */}

@@ -8,6 +8,7 @@ const MOCK_USER: AppUser = {
   displayName: 'Praia User',
   email: 'user@praia.ai',
   photoURL: 'https://i.imgur.com/83dv4n8.png',
+  isPro: true,
 };
 
 interface AuthContextType {

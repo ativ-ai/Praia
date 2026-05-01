@@ -6,7 +6,7 @@ import { useSEO } from '../../hooks/useSEO';
 const FeaturePillar: React.FC<{ icon: string; title: string; children: React.ReactNode; }> = ({ icon, title, children }) => (
     <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-200 transform hover:-translate-y-1">
         <div className="flex items-center gap-4 mb-4">
-            <span className="text-4xl" role="img" aria-label={title}>{icon}</span>
+            <span className="material-symbols-outlined text-4xl text-indigo-600">{icon}</span>
             <h3 className="text-xl font-bold text-slate-900">{title}</h3>
         </div>
         <p className="text-slate-600 leading-relaxed">{children}</p>
@@ -41,7 +41,7 @@ const About: React.FC = () => {
         <div className="max-w-5xl mx-auto animate-fade-in">
             {/* Hero Section */}
             <section className="text-center mb-16">
-                <span className="text-7xl mb-4 inline-block" role="img" aria-label="beach with umbrella">🏖️</span>
+                <span className="material-symbols-outlined text-7xl mb-4 text-indigo-600 inline-block">beach_access</span>
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">
                     Go Beyond Basic Prompts.
                 </h1>
@@ -72,16 +72,16 @@ const About: React.FC = () => {
             <section className="mb-20">
                  <h2 className="text-3xl font-extrabold text-center text-slate-800 mb-12">Everything You Need in One Suite</h2>
                  <div className="grid md:grid-cols-2 gap-8">
-                    <FeaturePillar icon="🧭" title="Prompt Hub & Studio">
+                    <FeaturePillar icon="explore" title="Prompt Hub & Studio">
                         Explore a vast library of expert-curated prompts. Then, move to our Studio to craft your own with powerful frameworks and our AI-powered Lyra enhancer.
                     </FeaturePillar>
-                    <FeaturePillar icon="🛠️" title="AI Tool Directory">
+                    <FeaturePillar icon="handyman" title="AI Tool Directory">
                         Discover the best AI tools for any job. Our curated directory helps you find, save, and launch the latest AI applications for writing, image generation, and more.
                     </FeaturePillar>
-                    <FeaturePillar icon="🎓" title="Training Center">
+                    <FeaturePillar icon="school" title="Training Center">
                         Level up with our integrated Training Center. From fundamental principles to advanced frameworks, our bite-sized modules make learning prompt engineering easy.
                     </FeaturePillar>
-                    <FeaturePillar icon="📚" title="My PRAIA: Your Library">
+                    <FeaturePillar icon="inventory_2" title="My PRAIA: Your Library">
                         Organize your workflow in 'My PRAIA'. Save your favorite prompts, tools, and training modules. Create folders and build a personal AI toolkit that's always ready.
                     </FeaturePillar>
                  </div>
@@ -179,7 +179,7 @@ const About: React.FC = () => {
             <section className="mb-20">
                  <div className="bg-slate-900 text-white p-8 rounded-xl shadow-lg border border-slate-700">
                     <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-6">
-                        <span className="text-6xl" role="img" aria-label="Gemini logo">✨</span>
+                        <span className="material-symbols-outlined text-6xl text-indigo-400">auto_awesome</span>
                         <div>
                             <h3 className="text-2xl font-bold">Built on a Foundation of Innovation</h3>
                             <p className="text-slate-300 mt-2 leading-relaxed">

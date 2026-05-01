@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { GroupedPrompt, Prompt, PromptFolder, PromptCategory, PromptFramework } from '../../types';
 import { PROMPT_CATEGORY_COLORS, PROMPT_FRAMEWORK_COLORS, ITEM_TYPE_COLORS, PROMPT_FRAMEWORKS, PROMPT_ICONS } from '../../constants';
 import { useNotification } from '../../hooks/useNotification';
-import Tooltip from './Tooltip';
 
 interface PromptCardProps {
   item: GroupedPrompt | Prompt;
@@ -109,7 +108,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
   const iconId = isGroupedPrompt(item)
     ? item.prompts[0]?.id
     : (item as Prompt).originalPublicId || item.id;
-  const icon = (iconId && PROMPT_ICONS[iconId]) ? PROMPT_ICONS[iconId] : '📝';
+  const icon = (iconId && PROMPT_ICONS[iconId]) ? PROMPT_ICONS[iconId] : 'description';
   const isUserSubmitted = isGroupedPrompt(item) && item.prompts[0] && !item.prompts[0].originalPublicId;
 
 
@@ -127,21 +126,19 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
           <div className="flex-grow">
             <div className="flex justify-between items-start gap-4">
               <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center bg-slate-100 rounded-lg">
-                <span className="text-3xl" role="img" aria-label="prompt icon">{icon}</span>
+                <span className="material-symbols-outlined text-3xl text-indigo-500">{icon}</span>
               </div>
               <div className="flex-grow">
                 <h3 className="text-lg font-bold text-slate-900 leading-tight">{item.title}</h3>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                    <Tooltip text={`Filter by Category: ${item.category}`} position="bottom">
-                        <button 
-                            onClick={onCategoryClick ? handleCategoryClick : undefined} 
-                            disabled={!onCategoryClick} 
-                            className={`text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
-                        >
-                            {item.category}
-                        </button>
-                    </Tooltip>
-                    {isUserSubmitted && <Tooltip text="Created by a Community Member"><span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-800">Community</span></Tooltip>}
+                    <button 
+                        onClick={onCategoryClick ? handleCategoryClick : undefined} 
+                        disabled={!onCategoryClick} 
+                        className={`text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block ${categoryColorClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
+                    >
+                        {item.category}
+                    </button>
+                    {isUserSubmitted && <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-800">Community</span>}
                     {'version' in item && <span className="text-xs font-mono bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">v{item.version}</span>}
                 </div>
               </div>
@@ -152,25 +149,22 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
           <div className="mt-4 pt-4 border-t border-slate-200/80 flex justify-between items-center">
             <div className="flex items-center gap-1.5 flex-wrap">
                 {frameworks.map(fw => (
-                    <Tooltip key={fw} text={`Filter by Framework: ${fw}`}>
-                        <button
-                            onClick={onFrameworkClick ? (e) => handleFrameworkClick(e, fw) : undefined}
-                            disabled={!onFrameworkClick}
-                            className={`text-xs font-bold px-2 py-0.5 rounded ${PROMPT_FRAMEWORK_COLORS[fw] || 'bg-slate-200 text-slate-800'} ${onFrameworkClick ? 'cursor-pointer hover:ring-2 hover:ring-offset-1' : 'cursor-default'}`}
-                        >
-                            {fw}
-                        </button>
-                    </Tooltip>
+                    <button
+                        key={fw}
+                        onClick={onFrameworkClick ? (e) => handleFrameworkClick(e, fw) : undefined}
+                        disabled={!onFrameworkClick}
+                        className={`text-xs font-bold px-2 py-0.5 rounded ${PROMPT_FRAMEWORK_COLORS[fw] || 'bg-slate-200 text-slate-800'} ${onFrameworkClick ? 'cursor-pointer hover:ring-2 hover:ring-offset-1' : 'cursor-default'}`}
+                    >
+                        {fw}
+                    </button>
                 ))}
             </div>
             <div className="flex items-center gap-1">
               {isMovable && (
                   <div ref={moveMenuRef} className="relative">
-                      <Tooltip text="Move to Folder">
-                        <button onClick={toggleMoveMenu} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
-                            <span className="material-symbols-outlined text-slate-500 text-xl leading-none">folder_open</span>
-                        </button>
-                      </Tooltip>
+                    <button onClick={toggleMoveMenu} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                        <span className="material-symbols-outlined text-slate-500 text-xl leading-none">folder_open</span>
+                    </button>
                       {moveMenuOpen && (
                           <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 animate-expand-in">
                               <div className="py-1">
@@ -187,27 +181,21 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
                       )}
                   </div>
               )}
-              <Tooltip text="Copy Prompt Text">
-                <button onClick={handleCopyClick} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
-                    <span className="material-symbols-outlined text-slate-500 text-xl leading-none">content_copy</span>
-                </button>
-              </Tooltip>
+              <button onClick={handleCopyClick} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                  <span className="material-symbols-outlined text-slate-500 text-xl leading-none">content_copy</span>
+              </button>
               {onFavorite && (
-                  <Tooltip text={isFavorited ? "Remove from Favorites" : "Add to Favorites"}>
-                    <button onClick={handleFavoriteClick} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
-                        <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
-                            star
-                        </span>
-                    </button>
-                  </Tooltip>
+                <button onClick={handleFavoriteClick} className="p-2 rounded-full hover:bg-amber-100 transition-colors">
+                    <span className={`material-symbols-outlined text-xl leading-none ${isFavorited ? 'text-amber-500' : 'text-slate-400'}`} style={{fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}`}}>
+                        star
+                    </span>
+                </button>
               )}
                {onDelete && (
                   <div ref={optionsMenuRef} className="relative">
-                    <Tooltip text="More Options">
-                        <button onClick={toggleOptionsMenu} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
-                        <span className="material-symbols-outlined text-slate-500 text-xl">more_vert</span>
-                        </button>
-                    </Tooltip>
+                    <button onClick={toggleOptionsMenu} className="p-2 rounded-full hover:bg-slate-200 transition-colors">
+                    <span className="material-symbols-outlined text-slate-500 text-xl">more_vert</span>
+                    </button>
                     {optionsMenuOpen && (
                       <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 animate-expand-in">
                         <div className="py-1">

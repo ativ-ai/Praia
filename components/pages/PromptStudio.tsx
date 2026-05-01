@@ -18,7 +18,7 @@ declare const Prism: any;
 
 const LYRA_ENHANCEMENT_OPTIONS = {
   targetAI: ['Gemini', 'ChatGPT', 'Claude', 'Llama 3', 'Mistral'],
-  style: ['BASIC: Clarity & Structure', 'DETAIL: Reasoning & Robustness']
+  style: ['Basic', 'Detail']
 };
 
 const PRO_SPEC_TEMPLATE = `# PRO-SPEC: [Feature Name]
@@ -73,6 +73,12 @@ const VIBE_TEMPLATE = `# THE VIBE
 # TECH STACK PREFERENCE
 - React + Tailwind
 - Framer Motion for smooth transitions`;
+
+const VIBE_STARTERS = [
+    { title: 'Modern SaaS', text: 'A clean, high-performance SaaS dashboard with a sidebar, stat cards, and a data table. Use a deep navy and electric blue color palette. High density but breathable.' },
+    { title: 'Zen Landing', text: 'A minimalist, calming landing page for a meditation app. Flowing layout, soft pastel gradients, elegant serif typography, and subtle scroll reveal animations.' },
+    { title: 'Futuristic HUD', text: 'A dark, cyberpunk-themed interface for a spaceship cockpit. Neon cyan accents, glowing lines, animated data visualizations, and monospace fonts.' }
+];
 
 const LAYER_SNIPPETS = {
     L1: `## [L1] PRODUCT INTENT (The Soul)
@@ -522,9 +528,47 @@ const PromptStudio: React.FC = () => {
                  </div>
             </div>
 
-            {/* The Canvas */}
-            <div className="flex-grow relative overflow-hidden flex flex-col">
-                {editorView === 'write' ? (
+            {/* The Canvas or Result Comparison */}
+            <div className="flex-grow relative overflow-hidden flex flex-col transition-all duration-300">
+                {resultGeneratedText && (resultType === 'Enhancement' || resultType === 'Framework') ? (
+                    <div className="flex-grow flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-100 overflow-hidden animate-fade-in group">
+                        {/* Original View */}
+                        <div className="flex-1 flex flex-col min-h-0 bg-slate-50/50">
+                            <div className="px-6 py-3 border-b border-slate-100 flex justify-between items-center bg-white/50 backdrop-blur-sm">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Original Prompt</span>
+                                <span className="text-[10px] font-mono text-slate-300">{resultOriginalText?.length} chars</span>
+                            </div>
+                            <div className="flex-grow p-6 overflow-y-auto prose prose-slate prose-sm max-w-none">
+                                <div className="text-slate-500 font-mono text-xs whitespace-pre-wrap leading-relaxed opacity-80">{resultOriginalText}</div>
+                            </div>
+                        </div>
+
+                        {/* Enhanced View */}
+                        <div className="flex-1 flex flex-col min-h-0 bg-white relative">
+                            <div className="px-6 py-3 border-b border-indigo-50 flex justify-between items-center bg-indigo-50/30">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Lyra Optimized</span>
+                                    <div className="px-1.5 py-0.5 rounded bg-indigo-500 text-[8px] font-bold text-white uppercase animate-pulse">New</div>
+                                </div>
+                                <span className="text-[10px] font-mono text-indigo-300">{resultGeneratedText?.length} chars</span>
+                            </div>
+                            <div className="flex-grow p-6 overflow-y-auto prose prose-indigo prose-sm max-w-none">
+                                <div className="text-slate-800 font-mono text-xs whitespace-pre-wrap leading-relaxed font-medium">{resultGeneratedText}</div>
+                            </div>
+                            
+                            {/* Action Floating Bar */}
+                            <div className="absolute bottom-6 left-6 right-6 flex gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200 shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                                <button onClick={clearResult} className="flex-1 py-3 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all">
+                                    Discard Changes
+                                </button>
+                                <button onClick={acceptChanges} className="flex-[2] py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                                    <span className="material-symbols-outlined text-sm">check</span>
+                                    Accept & Apply To Editor
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ) : editorView === 'write' ? (
                     <textarea 
                         id="promptText" 
                         ref={textAreaRef}
@@ -588,8 +632,8 @@ const PromptStudio: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Result View (Overlay Mode) */}
-                    {resultGeneratedText ? (
+                    {/* Result View (Overlay Mode for Vibe/Spec) */}
+                    {resultGeneratedText && resultType !== 'Enhancement' && resultType !== 'Framework' ? (
                         <div className="absolute inset-0 bg-white z-40 flex flex-col animate-slide-up">
                             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-indigo-50">
                                 <h3 className="text-sm font-bold text-indigo-900 flex items-center gap-2">
@@ -607,22 +651,9 @@ const PromptStudio: React.FC = () => {
                             </div>
                             
                             <div className="flex-grow overflow-hidden flex flex-col">
-                                {resultType === 'Enhancement' || resultType === 'Framework' ? (
-                                    <div className="grid grid-rows-2 h-full divide-y divide-slate-100">
-                                        <div className="p-4 overflow-y-auto bg-slate-50">
-                                            <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Original</div>
-                                            <div className="text-xs text-slate-500 font-mono whitespace-pre-wrap">{resultOriginalText}</div>
-                                        </div>
-                                        <div className="p-4 overflow-y-auto bg-white">
-                                            <div className="text-[10px] font-bold text-emerald-600 uppercase mb-2">Optimized Output</div>
-                                            <div className="text-xs text-slate-800 font-mono whitespace-pre-wrap">{resultGeneratedText}</div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="p-4 overflow-y-auto h-full bg-slate-50">
-                                        <div className="text-xs text-slate-800 font-mono whitespace-pre-wrap">{resultGeneratedText}</div>
-                                    </div>
-                                )}
+                                <div className="p-4 overflow-y-auto h-full bg-slate-50">
+                                    <div className="text-xs text-slate-800 font-mono whitespace-pre-wrap">{resultGeneratedText}</div>
+                                </div>
                             </div>
 
                             <div className="p-4 border-t border-slate-100 flex gap-3 bg-white">
@@ -739,6 +770,45 @@ const PromptStudio: React.FC = () => {
                                     <button onClick={handleVibeGenerate} className="w-full py-3 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95">
                                         Generate {vibeMode === 'spec' ? 'Spec' : 'Component'}
                                     </button>
+
+                                    {/* How to Vibe Code Guide */}
+                                    <div className="mt-6 border-t border-slate-100 pt-5">
+                                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">How to Vibe Code</h4>
+                                        <div className="space-y-4">
+                                            {[
+                                                { step: '1', title: 'Describe Vibe', desc: 'Write about the mood, colors, and purpose of your product in the editor.' },
+                                                { step: '2', title: 'Select Output', desc: 'Choose between a PRO-SPEC (document) or a functional React Component.' },
+                                                { step: '3', title: 'Generate', desc: 'Hit the button to let Gemini transform your vibe into a technical asset.' }
+                                            ].map(item => (
+                                                <div key={item.step} className="flex gap-3">
+                                                    <div className="w-5 h-5 rounded-full bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                        {item.step}
+                                                    </div>
+                                                    <div>
+                                                        <h5 className="text-xs font-bold text-slate-800 leading-none mb-1">{item.title}</h5>
+                                                        <p className="text-[10px] text-slate-500 leading-tight">{item.desc}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Vibe Starters */}
+                                    <div className="mt-6 border-t border-slate-100 pt-5">
+                                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">Vibe Starters</h4>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {VIBE_STARTERS.map(starter => (
+                                                <button 
+                                                    key={starter.title}
+                                                    onClick={() => insertTemplate(starter.text, 'Code Generation', `${starter.title} starter added.`)}
+                                                    className="text-left px-3 py-2 bg-slate-50 hover:bg-fuchsia-50 border border-slate-100 hover:border-fuchsia-200 rounded-lg group transition-all"
+                                                >
+                                                    <div className="text-[10px] font-bold text-fuchsia-600 mb-0.5">{starter.title}</div>
+                                                    <div className="text-[10px] text-slate-500 line-clamp-1 group-hover:text-fuchsia-800">{starter.text}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
@@ -757,28 +827,43 @@ const PromptStudio: React.FC = () => {
                                         </p>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Layers</div>
-                                        {Object.entries(LAYER_SNIPPETS).map(([key, snippet]) => {
-                                            const isPresent = promptText.includes(`[${key}]`);
-                                            return (
-                                                <button 
-                                                    key={key}
-                                                    onClick={() => !isPresent && insertLayerSnippet(key as any)}
-                                                    disabled={isPresent}
-                                                    className={`w-full flex items-center justify-between px-3 py-2 border rounded-lg text-xs font-bold transition-all ${
-                                                        isPresent 
-                                                        ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' 
-                                                        : 'bg-slate-50 hover:bg-white border-slate-100 hover:border-slate-300 text-slate-600 hover:text-emerald-700'
-                                                    }`}
-                                                >
-                                                    <span>{key} Snippet</span>
-                                                    <span className="material-symbols-outlined text-sm opacity-50">
-                                                        {isPresent ? 'check' : 'add'}
-                                                    </span>
-                                                </button>
-                                            );
-                                        })}
+                                    <button 
+                                        onClick={() => insertTemplate(PRO_SPEC_TEMPLATE, 'Code Generation', 'PRO-SPEC Template Added')} 
+                                        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">description</span>
+                                        Insert Full PRO-SPEC
+                                    </button>
+
+                                    <div className="space-y-3 pt-4 border-t border-slate-100">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Layer Snippets</div>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {Object.entries(LAYER_SNIPPETS).map(([key, snippet]) => {
+                                                const isPresent = promptText.includes(`[${key}]`);
+                                                return (
+                                                    <button 
+                                                        key={key}
+                                                        onClick={() => !isPresent && insertLayerSnippet(key as any)}
+                                                        disabled={isPresent}
+                                                        className={`w-full flex items-center justify-between px-3 py-2.5 border rounded-lg text-xs font-bold transition-all ${
+                                                            isPresent 
+                                                            ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60' 
+                                                            : 'bg-slate-50 hover:bg-emerald-50 border-slate-100 hover:border-emerald-200 text-slate-600 hover:text-emerald-700'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] ${isPresent ? 'bg-slate-200' : 'bg-emerald-100 text-emerald-700'}`}>
+                                                                {key}
+                                                            </div>
+                                                            <span>Layer {key.replace('L', '')}</span>
+                                                        </div>
+                                                        <span className="material-symbols-outlined text-sm opacity-50">
+                                                            {isPresent ? 'check' : 'add'}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
                             )}

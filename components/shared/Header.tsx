@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -72,18 +73,17 @@ const Header: React.FC = () => {
       if (isMobile) {
           return (
               <div className="space-y-2">
-                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">Studio</h3>
-                  <NavLink to="/prompt-studio" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">design_services</span>Prompt Studio</NavLink>
+                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">Prompt</h3>
+                  <NavLink to="/prompt-studio" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">design_services</span>STUDIO</NavLink>
+                  <NavLink to="/prompts" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">tips_and_updates</span>PROMPT LIB</NavLink>
+                  <NavLink to="/pro-spec" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">integration_instructions</span>VIBE CODING</NavLink>
                   
                   <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Explore</h3>
-                  <NavLink to="/prompts" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">tips_and_updates</span>Prompts</NavLink>
-                  <NavLink to="/tools" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">smart_toy</span>AI Tools</NavLink>
-                  <NavLink to="/training" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">model_training</span>Training</NavLink>
+                  <NavLink to="/tools" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">smart_toy</span>AI TOOLS</NavLink>
+                  <NavLink to="/training" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">school</span>LEARN</NavLink>
 
-                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Resources</h3>
-                  <NavLink to="/about" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">info</span>About</NavLink>
-                  <NavLink to="/api-docs" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">code</span>API Docs</NavLink>
-                  <NavLink to="/pro-spec" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">integration_instructions</span>PRO-SPEC</NavLink>
+                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Info</h3>
+                  <NavLink to="/about" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">info</span>ABOUT</NavLink>
               </div>
           );
       }
@@ -92,23 +92,23 @@ const Header: React.FC = () => {
 
       return (
           <>
-              <Tooltip text="Create & Optimize Prompts" position="bottom">
-                <NavLink to="/prompt-studio" className={navLinkClasses}>
-                    <span className="material-symbols-outlined text-indigo-600">design_services</span>Prompt Studio
-                </NavLink>
-              </Tooltip>
-              
-              <Dropdown title={<Tooltip text="Browse Community Content" position="bottom"><span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-indigo-600">explore</span>Explore</span></Tooltip>}>
-                  <NavLink to="/prompts" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">tips_and_updates</span>Prompts</NavLink>
-                  <NavLink to="/tools" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">smart_toy</span>AI Tools</NavLink>
-                  <NavLink to="/training" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">model_training</span>Training</NavLink>
+              <Dropdown title={<Tooltip text="Prompt Studio & Library" position="bottom"><span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-indigo-600">design_services</span>PROMPT</span></Tooltip>}>
+                  <NavLink to="/prompt-studio" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">draw</span>STUDIO</NavLink>
+                  <NavLink to="/prompts" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">tips_and_updates</span>PROMPT LIB</NavLink>
+                  <NavLink to="/pro-spec" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">integration_instructions</span>VIBE CODING</NavLink>
               </Dropdown>
 
-              <Dropdown title={<Tooltip text="Documentation & Guides" position="bottom"><span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-indigo-600">school</span>Resources</span></Tooltip>}>
-                  <NavLink to="/about" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">info</span>About</NavLink>
-                  <NavLink to="/api-docs" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">code</span>API Docs</NavLink>
-                  <NavLink to="/pro-spec" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">integration_instructions</span>PRO-SPEC</NavLink>
-              </Dropdown>
+              <NavLink to="/tools" className={navLinkClasses}>
+                  <span className="material-symbols-outlined text-indigo-600">smart_toy</span>AI TOOLS
+              </NavLink>
+
+              <NavLink to="/training" className={navLinkClasses}>
+                  <span className="material-symbols-outlined text-indigo-600">school</span>LEARN
+              </NavLink>
+
+              <NavLink to="/about" className={navLinkClasses}>
+                  <span className="material-symbols-outlined text-indigo-600">info</span>ABOUT
+              </NavLink>
           </>
       );
   };
@@ -119,7 +119,7 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-24">
           <div className="flex items-center">
             <Link to="/" onClick={closeAllMenus} className="flex-shrink-0 flex items-center gap-3">
-              <span className="text-4xl" role="img" aria-label="logo">🏖️</span>
+              <span className="material-symbols-outlined text-4xl text-indigo-600">beach_access</span>
               <div className="flex flex-col">
                 <span className="text-3xl font-black text-slate-900 tracking-tighter leading-none">PRAIA</span>
                 <span className="text-[0.65rem] sm:text-xs font-bold text-indigo-600 tracking-wide uppercase leading-none mt-0.5">
@@ -146,7 +146,10 @@ const Header: React.FC = () => {
                   <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 z-50 animate-expand-in">
                     <div className="px-4 py-3 text-sm text-slate-700 border-b border-slate-200">
                       Signed in as <br/>
-                      <span className="font-semibold text-base text-slate-900">{user.displayName}</span>
+                      <span className="font-semibold text-base text-slate-900 flex items-center gap-2">
+                        {user.displayName}
+                        {user.isPro && <span className="bg-indigo-100 text-indigo-700 text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide border border-indigo-200">PRO</span>}
+                      </span>
                     </div>
                     <Link to="/my-praia" onClick={() => setUserMenuOpen(false)} className={dropdownItemClasses}>
                         <span className="material-symbols-outlined text-slate-500">cottage</span>My PRAIA
@@ -191,7 +194,10 @@ const Header: React.FC = () => {
                   <img className="h-12 w-12 rounded-full" src={user.photoURL} alt="User profile" />
                 </div>
                 <div className="ml-4">
-                  <div className="text-base font-medium text-slate-800">{user.displayName}</div>
+                  <div className="text-base font-medium text-slate-800 flex items-center gap-2">
+                      {user.displayName}
+                      {user.isPro && <span className="bg-indigo-100 text-indigo-700 text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide border border-indigo-200">PRO</span>}
+                  </div>
                   <div className="text-sm font-medium text-slate-500">{user.email}</div>
                 </div>
               </div>
