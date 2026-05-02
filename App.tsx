@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router';
 import { HashRouter } from 'react-router-dom';
+import ReactGA from 'react-ga4';
 import { AuthProvider } from './hooks/useAuth';
 import { PromptProvider } from './hooks/usePrompts';
 import { NotificationProvider } from './hooks/useNotification';
@@ -24,6 +25,9 @@ import AIToolsHub from './components/pages/AIToolsHub';
 import TrainingCenter from './components/pages/TrainingCenter';
 import ProSpecFramework from './components/pages/ProSpecFramework';
 
+// Initialize GA4
+ReactGA.initialize('G-V301FR5XKL');
+
 const ItemDetailModal: React.FC = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -38,6 +42,11 @@ const ItemDetailModal: React.FC = () => {
 const AppRoutes: React.FC = () => {
   const location = useLocation();
   const background = location.state?.background;
+
+  // Track page views
+  useEffect(() => {
+    ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
+  }, [location]);
 
   return (
     <>

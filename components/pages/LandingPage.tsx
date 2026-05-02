@@ -6,7 +6,7 @@ import CookieBanner from '../shared/CookieBanner';
 import Header from '../shared/Header';
 
 const FeatureCard: React.FC<{ icon: string; title: string; children: React.ReactNode; }> = ({ icon, title, children }) => (
-    <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-xl hover:border-indigo-300 transform hover:-translate-y-1">
+    <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-2xl hover:border-indigo-400 transform hover:-translate-y-2 hover:scale-[1.02]">
         <div className="flex items-center gap-4 mb-4">
             <div className="bg-indigo-100 text-indigo-600 p-3 rounded-lg">
                 <span className="material-symbols-outlined text-3xl">{icon}</span>
@@ -130,7 +130,7 @@ const AnimatedPromptBuilder: React.FC = () => {
 };
 
 const TestimonialCard: React.FC<{ quote: string; author: string; role: string; avatar: string; }> = ({ quote, author, role, avatar }) => (
-    <div className="bg-white p-6 rounded-xl shadow-lg text-slate-800 border border-slate-200/80 h-full flex flex-col">
+    <div className="bg-white p-6 rounded-xl shadow-lg text-slate-800 border border-slate-200/80 h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:border-indigo-400 hover:-translate-y-1">
                                     <p className="text-6xl text-indigo-200 font-serif leading-none">"</p>
         <p className="italic text-slate-600 flex-grow -mt-4">"{quote}"</p>
         <div className="flex items-center mt-4 pt-4 border-t border-slate-200">
@@ -143,60 +143,132 @@ const TestimonialCard: React.FC<{ quote: string; author: string; role: string; a
     </div>
 );
 
+const ToolsGridAnimation: React.FC = () => {
+    const tools = [
+        { name: 'GPT-5.5', icon: '🧠', color: 'bg-emerald-50 text-emerald-600' },
+        { name: 'Claude 4', icon: '✍️', color: 'bg-orange-50 text-orange-600' },
+        { name: 'Gemini 3', icon: '✨', color: 'bg-blue-50 text-blue-600' },
+        { name: 'Midjourney', icon: '🎨', color: 'bg-purple-50 text-purple-600' },
+        { name: 'Runway', icon: '🎥', color: 'bg-pink-50 text-pink-600' },
+        { name: 'Cursor', icon: '💻', color: 'bg-slate-50 text-slate-600' },
+    ];
+
+    return (
+        <div className="grid grid-cols-2 gap-3 p-4">
+            {tools.map((tool, i) => (
+                <div 
+                    key={tool.name} 
+                    className={`flex items-center gap-3 p-3 rounded-xl border border-slate-200/60 bg-white shadow-sm animate-float`}
+                    style={{ animationDelay: `${i * 0.2}s` }}
+                >
+                    <div className={`w-8 h-8 rounded-lg ${tool.color} flex items-center justify-center text-lg`}>
+                        {tool.icon}
+                    </div>
+                    <span className="text-xs font-bold text-slate-700">{tool.name}</span>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+const DualPathShowcase: React.FC = () => {
+    return (
+        <div className="max-w-7xl mx-auto px-4 mt-16 sm:mt-24">
+            <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+                {/* Path 1: Prompt Design */}
+                <div className="group relative bg-white rounded-3xl p-8 border border-slate-200 shadow-xl overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(79,70,229,0.15)] hover:border-indigo-300 hover:-translate-y-2 hover:scale-[1.01]">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <span className="material-symbols-outlined text-8xl text-indigo-600">design_services</span>
+                    </div>
+                    <div className="relative z-10">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-black uppercase mb-4 tracking-wider">
+                            <span className="material-symbols-outlined text-sm">terminal</span> The Architect
+                        </div>
+                        <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Prompt Design</h3>
+                        <p className="text-slate-600 mb-8 leading-relaxed max-w-md">
+                            Stop chatting, start engineering. Use our <strong>PRO-SPEC</strong> framework to build rigorous, version-controlled instructions that don't hallucinate.
+                        </p>
+                        <div className="mb-8">
+                            <AnimatedPromptBuilder />
+                        </div>
+                        <Link to="/prompt-studio" className="inline-flex items-center gap-2 bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-slate-900 transition-all shadow-lg shadow-indigo-200">
+                            Open Studio <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Path 2: AI Tools Hub */}
+                <div className="group relative bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(16,185,129,0.15)] hover:border-emerald-500/30 hover:-translate-y-2 hover:scale-[1.01]">
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <span className="material-symbols-outlined text-8xl text-emerald-400">smart_toy</span>
+                    </div>
+                    <div className="relative z-10">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-black uppercase mb-4 tracking-wider">
+                            <span className="material-symbols-outlined text-sm">apps</span> The Ecosystem
+                        </div>
+                        <h3 className="text-3xl font-black text-white mb-4 tracking-tight">AI Tools Hub</h3>
+                        <p className="text-slate-400 mb-8 leading-relaxed max-w-md">
+                            Discover the world's most powerful AI models. From <strong>LLMs</strong> to <strong>Video Gen</strong> and <strong>Agentic Workflows</strong>, curated for builders.
+                        </p>
+                        <div className="mb-8 bg-slate-800/50 rounded-2xl border border-white/5 backdrop-blur-sm min-h-[220px] flex items-center justify-center">
+                            <ToolsGridAnimation />
+                        </div>
+                        <Link to="/tools" className="inline-flex items-center gap-2 bg-emerald-500 text-white font-bold px-6 py-3 rounded-xl hover:bg-white hover:text-slate-900 transition-all shadow-lg shadow-emerald-500/20">
+                            Explore Tools <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const LandingPage: React.FC = () => {
     useSEO({
         title: 'Home',
-        description: 'PRAIA is the definitive AI suite for prompt engineering. Build apps faster with Vibe Coding, discover expert prompts, and optimize your AI interactions with Lyra.',
-        keywords: ['AI Suite', 'Prompt Helper', 'App Builder', 'Prompt Library', 'Free AI Tools', 'PRAIA', 'Prompt Engineering', 'Gemini Prompts']
+        description: 'PRAIA is the definitive AI OS for prompt engineering and tool discovery. Master the AI conversation with PRO-SPEC and the Tools Hub.',
+        keywords: ['AI OS', 'AI Tools Hub', 'Prompt Design', 'Prompt Engineering', 'PRO-SPEC', 'AI Agent Builder']
     });
 
     return (
         <div className="bg-slate-50 text-slate-800">
             <Header />
             {/* Hero Section */}
-            <section className="relative text-center py-20 sm:py-32 overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100 border-b border-slate-200">
+            <section className="relative text-center pt-20 pb-16 sm:pt-32 overflow-hidden bg-slate-50">
                  <div className="absolute inset-0 bg-grid-slate-800 [mask-image:linear-gradient(to_bottom,white,transparent)] opacity-10"></div>
                  <div className="relative container mx-auto px-4 z-10">
-                    <h1 className="text-4xl md:text-7xl font-black tracking-tighter animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-slate-900 to-slate-700">
-                        Build with PRAIA.
-                    </h1>
-                    <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-indigo-600 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                        Guided by Intelligence.
-                    </h2>
-                    <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-600 leading-relaxed animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                        <strong>Prompt Research & AI Architect</strong> is the all-in-one suite for discovering, crafting, and mastering world-class AI prompts. Stop guessing, start engineering.
-                    </p>
-                    <div className="mt-8 flex justify-center gap-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                         <Link
-                            to="/prompts"
-                            className="inline-block bg-indigo-600 text-white font-bold text-lg px-8 py-4 rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 shadow-xl shadow-indigo-500/30"
-                        >
-                            Get Started - It's Free
-                        </Link>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-black uppercase mb-6 tracking-widest animate-fade-in">
+                         The Ultimate AI Operating System
                     </div>
-                    <AnimatedPromptBuilder />
+                    <h1 className="text-5xl md:text-8xl font-black tracking-tighter animate-slide-up leading-[0.9]">
+                        Master the <br/><span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-emerald-500">AI Era.</span>
+                    </h1>
+                    <p className="mt-8 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed animate-slide-up" style={{ animationDelay: '0.2s' }}>
+                        The command center for the next generation of builders. Engineering the world's most powerful prompts and curating the elite ecosystem of AI tools.
+                    </p>
                 </div>
+                <DualPathShowcase />
             </section>
             
             {/* Core Pillars Section */}
             <section className="py-16 sm:py-24 bg-white border-y border-slate-200/80">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">The Complete Prompt Engineering Workflow</h2>
-                        <p className="mt-4 text-lg text-slate-600">Everything you need to go from beginner to expert, all in one place.</p>
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-slate-900 sm:text-5xl tracking-tight">The 360° AI Ecosystem</h2>
+                        <p className="mt-4 text-xl text-slate-600">Everything you need to orchestrate intelligence at scale.</p>
                     </div>
-                    <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <FeatureCard icon="explore" title="Discover">
-                            Explore a vast library of expert-curated prompts, tools, and training modules. Find the perfect starting point for any task.
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <FeatureCard icon="hub" title="The Ecosystem">
+                            Access a curated directory of 100+ AI models. From multimodal giants like Gemini to niche automation agents.
                         </FeatureCard>
-                        <FeatureCard icon="auto_awesome" title="Create & Refine">
-                            Craft prompts with powerful frameworks and our AI-powered Lyra enhancer to ensure perfect, consistent results every time.
+                        <FeatureCard icon="architecture" title="The Architect">
+                            Engineer bulletproof prompts using the PRO-SPEC framework. Decouple intent from implementation.
                         </FeatureCard>
-                        <FeatureCard icon="inventory_2" title="Organize">
-                            Build your personal toolkit. Save, categorize, and edit your favorite prompts, tools, and training in one central library.
+                        <FeatureCard icon="terminal" title="The Command Center">
+                            Your unified workspace. Save, categorize, and version your favorite prompts and tools in one central library.
                         </FeatureCard>
-                         <FeatureCard icon="school" title="Master">
-                            Level up your skills with our integrated Training Center. Our bite-sized modules make learning prompt engineering easy and accessible.
+                         <FeatureCard icon="psychology_alt" title="The Forge">
+                            Master the mechanics of AI reasoning. Learn to build agentic workflows that solve complex, multi-step tasks.
                         </FeatureCard>
                     </div>
                 </div>
@@ -230,26 +302,26 @@ const LandingPage: React.FC = () => {
             <section className="py-16 sm:py-24 bg-white border-y border-slate-200/80">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                      <div className="text-center">
-                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Loved by Creators and Developers</h2>
-                        <p className="mt-4 text-lg text-slate-600">See how professionals are using PRAIA to accelerate their workflows.</p>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Trusted by the Next Gen of Builders</h2>
+                        <p className="mt-4 text-lg text-slate-600">See how professionals are orchestrating intelligence with PRAIA.</p>
                     </div>
                     <div className="mt-12 grid md:grid-cols-1 lg:grid-cols-3 gap-8">
                         <TestimonialCard 
-                            quote="PRAIA's Prompt Hub is my secret weapon for marketing campaigns. I can find proven ad copy and social media ideas in seconds. It's cut my content creation time in half."
+                            quote="The Ecosystem is my secret weapon. I can find the exact niche AI model for my data pipelines in seconds. It's transformed how we select our tech stack."
                             author="Elena Rodriguez"
-                            role="Marketing Manager"
+                            role="Architect"
                             avatar="https://i.imgur.com/83dv4n8.png"
                         />
                          <TestimonialCard 
-                            quote="The Studio's framework feature is a game-changer for building reliable prompts for my code. The consistency is incredible, and the Lyra enhancer catches issues I would have missed."
+                            quote="Using The Architect's PRO-SPEC framework has eliminated hallucinations in our production code. The structured output is perfect every single time."
                             author="Ben Carter"
-                            role="Full-Stack Developer"
+                            role="Lead Engineer"
                             avatar="https://i.imgur.com/pBcut2e.png"
                         />
                          <TestimonialCard 
-                            quote="As a writer, getting the tone right is everything. The training modules on persona and tone helped me understand how to talk to the AI. Now, my first drafts are 90% of the way there."
+                            quote="The Forge taught me how to actually talk to models. It's not just about prompts anymore; it's about building reasoning paths that actually work."
                             author="Aisha Khan"
-                            role="Content Creator"
+                            role="AI Operations"
                             avatar="https://i.imgur.com/cZcDo4h.png"
                         />
                     </div>
@@ -259,15 +331,15 @@ const LandingPage: React.FC = () => {
             {/* Final CTA Section */}
             <section>
                 <div className="max-w-4xl mx-auto text-center py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
-                     <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-900">Ready to Master the AI Conversation?</h2>
-                    <p className="mt-4 text-lg text-slate-600">
-                        Join a growing community of creators and developers who are building the future with AI. Get started for free, no credit card required.
+                     <h2 className="text-4xl sm:text-6xl font-black text-slate-900 leading-tight tracking-tighter">Ready to Command the <br/><span className="text-indigo-600">AI Era?</span></h2>
+                    <p className="mt-6 text-xl text-slate-600 max-w-2xl mx-auto">
+                        Join the elite builders orchestrating the future. Access the ecosystem, engineer your specs, and scale your intelligence.
                     </p>
                     <Link
                         to="/prompts"
-                        className="mt-8 inline-block bg-indigo-600 text-white font-bold text-lg px-10 py-4 rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 shadow-xl shadow-indigo-500/30"
+                        className="mt-10 inline-block bg-indigo-600 text-white font-bold text-xl px-12 py-5 rounded-2xl hover:bg-slate-900 transition-all transform hover:scale-105 shadow-2xl shadow-indigo-200"
                     >
-                        Start Building for Free
+                        Initialize Your Instance
                     </Link>
                 </div>
             </section>

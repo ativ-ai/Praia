@@ -118,7 +118,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ item, onClick, onFavorit
 
   return (
     <article 
-      className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all duration-300 flex flex-col h-full overflow-hidden group cursor-pointer"
+      className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-2xl hover:border-indigo-400 hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 flex flex-col h-full overflow-hidden group cursor-pointer"
       onClick={onClick}
     >
       <div className={`h-1.5 ${categoryColor.replace('border-', 'bg-')}`}></div>

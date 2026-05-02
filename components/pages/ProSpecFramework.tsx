@@ -134,22 +134,22 @@ const ProSpecFramework: React.FC = () => {
 
     return (
         <div className="max-w-6xl mx-auto animate-fade-in">
-             {/* Hero Section */}
-            <div className="text-center py-20 border-b border-slate-200 mb-16 bg-gradient-to-b from-white to-slate-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
-                <div className="inline-flex items-center justify-center p-3 bg-indigo-600 text-white rounded-2xl mb-8 shadow-lg shadow-indigo-500/30">
-                    <span className="material-symbols-outlined text-4xl">integration_instructions</span>
+            {/* Hero Section */}
+            <div className="text-center py-20 border-b border-slate-200 mb-16 bg-white -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-black uppercase mb-6 tracking-widest">
+                    The Architect's Protocol
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 mb-6">
-                    Architect. <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-600">Don't Just Chat.</span>
+                <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 mb-6 leading-[0.9]">
+                    PRO-SPEC <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-emerald-500">Methodology.</span>
                 </h1>
                 <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed">
-                    PRO-SPEC is the <strong>Artifact-First</strong> methodology for Vibe Coding. It turns abstract intent into deterministic software.
+                    Architecture is the antidote to hallucination. PRO-SPEC is the 5-layer hard standard for eliminating context drift and orchestrating intelligence.
                 </p>
                 <div className="mt-10 flex justify-center gap-4">
-                    <a href="#template" className="bg-slate-900 text-white font-bold py-3 px-8 rounded-full hover:bg-slate-800 transition-transform transform hover:scale-105 shadow-xl">
+                    <a href="#template" className="bg-indigo-600 text-white font-bold py-4 px-10 rounded-2xl hover:bg-slate-900 transition-all shadow-xl shadow-indigo-200">
                         Get the Template
                     </a>
-                    <a href="#layers" className="bg-white text-slate-700 border border-slate-300 font-bold py-3 px-8 rounded-full hover:bg-slate-50 transition-colors">
+                    <a href="#layers" className="bg-white text-slate-700 border border-slate-200 font-bold py-4 px-10 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
                         Explore Layers
                     </a>
                 </div>

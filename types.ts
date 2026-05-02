@@ -8,7 +8,7 @@ export interface User {
   isPro?: boolean;
 }
 
-export type PromptCategory = "Marketing" | "Code Generation" | "Copywriting" | "Ideation" | "Image Generation" | "Productivity" | "Data Analysis" | "Personal Development" | "Sales" | "Business" | "Role-Playing" | "Advertising" | "Content Creation" | "Creative Writing" | "E-Commerce" | "Editing & Proofreading" | "Goal Setting" | "Graphic Design" | "Personal Finance" | "Persuasion & Influence" | "Social Media" | "Frameworks" | "Learning" | "Career" | "Self Help" | "Education" | "Research" | "Fundamentals" | "Advanced Techniques" | "System Prompts";
+export type PromptCategory = "Business & Sales" | "Content & Creative" | "Tech & Data" | "Growth & Education" | "Productivity & Misc";
 
 export interface Prompt {
   id: string; // Unique ID for this specific version
@@ -48,11 +48,11 @@ export interface PromptFolder {
 }
 
 export enum PromptFramework {
-  RTF = "R-T-F",
-  TAG = "T-A-G",
-  BAB = "B-A-B",
-  CARE = "C-A-R-E",
-  RISE = "R-I-S-E",
+  RTF = "R.T.F.",
+  TAG = "T.A.G.",
+  BAB = "B.A.B.",
+  CARE = "C.A.R.E.",
+  RISE = "R.I.S.E.",
   SCOPE = "S.C.O.P.E.",
   PACEF = "P.A.C.E.F.",
   CURATE = "C.U.R.A.T.E.",
@@ -84,7 +84,12 @@ export interface TrainingModule {
     description: string;
     category: TrainingCategory;
     content: TrainingContent[];
+    institution?: string;
+    priceModel?: string;
+    externalLink?: string;
     isFavorited?: boolean;
+    isFeatured?: boolean;
+    internalLink?: string;
     originalPublicId?: string;
     createdAt?: number;
 }
@@ -98,7 +103,7 @@ export interface TrainingContent {
     mediaType?: 'image' | 'video';
 }
 
-export type AIToolCategory = "Assistant" | "Image" | "Video" | "Audio" | "Writing" | "Productivity" | "Design" | "Education" | "Code" | "Lifestyle" | "Business" | "Gaming" | "Creative Studio" | "Content & Marketing" | "Tech & Development" | "Workflow & Planning";
+export type AIToolCategory = "Media & Creative" | "Writing & Marketing" | "Tech & Developer" | "Business & Productivity" | "Growth & Lifestyle" | "Other Utilities";
 
 export interface AITool {
   id: string;

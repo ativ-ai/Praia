@@ -67,7 +67,7 @@ DESCRIPTION: ${framework.description}
 STRUCTURE:
 ${structureDetails}
 
-Take the user's original prompt below and rewrite it to adhere strictly to this structure. The output should be ONLY the rewritten prompt text. Do not add any explanations or markdown formatting. For example, if the framework is R-T-F, the output should start directly with "Act as a...".
+Take the user's original prompt below and rewrite it to adhere strictly to this structure. The output should be ONLY the rewritten prompt text. Do not add any explanations or markdown formatting. For example, if the framework is R.T.F., the output should start directly with "Act as a...".
 
 ORIGINAL PROMPT:
 """

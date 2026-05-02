@@ -33,92 +33,96 @@ const FAQItem: React.FC<{ question: string; children: React.ReactNode; }> = ({ q
 const About: React.FC = () => {
     useSEO({
         title: 'About PRAIA',
-        description: 'PRAIA (Prompt Research & AI Architect) is the all-in-one suite for discovering, crafting, and optimizing world-class AI prompts. Learn about our PRO-SPEC methodology.',
-        keywords: ['About PRAIA', 'AI Suite', 'Prompt Engineering', 'PRO-SPEC', 'Vibe Coding', 'AI Architect', 'Perfect Pitch']
+        description: 'PRAIA is the definitive AI Operating System for prompt engineering and tool discovery. Master the AI Era with PRO-SPEC and our curated Ecosystem.',
+        keywords: ['AI OS', 'AI Orchestration', 'Prompt Engineering', 'PRO-SPEC', 'AI Tools Hub', 'AI Agent Builder']
     });
 
     return (
         <div className="max-w-5xl mx-auto animate-fade-in">
             {/* Hero Section */}
-            <section className="text-center mb-16">
-                <span className="material-symbols-outlined text-7xl mb-4 text-indigo-600 inline-block">beach_access</span>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">
-                    Go Beyond Basic Prompts.
+            <section className="text-center mb-16 pt-12">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-black uppercase mb-6 tracking-widest">
+                    The Ultimate AI Operating System
+                </div>
+                <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-slate-900 leading-tight">
+                    Engineering the <br/><span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-emerald-500">AI Command Center.</span>
                 </h1>
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-indigo-600">
-                    Master the AI Conversation.
-                </h2>
-                <p className="mt-6 max-w-3xl mx-auto text-lg text-slate-600 leading-relaxed">
-                    PRAIA (Prompt Research & AI Architect) is your all-in-one suite for discovering, crafting, and optimizing world-class AI prompts. Stop guessing, start engineering.
+                <p className="mt-8 max-w-3xl mx-auto text-xl text-slate-600 leading-relaxed">
+                    PRAIA (Prompt Research & AI Architect) is the definitive platform for orchestrating intelligence at scale. We provide the elite tools and frameworks required to command the next generation of AI agents.
                 </p>
-                <Link
-                    to="/prompts"
-                    className="mt-8 inline-block bg-indigo-600 text-white font-bold text-lg px-8 py-4 rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 shadow-lg shadow-indigo-500/30"
-                >
-                    Explore the Hub
-                </Link>
+                <div className="mt-10 flex flex-wrap justify-center gap-4">
+                    <Link
+                        to="/prompt-studio"
+                        className="bg-indigo-600 text-white font-bold text-lg px-8 py-4 rounded-xl hover:bg-slate-900 transition-all shadow-xl shadow-indigo-200"
+                    >
+                        Initialize Studio
+                    </Link>
+                    <Link
+                        to="/tools"
+                        className="bg-white text-slate-900 border border-slate-200 font-bold text-lg px-8 py-4 rounded-xl hover:bg-slate-50 transition-all shadow-sm"
+                    >
+                        Explore Ecosystem
+                    </Link>
+                </div>
             </section>
 
              {/* The Perfect Pitch Section */}
             <section className="mb-20 max-w-4xl mx-auto">
-                 <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-8 md:p-12 text-center shadow-sm">
-                    <p className="text-xl md:text-2xl font-medium text-indigo-900 leading-relaxed">
-                        "Most people get generic, low-quality results from AI because they don't know how to structure their prompts effectively. That's why PRAIA acts as a complete prompt engineering package that uses the Lyra AI engine to automatically search, structure, and optimize your inputs, so you can instantly transform vague ideas into professional-level content and code without needing to be an expert."
+                 <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-emerald-500"></div>
+                    <p className="text-xl md:text-2xl font-medium text-slate-300 leading-relaxed italic">
+                        "Most developers fall into the 'Chat Loop'—an endless cycle of requesting tweaks that eventually causes the AI to forget previous instructions. PRAIA solves this by acting as a package of high-level engineering protocols, allowing you to transform vague vibes into production-ready specs and deterministic code instantly."
                     </p>
                 </div>
             </section>
 
             {/* Core Pillars Section */}
-            <section className="mb-20">
-                 <h2 className="text-3xl font-extrabold text-center text-slate-800 mb-12">Everything You Need in One Suite</h2>
+            <section className="mb-24">
+                 <h2 className="text-4xl font-black text-center text-slate-900 mb-12 tracking-tight">The Four Pillars of Orchestration</h2>
                  <div className="grid md:grid-cols-2 gap-8">
-                    <FeaturePillar icon="explore" title="Prompt Hub & Studio">
-                        Explore a vast library of expert-curated prompts. Then, move to our Studio to craft your own with powerful frameworks and our AI-powered Lyra enhancer.
+                    <FeaturePillar icon="hub" title="The Ecosystem">
+                        A curated directory of 100+ AI models and specialized agents. From multimodal giants like Gemini to niche automation tools, we map the entire intelligence frontier.
                     </FeaturePillar>
-                    <FeaturePillar icon="handyman" title="AI Tool Directory">
-                        Discover the best AI tools for any job. Our curated directory helps you find, save, and launch the latest AI applications for writing, image generation, and more.
+                    <FeaturePillar icon="architecture" title="The Architect">
+                        Our world-class Prompt Studio. Use the PRO-SPEC framework to build rigorous, version-controlled instructions that eliminate hallucinations and enforce system constraints.
                     </FeaturePillar>
-                    <FeaturePillar icon="school" title="Training Center">
-                        Level up with our integrated Training Center. From fundamental principles to advanced frameworks, our bite-sized modules make learning prompt engineering easy.
+                    <FeaturePillar icon="terminal" title="The Command Center">
+                        Your unified workspace (My PRAIA). Save, categorize, and version-control your favorite prompts, tools, and specifications in one central library.
                     </FeaturePillar>
-                    <FeaturePillar icon="inventory_2" title="My PRAIA: Your Library">
-                        Organize your workflow in 'My PRAIA'. Save your favorite prompts, tools, and training modules. Create folders and build a personal AI toolkit that's always ready.
+                    <FeaturePillar icon="psychology_alt" title="The Forge">
+                        Our integrated Training Center. Master the deep mechanics of AI reasoning, RAG architectures, and agentic workflows through bite-sized, practical modules.
                     </FeaturePillar>
                  </div>
             </section>
 
             {/* PRO-SPEC Methodology Section */}
-            <section className="mb-20">
-                <div className="bg-slate-900 rounded-2xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
-                    {/* Abstract decorative background */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-                    <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-fuchsia-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-
+            <section className="mb-24">
+                <div className="bg-white rounded-3xl p-8 md:p-16 border border-slate-200 shadow-xl relative overflow-hidden">
                     <div className="relative z-10">
-                        <div className="text-center mb-10">
-                            <span className="bg-indigo-500/20 text-indigo-200 border border-indigo-500/30 text-sm font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
-                                The Methodology
+                        <div className="text-center mb-12">
+                            <span className="bg-indigo-100 text-indigo-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
+                                The Hard Core Protocol
                             </span>
-                            <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
-                                Stop Chatting. <br className="hidden md:block" />Start Architecting.
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 mb-6">
+                                PRO-SPEC™ Methodology
                             </h2>
-                            <p className="text-slate-300 text-lg max-w-2xl mx-auto leading-relaxed">
-                                PRAIA introduces <strong>PRO-SPEC</strong>, a rigorous 5-layer framework designed to eliminate AI context drift. It turns vague ideas into production-grade software artifacts.
+                            <p className="text-slate-600 text-xl max-w-3xl mx-auto leading-relaxed">
+                                Architecture is the antidote to hallucination. PRO-SPEC is a 5-layer framework designed to harden the boundary between human intent and AI execution.
                             </p>
                         </div>
 
-                        <div className="grid md:grid-cols-5 gap-4 mb-10">
+                        <div className="grid md:grid-cols-5 gap-4 mb-12">
                             {[
-                                { id: 'L1', title: 'Intent', desc: 'The Soul & Vibe', color: 'border-slate-500' },
-                                { id: 'L2', title: 'Contracts', desc: 'DB & API Schema', color: 'border-slate-400' },
-                                { id: 'L3', title: 'Shield', desc: 'Security Rules', color: 'border-amber-500' },
-                                { id: 'L4', title: 'Engine', desc: 'Performance', color: 'border-emerald-500' },
-                                { id: 'L5', title: 'Command', desc: 'Orchestration', color: 'border-indigo-500' },
+                                { id: 'L1', title: 'Intent', desc: "The 'why' and user-centric vibes.", color: 'bg-indigo-50 border-indigo-200' },
+                                { id: 'L2', title: 'Contracts', desc: 'Hard schemas, types, and API specs.', color: 'bg-slate-50 border-slate-200' },
+                                { id: 'L3', title: 'Shield', desc: 'Auth, security, and safety logic.', color: 'bg-red-50 border-red-200' },
+                                { id: 'L4', title: 'Engine', desc: 'Performance and Big O constraints.', color: 'bg-emerald-50 border-emerald-200' },
+                                { id: 'L5', title: 'Command', desc: 'The orchestration and trigger.', color: 'bg-blue-50 border-blue-200' },
                             ].map((layer, i) => (
-                                <div key={layer.id} className={`bg-slate-800/50 backdrop-blur-sm border-t-4 ${layer.color} p-4 rounded-lg text-center hover:bg-slate-800 transition-colors`}>
-                                    <div className="text-xs font-mono text-slate-400 mb-1">Layer {i+1}</div>
-                                    <div className="font-bold text-lg text-white">{layer.title}</div>
-                                    <div className="text-xs text-slate-300">{layer.desc}</div>
+                                <div key={layer.id} className={`border p-5 rounded-2xl transition-all hover:shadow-lg ${layer.color}`}>
+                                    <div className="text-xs font-black text-slate-400 mb-2 uppercase">Layer {i+1}</div>
+                                    <div className="font-black text-xl text-slate-900 mb-2">{layer.title}</div>
+                                    <div className="text-sm text-slate-600 leading-snug">{layer.desc}</div>
                                 </div>
                             ))}
                         </div>
@@ -126,10 +130,11 @@ const About: React.FC = () => {
                         <div className="text-center">
                             <Link 
                                 to="/pro-spec" 
-                                className="inline-flex items-center gap-2 bg-white text-slate-900 font-bold px-6 py-3 rounded-lg hover:bg-indigo-50 transition-all transform hover:scale-105"
+                                className="group inline-flex items-center gap-2 bg-slate-900 text-white font-bold px-8 py-4 rounded-xl hover:bg-indigo-600 transition-all shadow-lg"
                             >
                                 <span className="material-symbols-outlined">integration_instructions</span>
-                                Read the Full PRO-SPEC Guide
+                                Deploy Documentation
+                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                             </Link>
                         </div>
                     </div>
@@ -137,53 +142,39 @@ const About: React.FC = () => {
             </section>
 
             {/* FAQ Section */}
-            <section className="mb-20">
-                <h2 className="text-3xl font-extrabold text-center text-slate-800 mb-12">Frequently Asked Questions</h2>
-                <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-slate-200">
-                    <FAQItem question="What is PRAIA?">
-                        <p>PRAIA stands for <strong>Prompt Research & AI Architect</strong>. It is a comprehensive AI suite designed to help users of all skill levels master prompt engineering. It provides tools to discover, create, save, and optimize AI prompts for models like Google's Gemini.</p>
+            <section className="mb-24">
+                <h2 className="text-4xl font-black text-center text-slate-900 mb-12 tracking-tight">System FAQ</h2>
+                <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-slate-200">
+                    <FAQItem question="What defines PRAIA as an AI OS?">
+                        <p>Unlike simple chat interfaces, an <strong>Operating System</strong> provides a kernel of standards (PRO-SPEC), a file system for persistence (My PRAIA), and a registry of capabilities (The Ecosystem). PRAIA is the environment where you manage the complexity of AI apps rather than just asking questions.</p>
                     </FAQItem>
-                    <FAQItem question="Who is PRAIA for?">
-                        <p>PRAIA is for anyone who interacts with AI models. This includes:</p>
-                        <ul>
-                            <li><strong>Developers</strong> who want to build reliable, structured prompts for their applications.</li>
-                            <li><strong>Marketers & Copywriters</strong> looking for creative inspiration and high-converting copy frameworks.</li>
-                            <li><strong>Students & Researchers</strong> who need to efficiently summarize text, brainstorm ideas, or learn complex topics.</li>
-                            <li><strong>Business Professionals</strong> aiming to improve productivity, draft emails, or create reports.</li>
-                            <li><strong>Creative Individuals</strong> exploring AI for writing, art, and ideation.</li>
-                        </ul>
+                    <FAQItem question="Who are 'The Next Gen Builders'?">
+                         <p>They are "AI Orchestrators"—developers, founders, and creators who understand that the future of work isn't just knowing how to write; it's knowing how to <strong>instruct and coordinate</strong> collections of intelligence to solve high-order problems.</p>
                     </FAQItem>
-                    <FAQItem question="How is PRAIA different from just using an AI chatbot directly?">
-                        <p>While chatbots are powerful, PRAIA provides a structured workflow around them. Key differences include:</p>
-                        <ul>
-                            <li><strong>Structure & Frameworks:</strong> PRAIA offers proven frameworks (like R-T-F, B-A-B) that add precision and consistency to your prompts, reducing the "guesswork" of getting a good response.</li>
-                            <li><strong>Optimization:</strong> Our Lyra enhancer acts as an AI specialist, refining your prompts to be clearer and more effective for the target AI model.</li>
-                            <li><strong>Organization:</strong> "My PRAIA" allows you to build a personal, reusable library of prompts, tools, and training, saving you time and effort.</li>
-                            <li><strong>Discovery:</strong> The Community Hub provides a curated collection of high-quality prompts and tools, so you don't have to start from scratch.</li>
-                        </ul>
+                    <FAQItem question="How does PRO-SPEC eliminate hallucinations?">
+                        <p>By forcing the AI into a "Contract-First" mode. When you provide an L2 (Technical Contract) and L3 (Security Shield), the AI's creativity is bounded by your specifications. It cannot guess a database schema if the schema is already defined in the Spec.</p>
                     </FAQItem>
-                     <FAQItem question="What is the Lyra Prompt Enhancer?">
-                        <p>Lyra is a specialized AI persona built into the Prompt Studio. It uses a "meta-prompt" (a prompt about prompting) to analyze your input and automatically apply prompt engineering best practices. It deconstructs your intent, enhances clarity, adds structure, and delivers an optimized prompt designed for better performance on models like Gemini.</p>
+                    <FAQItem question="What is the Forge?">
+                        <p>The Forge is where you learn the mechanics of <strong>Agentic Workflows</strong>. We don't just teach you how to write "Act as a pirate" prompts; we teach you how to build chain-of-thought protocols and multi-agent systems.</p>
                     </FAQItem>
-                    <FAQItem question="How does PRAIA handle my data and API keys?">
-                        <p>This version of PRAIA is a demonstration app and operates entirely within your browser session.</p>
-                        <ul>
-                            <li><strong>No Database:</strong> Your saved prompts, tools, and folders are stored locally for your current session and are cleared when you close the tab. No user data is saved on a server.</li>
-                            <li><strong>API Key Security:</strong> The Lyra Prompt Enhancer requires a Google Gemini API key. For security, this application is designed to source the API key exclusively from a pre-configured environment variable (`process.env.API_KEY`). The application will never ask you to enter your API key in the user interface.</li>
-                        </ul>
+                    <FAQItem question="Is this a production-ready system?">
+                        <p>This application is a <strong>Preview Edition</strong> built using Vibe Coding. It demonstrates the architecture and UI/UX patterns of a professional AI suite. Currently, data persists locally in your session (browser-only).</p>
                     </FAQItem>
                 </div>
             </section>
             
             {/* "Built with" Section */}
-            <section className="mb-20">
-                 <div className="bg-slate-900 text-white p-8 rounded-xl shadow-lg border border-slate-700">
-                    <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-6">
-                        <span className="material-symbols-outlined text-6xl text-indigo-400">auto_awesome</span>
-                        <div>
-                            <h3 className="text-2xl font-bold">Built on a Foundation of Innovation</h3>
-                            <p className="text-slate-300 mt-2 leading-relaxed">
-                                This application was built in partnership with <strong>Google's Gemini API</strong> using the <strong>Vibe Coding</strong> methodology. It stands as a testament to the power of human-AI collaboration, showcasing how creativity and technical efficiency can merge to build rich, functional applications at speed.
+            <section className="mb-24">
+                 <div className="bg-slate-50 text-slate-900 p-10 rounded-3xl border border-slate-200 relative overflow-hidden group">
+                    <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-indigo-100 rounded-full blur-3xl opacity-50 group-hover:bg-indigo-200 transition-colors"></div>
+                    <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-8 relative z-10">
+                        <div className="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center rotate-3 shadow-xl">
+                            <span className="material-symbols-outlined text-4xl text-white">auto_awesome</span>
+                        </div>
+                        <div className="flex-grow">
+                            <h3 className="text-3xl font-black tracking-tight">The Vibe Coding Genesis</h3>
+                            <p className="text-slate-600 mt-3 text-lg leading-relaxed max-w-3xl">
+                                This platform was architected using **Google's Gemini API** and the **Vibe Coding** methodology. It represents a paradigm shift where natural language becomes the compiler, and human intent is the only limiting factor.
                             </p>
                         </div>
                     </div>
@@ -191,17 +182,22 @@ const About: React.FC = () => {
             </section>
 
             {/* Final CTA Section */}
-            <section className="bg-indigo-700 text-white p-10 rounded-xl text-center shadow-2xl bg-gradient-to-br from-indigo-600 to-indigo-800">
-                <h2 className="text-3xl font-extrabold mb-4">Ready to Elevate Your Prompts?</h2>
-                <p className="text-indigo-200 text-lg mb-6 max-w-xl mx-auto">
-                    Join a growing community of creators and developers who are mastering the art of AI communication.
-                </p>
-                <Link
-                    to="/login"
-                    className="inline-block bg-white text-indigo-700 font-bold text-lg px-10 py-4 rounded-lg hover:bg-indigo-100 transition-all shadow-lg transform hover:scale-105"
-                >
-                    Get Started for Free
-                </Link>
+            <section className="relative overflow-hidden bg-indigo-600 rounded-[3rem] p-12 sm:p-20 text-center shadow-2xl">
+                <div className="absolute inset-0 bg-grid-slate-800 opacity-20 [mask-image:radial-gradient(white,transparent)]"></div>
+                <div className="relative z-10">
+                    <h2 className="text-4xl sm:text-7xl font-black text-white leading-none tracking-tighter mb-8">
+                        Ready to Command <br/>the <span className="text-indigo-200">AI Era?</span>
+                    </h2>
+                    <p className="text-indigo-100 text-xl mb-12 max-w-2xl mx-auto font-medium">
+                        Join the elite builders orchestrating the future. Access the ecosystem, engineer your specs, and scale your intelligence.
+                    </p>
+                    <Link
+                        to="/login"
+                        className="inline-block bg-white text-indigo-700 font-bold text-xl px-12 py-5 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-2xl transform hover:scale-105"
+                    >
+                        Initialize Your Instance
+                    </Link>
+                </div>
             </section>
         </div>
     );

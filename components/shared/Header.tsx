@@ -73,14 +73,13 @@ const Header: React.FC = () => {
       if (isMobile) {
           return (
               <div className="space-y-2">
-                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">Prompt</h3>
-                  <NavLink to="/prompt-studio" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">design_services</span>STUDIO</NavLink>
-                  <NavLink to="/prompts" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">tips_and_updates</span>PROMPT LIB</NavLink>
-                  <NavLink to="/pro-spec" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">integration_instructions</span>VIBE CODING</NavLink>
-                  
-                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Explore</h3>
+                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">Navigation</h3>
                   <NavLink to="/tools" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">smart_toy</span>AI TOOLS</NavLink>
-                  <NavLink to="/training" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">school</span>LEARN</NavLink>
+                  <NavLink to="/prompts" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">tips_and_updates</span>PROMPTS</NavLink>
+                  <NavLink to="/prompt-studio" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">design_services</span>STUDIO</NavLink>
+                  
+                  <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Training</h3>
+                  <NavLink to="/training" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">school</span>TRAINING CENTER</NavLink>
 
                   <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider mt-4">Info</h3>
                   <NavLink to="/about" onClick={closeAllMenus} className={({isActive}) => `${mobileLinkClasses} ${isActive ? mobileActiveLinkClasses : mobileInactiveLinkClasses}`}><span className="material-symbols-outlined">info</span>ABOUT</NavLink>
@@ -92,18 +91,20 @@ const Header: React.FC = () => {
 
       return (
           <>
-              <Dropdown title={<Tooltip text="Prompt Studio & Library" position="bottom"><span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-indigo-600">design_services</span>PROMPT</span></Tooltip>}>
-                  <NavLink to="/prompt-studio" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">draw</span>STUDIO</NavLink>
-                  <NavLink to="/prompts" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">tips_and_updates</span>PROMPT LIB</NavLink>
-                  <NavLink to="/pro-spec" className={dropdownItemClasses}><span className="material-symbols-outlined text-slate-500">integration_instructions</span>VIBE CODING</NavLink>
-              </Dropdown>
-
               <NavLink to="/tools" className={navLinkClasses}>
                   <span className="material-symbols-outlined text-indigo-600">smart_toy</span>AI TOOLS
               </NavLink>
 
+              <NavLink to="/prompts" className={navLinkClasses}>
+                  <span className="material-symbols-outlined text-indigo-600">tips_and_updates</span>PROMPTS
+              </NavLink>
+
+              <NavLink to="/prompt-studio" className={navLinkClasses}>
+                  <span className="material-symbols-outlined text-indigo-600">design_services</span>STUDIO
+              </NavLink>
+
               <NavLink to="/training" className={navLinkClasses}>
-                  <span className="material-symbols-outlined text-indigo-600">school</span>LEARN
+                  <span className="material-symbols-outlined text-indigo-600">school</span>TRAINING CENTER
               </NavLink>
 
               <NavLink to="/about" className={navLinkClasses}>

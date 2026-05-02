@@ -16,8 +16,9 @@ const ToolStudio: React.FC = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
-  const [category, setCategory] = useState<AIToolCategory>('Productivity');
+  const [category, setCategory] = useState<AIToolCategory>('Tech & Developer');
   const [iconUrl, setIconUrl] = useState('');
+  const [priceModel, setPriceModel] = useState('Free');
   
   const pageTitle = id ? 'Edit AI Tool' : 'Create New AI Tool';
   useSEO({
@@ -35,6 +36,7 @@ const ToolStudio: React.FC = () => {
         setLink(toolToEdit.link);
         setCategory(toolToEdit.category);
         setIconUrl(toolToEdit.iconUrl);
+        setPriceModel(toolToEdit.priceModel || 'Free');
       } else {
         addNotification('Tool not found!', 'error');
         navigate('/my-praia');
@@ -55,6 +57,7 @@ const ToolStudio: React.FC = () => {
       description,
       link,
       category,
+      priceModel,
       iconUrl: iconUrl || `https://fav.farm/🛠️`,
     };
 
@@ -97,6 +100,17 @@ const ToolStudio: React.FC = () => {
           <label htmlFor="category" className="block text-sm font-medium text-slate-700">Category</label>
           <select id="category" value={category} onChange={e => setCategory(e.target.value as AIToolCategory)} className="mt-1 block w-full border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
             {AI_TOOL_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="priceModel" className="block text-sm font-medium text-slate-700">Price Model</label>
+          <select id="priceModel" value={priceModel} onChange={e => setPriceModel(e.target.value)} className="mt-1 block w-full border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
+            <option value="Free">Free</option>
+            <option value="Freemium">Freemium</option>
+            <option value="Paid">Paid</option>
+            <option value="Subscription">Subscription</option>
+            <option value="Enterprise">Enterprise</option>
           </select>
         </div>
         

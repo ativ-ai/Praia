@@ -473,7 +473,24 @@ const PromptStudio: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Main Work Area */}
+      {/* 2. Introduction Section */}
+      {!isFullScreen && (
+          <div className="mb-6 animate-slide-up px-1" style={{ animationDelay: '0.1s' }}>
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm overflow-hidden relative">
+                  <div className="absolute top-0 right-0 p-6 opacity-5">
+                      <span className="material-symbols-outlined text-6xl text-indigo-600">architecture</span>
+                  </div>
+                  <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-2">The Architect's Workspace</h2>
+                  <p className="text-slate-600 text-sm max-w-4xl leading-relaxed">
+                      Welcome to the Prompt Studio, the command center for AI orchestration. This is your professional environment to transform vague intent into deterministic execution. 
+                      Leverage our <strong>PRO-SPEC</strong> methodology to architect rigorous technical contracts, or use the <strong>Lyra AI</strong> optimizer to eliminate context drift and hallucinations. 
+                      Here, we don't just chat with AI—we engineer the future of autonomous systems.
+                  </p>
+              </div>
+          </div>
+      )}
+
+      {/* 3. Main Work Area */}
       <div className={`flex-grow flex gap-6 min-h-0 ${isFullScreen ? 'p-4' : ''}`}>
         
         {/* LEFT COLUMN: The Document Editor (Canvas) */}
